@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kannur City Police - Home (Hover)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif !important;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #F7F9FC;
+      color: #111418;
+      overflow-x: hidden;
+    }
+    .liquid-glass {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 20px 40px -15px rgba(31, 111, 255, 0.07), 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+    }
+    .liquid-glass-strip {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.1);
+    }
+    .glass-circle {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+    .card-hover-active {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px -10px rgba(31, 111, 255, 0.25), 0 0 0 1.5px rgba(31, 111, 255, 0.5);
+    }
+  </style>
+</head>
+<body class="min-h-screen relative flex flex-col justify-between selection:bg-blue-100 selection:text-blue-900">
+  <!-- Glowing Background Orbs -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-[120px] -right-[120px] w-[580px] h-[580px] rounded-full bg-[#BFD9FF] opacity-60 blur-[130px]"></div>
+    <div class="absolute top-[35%] -left-[140px] w-[520px] h-[520px] rounded-full bg-[#C9D8FF] opacity-50 blur-[130px]"></div>
+    <div class="absolute -bottom-[100px] right-[10%] w-[540px] h-[540px] rounded-full bg-[#DCEBFF] opacity-70 blur-[140px]"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 w-full h-[72px] liquid-glass border-b border-white/60 px-8 flex items-center justify-between">
+    <!-- Brand -->
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-[#1F6FFF] flex items-center justify-center text-white shadow-sm shadow-blue-500/20">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-[17px] font-semibold text-[#111418] leading-tight">Kannur City Police</h1>
+        <p class="text-[13px] text-[#6B7280] leading-none mt-0.5">Sports facilities</p>
+      </div>
+    </div>
+
+    <!-- Center Nav Pills -->
+    <nav class="liquid-glass rounded-full p-1.5 flex items-center gap-1 shadow-sm">
+      <a href="#" class="px-5 py-2 rounded-full bg-[#1F6FFF]/10 text-[#1F6FFF] text-[15px] font-semibold transition">Home</a>
+      <a href="#" class="px-5 py-2 rounded-full text-[#6B7280] hover:text-[#111418] text-[15px] font-medium transition">Bookings</a>
+      <a href="#" class="px-5 py-2 rounded-full text-[#6B7280] hover:text-[#111418] text-[15px] font-medium transition">Membership</a>
+    </nav>
+
+    <!-- Right Controls -->
+    <div class="flex items-center gap-3">
+      <div class="liquid-glass rounded-full px-3 py-1.5 text-[13px] font-medium text-[#111418] flex items-center gap-1.5 shadow-sm">
+        <span class="font-semibold text-[#1F6FFF]">EN</span>
+        <span class="text-gray-300">|</span>
+        <span class="text-[#6B7280]">മലയാളം</span>
+      </div>
+      <button class="w-11 h-11 rounded-full liquid-glass flex items-center justify-center text-[#111418] hover:bg-white/80 transition relative shadow-sm" aria-label="Notifications">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#1F6FFF]"></span>
+      </button>
+      <button class="w-11 h-11 rounded-full liquid-glass flex items-center justify-center text-[#1F6FFF] hover:bg-white/80 transition shadow-sm" aria-label="Account">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="w-full max-w-[1200px] mx-auto px-6 pt-10 pb-6 relative z-10 flex-1 flex flex-col justify-start">
+    <!-- Greeting -->
+    <section class="mb-8">
+      <p class="text-[17px] text-[#6B7280] font-normal mb-1">Good morning</p>
+      <h2 class="text-[56px] font-bold text-[#111418] tracking-tight leading-none">Anil Kumar</h2>
+    </section>
+
+    <!-- Bento Grid (3 Columns) -->
+    <div class="grid grid-cols-3 gap-5 items-stretch">
+      <!-- Col 1: Synthetic Track (Tall Card) -->
+      <div class="relative rounded-[36px] overflow-hidden shadow-lg shadow-blue-900/5 border border-white/80 h-[560px] flex flex-col justify-between p-4 group">
+        <!-- Photo Background -->
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAV_Hrgfy9vbDdz24vq7zvqtz5r6zP0uBxPuZFB7m22wLK5qfeF5XnkTeh_jBKSuDt9H6dz135vfXDSwbxadDOP1E0kgjx01WP8n3htywIDJg_JcqVv5Ep5BR-DCDMPgLJL81QaGw4d5ijm699RZunoJ135uRHe7QaM6S7WIliVsyYHr1UGnIcK7OablK5_Wv9aYU2X1jG7bO5rzhqEtM9dpuwFD7oE3pQ2m2fOhsw" alt="Synthetic Track" class="absolute inset-0 w-full h-full object-cover object-center z-0 transition duration-300">
+        <!-- Subtle dark/light gradient overlay for contrast -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/25 z-[1]"></div>
+
+        <!-- Top Badges -->
+        <div class="relative z-10 flex items-center justify-between p-2">
+          <div class="w-12 h-12 rounded-full glass-circle flex items-center justify-center text-[#1F6FFF]">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+              <line x1="6" y1="1" x2="6" y2="4"/>
+              <line x1="10" y1="1" x2="10" y2="4"/>
+              <line x1="14" y1="1" x2="14" y2="4"/>
+            </svg>
+          </div>
+          <div class="w-10 h-10 rounded-full glass-circle flex items-center justify-center text-[#6B7280]">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="7" y1="17" x2="17" y2="7"/>
+              <polyline points="7 7 17 7 17 17"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Frosted Glass Bottom Strip -->
+        <div class="relative z-10 rounded-[28px] liquid-glass-strip p-5 flex items-center justify-between">
+          <div>
+            <h3 class="text-[22px] font-semibold text-[#111418] leading-tight">Synthetic Track</h3>
+            <p class="text-[15px] text-[#6B7280] mt-0.5">Monthly membership</p>
+          </div>
+          <a href="#" class="px-5 py-3 rounded-full bg-[#1F6FFF] hover:bg-blue-600 text-white font-medium text-[15px] shadow-sm shadow-blue-500/25 transition">Apply for membership</a>
+        </div>
+      </div>
+
+      <!-- Col 2: Football Ground & Police Turf (Two Stacked Cards) -->
+      <div class="flex flex-col gap-5 h-[560px]">
+        <!-- Football Ground (Hover state active) -->
+        <div class="card-hover-active relative rounded-[36px] overflow-hidden border border-white/80 flex-1 flex flex-col justify-between p-4 group transition-all duration-300">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrZk9ehClkUsmUk4mz80QgV6PZge3S4l6p5RXQWW7M2gb1dRsgqhzvFKnUI6BEsGE3eq0_dzeaGxjKQDKqMm7thHEr8P0nYxWZEj0vXBGvP1of1-ND4JRjYDeOlq3QaFFFTIHLhzkJccLBmu9PSLeAyYAOP5LvrkZROnxa93UIquKVzHkNEJ7j_OCmWJ52plVbr0_Rr2Ey6avOWUIHVY5EvSOptrQRPVLQeRP98xs" alt="Football Ground" class="absolute inset-0 w-full h-full object-cover object-center z-0 scale-[1.04] transition duration-300">
+          <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/25 z-[1]"></div>
+          
+          <!-- Top Badges -->
+          <div class="relative z-10 flex items-center justify-between p-1">
+            <div class="w-12 h-12 rounded-full glass-circle flex items-center justify-center text-[#1F6FFF]">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m4.93 4.93 4.24 4.24"/>
+                <path d="m14.83 9.17 4.24-4.24"/>
+                <path d="m14.83 14.83 4.24 4.24"/>
+                <path d="m9.17 14.83-4.24 4.24"/>
+                <circle cx="12" cy="12" r="4"/>
+              </svg>
+            </div>
+            <div class="w-10 h-10 rounded-full glass-circle flex items-center justify-center text-[#1F6FFF] shadow-md shadow-blue-500/10">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="7" y1="17" x2="17" y2="7"/>
+                <polyline points="7 7 17 7 17 17"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Bottom Strip -->
+          <div class="relative z-10 rounded-[28px] liquid-glass-strip p-4 flex items-center justify-between">
+            <div>
+              <h3 class="text-[22px] font-semibold text-[#111418] leading-tight">Football Ground</h3>
+              <p class="text-[15px] text-[#6B7280] mt-0.5">Book by the hour</p>
+            </div>
+            <!-- Small Blue Busy-Time Bars (Taller and brighter blue) -->
+            <div class="flex items-end gap-1 h-7">
+              <span class="w-1.5 h-2.5 rounded-full bg-[#BFD9FF]"></span>
+              <span class="w-1.5 h-3.5 rounded-full bg-[#99C2FF]"></span>
+              <span class="w-1.5 h-4.5 rounded-full bg-[#66A3FF]"></span>
+              <span class="w-1.5 h-5 rounded-full bg-[#3D8BFF]"></span>
+              <span class="w-1.5 h-6 rounded-full bg-[#1F6FFF]"></span>
+              <span class="w-1.5 h-7 rounded-full bg-[#1F6FFF] shadow-[0_0_8px_rgba(31,111,255,0.6)]"></span>
+              <span class="w-1.5 h-7.5 rounded-full bg-[#005AE0] shadow-[0_0_10px_rgba(31,111,255,0.7)]"></span>
+              <span class="w-1.5 h-7 rounded-full bg-[#1F6FFF] shadow-[0_0_8px_rgba(31,111,255,0.6)]"></span>
+              <span class="w-1.5 h-5 rounded-full bg-[#3D8BFF]"></span>
+              <span class="w-1.5 h-3 rounded-full bg-[#99C2FF]"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Police Turf -->
+        <div class="relative rounded-[36px] overflow-hidden shadow-lg shadow-blue-900/5 border border-white/80 flex-1 flex flex-col justify-between p-4 group">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaqVet4jvOSySJzquwxPFuVOzh9t7x556yaZMQTy84elOfeI1D3zOwEs8Rmxhm6pfx8NZ8KMUxifGacKWKsfz0sil62zD4M07e3xOowtkGnjNLyCOZjkkUZxcycl-htDorb02ucQUIxqn1FIOm76cB9IKDVnQ6Aaz8diHuvS_TP1AV7_s8LbcmTLBPZHXoX7oVLzniEOjBO8cGAOQ6Hmm_RKy24V_vldZ3wfrqYBs" alt="Police Turf" class="absolute inset-0 w-full h-full object-cover object-center z-0 transition duration-300">
+          <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/25 z-[1]"></div>
+
+          <!-- Top Badges -->
+          <div class="relative z-10 flex items-center justify-between p-1">
+            <div class="w-12 h-12 rounded-full glass-circle flex items-center justify-center text-[#1F6FFF]">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2"/>
+                <path d="M3 12h18"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+            <div class="w-10 h-10 rounded-full glass-circle flex items-center justify-center text-[#6B7280]">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="7" y1="17" x2="17" y2="7"/>
+                <polyline points="7 7 17 7 17 17"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Bottom Strip -->
+          <div class="relative z-10 rounded-[28px] liquid-glass-strip p-4 flex items-center justify-between">
+            <div>
+              <h3 class="text-[22px] font-semibold text-[#111418] leading-tight">Police Turf</h3>
+              <p class="text-[15px] text-[#6B7280] mt-0.5">Full or half court</p>
+            </div>
+            <!-- Small Blue Busy-Time Bars -->
+            <div class="flex items-end gap-1 h-7">
+              <span class="w-1.5 h-2 rounded-full bg-[#DCEBFF]"></span>
+              <span class="w-1.5 h-2.5 rounded-full bg-[#DCEBFF]"></span>
+              <span class="w-1.5 h-3 rounded-full bg-[#BFD9FF]"></span>
+              <span class="w-1.5 h-4.5 rounded-full bg-[#1F6FFF]/60"></span>
+              <span class="w-1.5 h-6 rounded-full bg-[#1F6FFF]"></span>
+              <span class="w-1.5 h-7 rounded-full bg-[#1F6FFF]"></span>
+              <span class="w-1.5 h-5.5 rounded-full bg-[#1F6FFF]/80"></span>
+              <span class="w-1.5 h-3.5 rounded-full bg-[#BFD9FF]"></span>
+              <span class="w-1.5 h-2 rounded-full bg-[#DCEBFF]"></span>
+            </div>
+          </div>

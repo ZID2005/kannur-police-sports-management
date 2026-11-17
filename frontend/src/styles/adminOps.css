@@ -1,0 +1,18 @@
+/* Page-specific styles extracted from facilities_slot_management and payment_management_financial_reports */
+
+.admin-ops-page > :first-child {
+  margin-top: 0 !important;
+}
+
+.admin-ops-page > :last-child {
+  margin-bottom: 0 !important;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

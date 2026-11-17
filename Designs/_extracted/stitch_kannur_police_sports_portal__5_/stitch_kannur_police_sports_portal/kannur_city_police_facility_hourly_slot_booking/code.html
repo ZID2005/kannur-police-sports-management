@@ -1,0 +1,526 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "surface-dim": "#d8dadf",
+          "primary": "#0053cd",
+          "outline-variant": "#c2c6d8",
+          "on-tertiary-fixed": "#0e1d2b",
+          "surface": "#f8f9ff",
+          "inverse-primary": "#b2c5ff",
+          "on-primary-fixed": "#001848",
+          "on-tertiary-container": "#fdfcff",
+          "inverse-on-surface": "#eff0f6",
+          "tertiary-fixed-dim": "#b9c8db",
+          "outline": "#727787",
+          "on-background": "#191c20",
+          "on-surface": "#191c20",
+          "on-tertiary": "#ffffff",
+          "on-primary": "#ffffff",
+          "surface-tint": "#0056d2",
+          "secondary-container": "#bfd9ff",
+          "secondary-fixed": "#d2e4ff",
+          "secondary": "#476080",
+          "surface-bright": "#f8f9ff",
+          "on-secondary-fixed": "#001c38",
+          "surface-container": "#eceef3",
+          "primary-fixed-dim": "#b2c5ff",
+          "inverse-surface": "#2e3135",
+          "secondary-fixed-dim": "#afc8ee",
+          "on-primary-fixed-variant": "#0040a1",
+          "on-surface-variant": "#424655",
+          "surface-container-low": "#f2f3f9",
+          "surface-container-high": "#e6e8ee",
+          "on-error-container": "#93000a",
+          "tertiary-fixed": "#d5e4f8",
+          "tertiary": "#4f5d6e",
+          "tertiary-container": "#677687",
+          "on-secondary-container": "#465f7f",
+          "on-tertiary-fixed-variant": "#3a4858",
+          "error-container": "#ffdad6",
+          "primary-fixed": "dae2ff",
+          "on-error": "#ffffff",
+          "surface-container-lowest": "#ffffff",
+          "on-secondary": "#ffffff",
+          "primary-container": "#166bfb",
+          "on-primary-container": "#fefcff",
+          "surface-container-highest": "#e1e2e8",
+          "background": "#f8f9ff",
+          "on-secondary-fixed-variant": "#2f4867",
+          "surface-variant": "#e1e2e8",
+          "error": "#ba1a1a"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-sm": "0.5rem",
+          "margin": "1.5rem",
+          "space-xl": "2.5rem",
+          "gutter-desktop": "1.5rem",
+          "space-lg": "1.5rem",
+          "margin-desktop": "2.5rem",
+          "space-xs": "0.25rem",
+          "space-md": "1rem",
+          "gutter": "1.5rem"
+        },
+        "fontFamily": {
+          "title-portal-mobile": [
+            "Inter"
+          ],
+          "body-default": [
+            "Inter"
+          ],
+          "title-portal": [
+            "Inter"
+          ],
+          "body-medium": [
+            "Inter"
+          ],
+          "headline-card": [
+            "Inter"
+          ],
+          "label-meta": [
+            "Inter"
+          ],
+          "label-primary": [
+            "Inter"
+          ],
+          "caption": [
+            "Inter"
+          ]
+        },
+        "fontSize": {
+          "title-portal-mobile": [
+            "30px",
+            {
+              "lineHeight": "36px",
+              "letterSpacing": "-0.025em",
+              "fontWeight": "700"
+            }
+          ],
+          "body-default": [
+            "17px",
+            {
+              "lineHeight": "24px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "400"
+            }
+          ],
+          "title-portal": [
+            "40px",
+            {
+              "lineHeight": "48px",
+              "letterSpacing": "-0.03em",
+              "fontWeight": "700"
+            }
+          ],
+          "body-medium": [
+            "17px",
+            {
+              "lineHeight": "24px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "500"
+            }
+          ],
+          "headline-card": [
+            "20px",
+            {
+              "lineHeight": "28px",
+              "letterSpacing": "-0.015em",
+              "fontWeight": "600"
+            }
+          ],
+          "label-meta": [
+            "13px",
+            {
+              "lineHeight": "18px",
+              "letterSpacing": "0em",
+              "fontWeight": "500"
+            }
+          ],
+          "label-primary": [
+            "15px",
+            {
+              "lineHeight": "20px",
+              "letterSpacing": "-0.005em",
+              "fontWeight": "500"
+            }
+          ],
+          "caption": [
+            "12px",
+            {
+              "lineHeight": "16px",
+              "letterSpacing": "0.01em",
+              "fontWeight": "400"
+            }
+          ]
+        }
+      }
+    }
+  }</script></head><body class="bg-surface font-body-default text-body-default text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-2xl shadow-[0_1px_12px_rgba(31,111,255,0.06)]"><div class="h-20 w-full px-margin-desktop flex items-center justify-between"><div class="flex items-center gap-space-md"><div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]"><span class="material-symbols-outlined text-[26px]">local_police</span></div><div class="flex flex-col"><span class="font-headline-card text-headline-card leading-tight text-on-surface tracking-tight">Kannur City Police</span><span class="font-caption text-caption text-primary font-medium tracking-wide uppercase">Sports Facilities</span></div></div><div class="hidden md:flex items-center justify-center"><div class="bg-surface-container-high/60 backdrop-blur-md p-space-xs rounded-full shadow-[inset_0_1px_2px_rgba(17,20,24,0.03)]"><nav class="flex items-center gap-space-xs" data-active-classes="bg-primary text-on-primary shadow-[0_4px_14px_rgba(0,83,205,0.3)]"><a class="px-space-lg py-space-xs rounded-full font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface transition-all whitespace-nowrap shrink-0" data-path="home" href="#">Home</a><a aria-current="page" class="px-space-lg py-space-xs rounded-full font-label-primary transition-all bg-primary text-on-primary shadow-[0_4px_14px_rgba(0,83,205,0.3)] whitespace-nowrap shrink-0" data-path="bookings" href="#">Bookings</a><a class="px-space-lg py-space-xs rounded-full font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface transition-all whitespace-nowrap shrink-0" data-path="membership" href="#">Membership</a></nav></div></div><div class="flex items-center gap-space-lg"><button class="px-space-md py-space-xs rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-label-meta text-label-meta transition-colors flex items-center gap-space-xs" type="button"><span class="font-semibold text-primary">EN</span><span class="text-outline-variant">|</span><span>മലയാളം</span></button><button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors relative" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary ring-2 ring-white"></span></button><div class="flex items-center gap-space-md pl-space-sm"><div class="text-right hidden sm:block"><p class="font-label-primary text-label-primary text-on-surface leading-tight">Priya Mohan</p><p class="font-caption text-caption text-on-surface-variant">Citizen Account</p></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-white/80" src="https://lh3.googleusercontent.com/aida/ALJJyrB7tuXUPyXW9fYJM5AoTeNRY92R-I5DH-zeYatJ3rGweCNVHMbZf2B4f3M0lg0r_1iJjxM4vbXELaUR8KufQA5dPLotyKl535fQa7fZXvAgMB_1qSU5meTpF16apm4PBLfOcdv_zD5o-bdUqNrHVdmD5pcHB7l_-Vw7VxwbQkX7jLjdo17la0ZHT_yz7IR0mSw9wWvPruO9LymErxbcr9f1d40HKFDy-yRpddklBGc"></div></div></div></header><main class="w-full pt-20 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<div class="relative w-full overflow-hidden px-margin sm:px-margin-desktop py-space-lg max-w-7xl mx-auto flex flex-col gap-space-lg">
+<!-- Ambient Liquid Glass Atmosphere Glows -->
+<div class="absolute -top-24 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+<div class="absolute top-1/3 -right-20 w-80 h-80 bg-secondary-container/40 rounded-full blur-[110px] pointer-events-none -z-10"></div>
+<!-- Section: Header Context & Official Tagline -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs text-primary font-label-meta text-label-meta">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span>Official Departmental Booking Portal • Citizen Access Level 1</span>
+</div>
+<h1 class="font-title-portal text-title-portal text-on-surface tracking-tight">Facility &amp; Hourly Slot Booking</h1>
+</div>
+<div class="flex items-center gap-space-sm bg-white/70 backdrop-blur-xl px-space-md py-space-xs rounded-full shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="font-label-meta text-label-meta text-on-surface-variant font-medium">Kannur Sports Complex • Online Gate Sync Active</span>
+</div>
+</div>
+<!-- 1. Venue Selector Cards (3 Horizontal Tabs) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Card 1: Active Police Turf -->
+<button class="group relative flex items-center p-space-sm rounded-3xl bg-white/75 backdrop-blur-2xl shadow-[0_12px_32px_rgba(31,111,255,0.12)] ring-2 ring-primary text-left transition-all duration-300" type="button">
+<div class="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0 shadow-inner">
+<img alt="Police Turf AstroTurf 5-a-side pitch with high enclosure netting and floodlight towers" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/ALJJyrCcal09iMk-BFy2Cn_sXS6FHalOuHnTiMJwVHKGm8E4Hag-u0AHjZYaoWIvpSTs4PciKUWtTp5Lda0f3TVjhKyFFWFhvgWzlioFtKiXVDrUICGpd5QcZnP_5tYSmpLMVRUMLD5i6plC-2xiakoK3xnltSbwVP7JvXP68Lzonyu23t80UkBdyqJ5Cad27vz8eYUTwPHFIGOmyrvlnqGb9_t_WUqdNCp0NVZTtmdOxPM2">
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+<span class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-primary text-[10px] font-semibold text-white tracking-wider uppercase">Turf 1</span>
+</div>
+<div class="flex flex-col justify-center ml-space-md min-w-0 pr-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-card text-headline-card text-on-surface truncate">Police Turf</span>
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<p class="font-label-meta text-label-meta text-on-surface-variant truncate mt-0.5">Full / Half Court • 5-a-side AstroTurf</p>
+<span class="font-caption text-caption text-primary font-semibold mt-1">₹600 - ₹1,200 / hr</span>
+</div>
+</button>
+<!-- Card 2: Football Ground -->
+<button class="group relative flex items-center p-space-sm rounded-3xl bg-white/45 backdrop-blur-xl hover:bg-white/70 shadow-[0_6px_20px_rgba(0,0,0,0.03)] text-left transition-all duration-300 hover:scale-[1.01]" type="button">
+<div class="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0 shadow-inner">
+<img alt="Police Parade Football Ground featuring pristine grass surface and stadium floodlight pylons" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/ALJJyrB9oF73_Sh-nyG7-DAwquPUOIYYUSUrlDVaNr47pxWEm53xJQMkTgPvhGKBMqV1WTwMbd1pwidOv78MmnhPdZ1WZYZHG60Lzt1DqMhv2kmiJXopahOGQRWDMooaw8NcJ0bShmftXkokqRRrYOINwFiWDExqkVGCIV0tZ8GiX3_v9yx5hlW_WUDIOFiM0rlyEEXZPdFGyRbFu7Ne4x8t6M95e8KjtiQIIsZOI0T8zbVJ">
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+<span class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-surface-container-highest text-[10px] font-semibold text-on-surface-variant tracking-wider uppercase">Stadium</span>
+</div>
+<div class="flex flex-col justify-center ml-space-md min-w-0 pr-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-card text-headline-card text-on-surface truncate">Football Ground</span>
+</div>
+<p class="font-label-meta text-label-meta text-on-surface-variant truncate mt-0.5">Police Parade Ground • Regulation</p>
+<span class="font-caption text-caption text-secondary font-medium mt-1">From ₹2,400 / hr</span>
+</div>
+</button>
+<!-- Card 3: Indoor Badminton Court -->
+<button class="group relative flex items-center p-space-sm rounded-3xl bg-white/45 backdrop-blur-xl hover:bg-white/70 shadow-[0_6px_20px_rgba(0,0,0,0.03)] text-left transition-all duration-300 hover:scale-[1.01]" type="button">
+<div class="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0 shadow-inner">
+<img alt="Kannur Police indoor badminton competition court with polished synthetic flooring and court markings" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/ALJJyrByvPzEgGgXdkmbVDO8IpvmSNCApIML-YmAsCt7qtrYVMZ7QOrsz-QGZiFnE6EUgxIzXUqnWozf0g3ALVtxJy4qOgqV6kNbsNFzdGEFDT9VBKDmyEhkwXIyTXLnllHeBKLvhPDdO0X5FyVilU-wnVAA7UjeT5qCu98eIyJFUnPJGUSMIRHyLrzE0F1sgDRtvFVSjsKAU7yXV1ZdrJYk3iJJxbDq313ORWdclGkW390">
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+<span class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-surface-container-highest text-[10px] font-semibold text-on-surface-variant tracking-wider uppercase">Indoor</span>
+</div>
+<div class="flex flex-col justify-center ml-space-md min-w-0 pr-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-card text-headline-card text-on-surface truncate">Indoor Badminton</span>
+</div>
+<p class="font-label-meta text-label-meta text-on-surface-variant truncate mt-0.5">Teak Floor Competition Courts</p>
+<span class="font-caption text-caption text-secondary font-medium mt-1">From ₹450 / hr</span>
+</div>
+</button>
+</div>
+<!-- Selected Venue Policy & Rate Glass Banner (for Police Turf) -->
+<div class="relative w-full rounded-3xl bg-white/65 backdrop-blur-2xl p-space-md md:p-space-lg shadow-[0_16px_36px_rgba(31,111,255,0.07)] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs max-w-3xl">
+<div class="flex flex-wrap items-center gap-space-xs">
+<span class="px-space-md py-1 rounded-full bg-primary/10 text-primary font-label-meta text-label-meta font-semibold">General Public Rate: ₹1,200/hr Full Court • ₹600/hr Half Court</span>
+<span class="px-space-sm py-1 rounded-full bg-surface-container-high text-on-surface-variant font-caption text-caption">Rule § 6.25 Compliant</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-label-primary text-label-primary mt-1">
+<span class="material-symbols-outlined text-primary text-[20px] shrink-0">schedule</span>
+<span>Operating Hours: 06:00 AM – 10:00 PM • Floodlights included after 06:30 PM • Stage 1 QR Gate Scan only (Biometric exemption applies)</span>
+</div>
+</div>
+<!-- Court Type Selector Radio Pills -->
+<div class="flex items-center gap-space-xs bg-surface-container-high/70 p-1.5 rounded-full shrink-0 shadow-inner"><label class="cursor-pointer shrink-0"><input checked="" class="sr-only peer" name="court_type" type="radio" value="full"><span class="px-space-md py-2 rounded-full flex items-center gap-2 font-label-primary text-label-primary text-on-surface-variant peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-md transition-all whitespace-nowrap shrink-0"><span class="material-symbols-outlined text-[18px]">sports_soccer</span><span>Full Court • ₹1,200/hr</span></span></label><label class="cursor-pointer shrink-0"><input class="sr-only peer" name="court_type" type="radio" value="half_a"><span class="px-space-md py-2 rounded-full flex items-center gap-2 font-label-primary text-label-primary text-on-surface-variant peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-md transition-all whitespace-nowrap shrink-0"><span class="material-symbols-outlined text-[18px]">crop_free</span><span>Half Court A • ₹600/hr</span></span></label><label class="cursor-pointer shrink-0"><input class="sr-only peer" name="court_type" type="radio" value="half_b"><span class="px-space-md py-2 rounded-full flex items-center gap-2 font-label-primary text-label-primary text-on-surface-variant peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-md transition-all whitespace-nowrap shrink-0"><span class="material-symbols-outlined text-[18px]">crop_free</span><span>Half Court B • ₹600/hr</span></span></label></div>
+</div>
+<!-- 2. Main Booking Two-Column Workspace -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Left Column: Date & Time Slot Grid (8 cols / 2/3 width) -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg">
+<!-- Date Selector Card -->
+<div class="w-full rounded-3xl bg-white/60 backdrop-blur-2xl p-space-lg shadow-[0_12px_32px_rgba(31,111,255,0.06)] flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[24px]">calendar_month</span>
+<h2 class="font-headline-card text-headline-card text-on-surface">Select Date &amp; Playing Slot</h2>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-high/60 px-space-md py-1.5 rounded-full">
+<span class="font-label-primary text-label-primary font-medium text-on-surface">November 2024</span>
+<div class="flex items-center">
+<button class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-white/80 transition-all" type="button"><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
+<button class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-white/80 transition-all" type="button"><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+</div>
+</div>
+</div>
+<!-- Horizontal 7-Day Date Picker Pills -->
+<div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-space-xs overflow-x-auto pb-1"><!-- Wed 20 Nov (Past/dimmed) -->
+<button class="flex flex-col items-center justify-center py-space-sm px-2 rounded-2xl bg-surface-container-low/40 opacity-40 cursor-not-allowed text-center whitespace-nowrap" disabled="" type="button">
+<span class="font-caption text-caption text-outline">Wed</span>
+<span class="font-headline-card text-headline-card text-outline">20</span>
+<span class="font-caption text-[11px] text-outline mt-0.5 whitespace-nowrap">Past</span>
+</button>
+<!-- Thu 21 Nov -->
+<button class="flex flex-col items-center justify-center py-space-sm px-2 rounded-2xl bg-white/50 hover:bg-white/90 text-center shadow-xs transition-all whitespace-nowrap" type="button">
+<span class="font-caption text-caption text-on-surface-variant">Thu</span>
+<span class="font-headline-card text-headline-card text-on-surface">21</span>
+<span class="font-caption text-[11px] text-primary mt-0.5 whitespace-nowrap">2 slots</span>
+</button>
+<!-- Fri 22 Nov -->
+<button class="flex flex-col items-center justify-center py-space-sm px-2 rounded-2xl bg-white/50 hover:bg-white/90 text-center shadow-xs transition-all whitespace-nowrap" type="button">
+<span class="font-caption text-caption text-on-surface-variant">Fri</span>
+<span class="font-headline-card text-headline-card text-on-surface">22</span>
+<span class="font-caption text-[11px] text-primary mt-0.5 whitespace-nowrap">1 slot</span>
+</button>
+<!-- Sat 23 Nov (Selected Active) -->
+<button class="flex flex-col items-center justify-center py-space-sm px-2 rounded-2xl bg-primary text-on-primary text-center shadow-[0_8px_20px_rgba(0,83,205,0.35)] scale-[1.04] transition-all whitespace-nowrap" type="button">
+<span class="font-caption text-caption text-on-primary/80 font-medium">Sat</span>
+<span class="font-headline-card text-headline-card text-on-primary font-bold">23</span>
+<span class="font-caption text-[11px] text-on-primary/90 font-medium mt-0.5 whitespace-nowrap">4 slots</span>
+</button>
+<!-- Sun 24 Nov -->
+<button class="flex flex-col items-center justify-center py-space-sm px-2 rounded-2xl bg-white/50 hover:bg-white/90 text-center shadow-xs transition-all whitespace-nowrap" type="button">
+<span class="font-caption text-caption text-on-surface-variant">Sun</span>
+<span class="font-headline-card text-headline-card text-on-surface">24</span>
+<span class="font-caption text-[11px] text-primary mt-0.5 whitespace-nowrap">6 slots</span>
+</button>
+<!-- Mon 25 Nov -->
+<button class="flex flex-col items-center justify-center py-space-sm px-2 rounded-2xl bg-white/50 hover:bg-white/90 text-center shadow-xs transition-all whitespace-nowrap" type="button">
+<span class="font-caption text-caption text-on-surface-variant">Mon</span>
+<span class="font-headline-card text-headline-card text-on-surface">25</span>
+<span class="font-caption text-[11px] text-primary mt-0.5 whitespace-nowrap">8 slots</span>
+</button>
+<!-- Tue 26 Nov -->
+<button class="flex flex-col items-center justify-center py-space-sm px-2 rounded-2xl bg-white/50 hover:bg-white/90 text-center shadow-xs transition-all whitespace-nowrap" type="button">
+<span class="font-caption text-caption text-on-surface-variant">Tue</span>
+<span class="font-headline-card text-headline-card text-on-surface">26</span>
+<span class="font-caption text-[11px] text-primary mt-0.5 whitespace-nowrap">5 slots</span>
+</button></div>
+</div>
+<!-- Time Slots Grid Container -->
+<div class="w-full rounded-3xl bg-white/60 backdrop-blur-2xl p-space-lg shadow-[0_12px_32px_rgba(31,111,255,0.06)] flex flex-col gap-space-lg">
+<!-- Morning Session -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-amber-500 text-[20px]">wb_sunny</span>
+<span class="font-body-medium text-body-medium text-on-surface font-semibold">Morning Sessions</span>
+<span class="font-caption text-caption text-on-surface-variant">(06:00 AM – 10:00 AM)</span>
+</div>
+<span class="font-caption text-caption text-primary bg-primary/10 px-2.5 py-0.5 rounded-full font-medium">3 Slots Available</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-space-sm"><!-- 06:00 - 07:00 AM (Booked Dept) -->
+<div class="p-space-md rounded-2xl bg-surface-container-high/60 flex flex-col justify-between h-24 opacity-75">
+<span class="font-label-meta text-label-meta font-semibold text-outline">06:00 - 07:00 AM</span>
+<div class="flex items-center gap-1 text-on-surface-variant whitespace-nowrap"><span class="material-symbols-outlined text-[16px] text-outline">lock</span><span class="font-caption text-caption text-outline">Already Booked</span></div>
+</div>
+<!-- 07:00 - 08:00 AM (Available) -->
+<button class="p-space-md rounded-2xl bg-white/80 hover:bg-white hover:shadow-md transition-all flex flex-col justify-between h-24 text-left group" type="button">
+<span class="font-label-meta text-label-meta font-semibold text-on-surface">07:00 - 08:00 AM</span>
+<div class="flex items-center justify-between gap-1 w-full">
+<span class="font-caption text-caption font-semibold text-primary whitespace-nowrap">₹1,200</span>
+<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-semibold whitespace-nowrap shrink-0">Available</span>
+</div>
+</button>
+<!-- 08:00 - 09:00 AM (Available) -->
+<button class="p-space-md rounded-2xl bg-white/80 hover:bg-white hover:shadow-md transition-all flex flex-col justify-between h-24 text-left group" type="button">
+<span class="font-label-meta text-label-meta font-semibold text-on-surface">08:00 - 09:00 AM</span>
+<div class="flex items-center justify-between gap-1 w-full">
+<span class="font-caption text-caption font-semibold text-primary whitespace-nowrap">₹1,200</span>
+<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-semibold whitespace-nowrap shrink-0">Available</span>
+</div>
+</button>
+<!-- 09:00 - 10:00 AM (Available) -->
+<button class="p-space-md rounded-2xl bg-white/80 hover:bg-white hover:shadow-md transition-all flex flex-col justify-between h-24 text-left group" type="button">
+<span class="font-label-meta text-label-meta font-semibold text-on-surface">09:00 - 10:00 AM</span>
+<div class="flex items-center justify-between gap-1 w-full">
+<span class="font-caption text-caption font-semibold text-primary whitespace-nowrap">₹1,200</span>
+<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-semibold whitespace-nowrap shrink-0">Available</span>
+</div>
+</button></div>
+</div>
+<!-- Afternoon & Evening Session -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-indigo-500 text-[20px]">nightlight</span>
+<span class="font-body-medium text-body-medium text-on-surface font-semibold">Afternoon &amp; Evening Sessions</span>
+<span class="font-caption text-caption text-on-surface-variant">(04:00 PM – 10:00 PM • Floodlit)</span>
+</div>
+<span class="font-caption text-caption text-primary bg-primary/10 px-2.5 py-0.5 rounded-full font-medium">Floodlights Active</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-space-sm"><!-- 04:00 - 05:00 PM (Booked KCP Team) -->
+<div class="p-space-md rounded-2xl bg-surface-container-high/60 flex flex-col justify-between h-24 opacity-75">
+<span class="font-label-meta text-label-meta font-semibold text-outline">04:00 - 05:00 PM</span>
+<div class="flex items-center gap-1 text-on-surface-variant whitespace-nowrap"><span class="material-symbols-outlined text-[16px] text-outline">lock</span><span class="font-caption text-caption text-outline">Already Booked</span></div>
+</div>
+<!-- 05:00 - 06:00 PM (Available) -->
+<button class="p-space-md rounded-2xl bg-white/80 hover:bg-white hover:shadow-md transition-all flex flex-col justify-between h-24 text-left group" type="button">
+<span class="font-label-meta text-label-meta font-semibold text-on-surface">05:00 - 06:00 PM</span>
+<div class="flex items-center justify-between gap-1 w-full">
+<span class="font-caption text-caption font-semibold text-primary whitespace-nowrap">₹1,200</span>
+<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-semibold whitespace-nowrap shrink-0">Available</span>
+</div>
+</button>
+<!-- 06:00 - 07:00 PM (Booked Public) -->
+<div class="p-space-md rounded-2xl bg-surface-container-high/60 flex flex-col justify-between h-24 opacity-75">
+<span class="font-label-meta text-label-meta font-semibold text-outline">06:00 - 07:00 PM</span>
+<div class="flex items-center gap-1 text-on-surface-variant whitespace-nowrap"><span class="material-symbols-outlined text-[16px] text-outline">lock</span><span class="font-caption text-caption text-outline">Already Booked</span></div>
+</div>
+<!-- 07:00 - 08:00 PM (SELECTED HIGHLIGHTED ACTIVE) -->
+<div class="relative p-space-md rounded-2xl bg-primary text-on-primary shadow-[0_12px_28px_rgba(0,83,205,0.38)] flex flex-col justify-between h-24 ring-2 ring-primary-container">
+<div class="flex items-center justify-between">
+<span class="font-label-meta text-label-meta font-semibold text-white whitespace-nowrap">07:00 - 08:00 PM</span>
+<span class="material-symbols-outlined text-white text-[20px] shrink-0" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex items-center justify-between gap-1 w-full">
+<span class="font-caption text-caption text-white/90 font-medium whitespace-nowrap">Floodlit Session</span>
+<span class="font-label-meta text-label-meta font-bold text-white whitespace-nowrap shrink-0">₹1,200</span>
+</div>
+</div>
+<!-- 08:00 - 09:00 PM (Available) -->
+<button class="p-space-md rounded-2xl bg-white/80 hover:bg-white hover:shadow-md transition-all flex flex-col justify-between h-24 text-left group" type="button">
+<span class="font-label-meta text-label-meta font-semibold text-on-surface">08:00 - 09:00 PM</span>
+<div class="flex items-center justify-between gap-1 w-full">
+<span class="font-caption text-caption font-semibold text-primary whitespace-nowrap">₹1,200</span>
+<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-semibold whitespace-nowrap shrink-0">Available</span>
+</div>
+</button>
+<!-- 09:00 - 10:00 PM (Maintenance) -->
+<div class="p-space-md rounded-2xl bg-surface-container-high/60 flex flex-col justify-between h-24 opacity-60">
+<span class="font-label-meta text-label-meta font-semibold text-outline">09:00 - 10:00 PM</span>
+<div class="flex items-center gap-1 text-on-surface-variant whitespace-nowrap"><span class="material-symbols-outlined text-[16px] text-outline">lock</span><span class="font-caption text-caption text-outline">Already Booked</span></div>
+</div></div>
+</div>
+<!-- Slot Policy Micro-banner -->
+<div class="flex items-center gap-space-sm bg-surface-container-low/70 p-space-sm rounded-2xl text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[20px]">info</span>
+<span class="font-caption text-caption">Consecutive slots up to 2 hours allowed per citizen booking. Equipment rental (footballs &amp; bibs) available at Gate #2 reception counter.</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Booking Order Summary & Instant Checkout Glass Card (4 cols / 1/3 width) -->
+<div class="lg:col-span-4 w-full sticky top-24 flex flex-col gap-space-md">
+<div class="w-full rounded-3xl bg-white/75 backdrop-blur-3xl p-space-lg shadow-[0_24px_48px_rgba(31,111,255,0.12)] flex flex-col gap-space-md">
+<!-- Card Title & Security Badge -->
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<h2 class="font-headline-card text-headline-card text-on-surface font-bold">Booking Summary</h2>
+</div>
+<div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-caption text-caption font-semibold uppercase tracking-wider">Verified Slot</span>
+</div>
+</div>
+<!-- Primary Reservation Breakdown Container -->
+<div class="bg-surface-container-low/50 rounded-2xl p-space-md flex flex-col gap-space-sm">
+<div class="flex flex-col">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Facility</span>
+<span class="font-body-medium text-body-medium font-semibold text-on-surface">Police Turf (Full Court 5-a-side)</span>
+</div>
+<div class="flex flex-col pt-1">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Date &amp; Selected Time</span>
+<span class="font-body-medium text-body-medium font-medium text-primary">Saturday, 23 Nov 2024 • 07:00 PM – 08:00 PM</span>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-caption text-caption">
+<span class="material-symbols-outlined text-[16px] text-secondary">timelapse</span>
+<span>1 Hour (Floodlit Evening Session)</span>
+</div>
+<!-- Citizen Profile Tagging -->
+<div class="pt-space-xs flex flex-col gap-1">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Authorized Registrant</span>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-primary text-label-primary font-medium text-on-surface">Priya Mohan</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-[11px] font-mono text-on-surface-variant">#KCP-PUB-2024-3194</span>
+</div>
+<span class="font-caption text-caption text-outline">+91 98470 12345 • priya.m@kerala.in</span>
+</div>
+</div>
+<!-- Detailed Price Breakdown -->
+<div class="flex flex-col gap-2.5 py-space-xs">
+<div class="flex items-center justify-between font-label-primary text-label-primary text-on-surface-variant">
+<span>Base Hourly Pitch Fee</span>
+<span class="text-on-surface font-medium">₹1,200.00</span>
+</div>
+<div class="flex items-center justify-between font-label-primary text-label-primary text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span>Floodlight Operational Charge</span>
+<span class="material-symbols-outlined text-[14px] text-primary" title="Included complimentary after 06:30 PM">info</span>
+</span>
+<span class="text-emerald-700 font-medium">Complimentary</span>
+</div>
+<div class="flex items-center justify-between font-label-primary text-label-primary text-on-surface-variant">
+<span>CGST (9%) + SGST (9%)</span>
+<span class="text-on-surface font-medium">₹216.00</span>
+</div>
+<!-- Grand Total Plate -->
+<div class="mt-space-xs pt-space-sm bg-surface-container-high/40 rounded-2xl px-space-md py-space-sm flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-caption text-caption text-on-surface-variant font-medium">Total Amount Payable</span>
+<span class="font-caption text-[11px] text-outline">Incl. of all official Kerala GST</span>
+</div>
+<span class="font-title-portal-mobile text-title-portal-mobile font-bold text-primary tracking-tight">₹1,416.00</span>
+</div>
+</div>
+<!-- Cancellation & Gate Notice Glass Strip -->
+<div class="p-space-sm rounded-2xl bg-primary/5 flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">qr_code_2</span>
+<p class="font-caption text-caption text-on-surface-variant leading-snug">
+              Instant digital entry QR token issued immediately upon payment. 100% refund on cancellations up to 4 hours prior (§ 6.18).
+            </p>
+</div>
+<!-- Call-to-Action Triggers -->
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<button class="w-full h-14 rounded-2xl bg-primary hover:bg-primary-container text-white font-label-primary text-label-primary font-semibold shadow-[0_8px_24px_rgba(0,83,205,0.32)] flex items-center justify-center gap-space-xs transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.985]" type="button">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+<span>Proceed to Secure Payment (₹1,416.00)</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<button class="w-full h-12 rounded-2xl bg-white/70 hover:bg-white text-on-surface font-label-primary text-label-primary font-medium shadow-xs transition-all flex items-center justify-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">bookmark</span>
+<span>Save Slot as Draft (15m hold)</span>
+</button>
+</div>
+</div>
+<!-- Quick Facility Support Mini Card -->
+<div class="w-full rounded-2xl bg-white/50 backdrop-blur-xl p-space-md shadow-xs flex items-center justify-between text-on-surface-variant">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">call</span>
+<div class="flex flex-col">
+<span class="font-label-meta text-label-meta font-semibold text-on-surface">Ground Incharge Desk</span>
+<span class="font-caption text-caption text-outline">0497 276 3331 (Ext. 204)</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface text-caption font-medium">Gate #2</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Micro-interaction for slot choice feedback & state persistence
+  document.addEventListener('DOMContentLoaded', () => {
+    const slotButtons = document.querySelectorAll('button:not([disabled])');
+    slotButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // Subtle haptic ripple / visual feedback
+        btn.classList.add('scale-[0.99]');
+        setTimeout(() => btn.classList.remove('scale-[0.99]'), 150);
+      });
+    });
+  });
+</script></main>
+
+</body></html>

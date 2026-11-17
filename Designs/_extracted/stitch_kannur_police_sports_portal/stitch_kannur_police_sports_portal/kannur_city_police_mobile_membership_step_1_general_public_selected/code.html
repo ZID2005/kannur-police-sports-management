@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<meta content="mobile_stack" name="shell-type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#1F6FFF",
+            "primary-dark": "#0053CD",
+            neutral: {
+              title: "#111418",
+              sub: "#6B7280",
+              track: "#D1D5DB",
+              ring: "#9CA3AF"
+            }
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        background-color: #F8FAFD;
+        font-family: 'Inter', sans-serif;
+      }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-[#F8FAFD] text-[#111418] antialiased min-h-screen flex flex-col items-center justify-between relative overflow-x-hidden selection:bg-blue-100">
+<!-- Atmospheric Background Blobs (Ice blue, sky blue, periwinkle) -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-16 -left-16 w-80 h-80 rounded-full bg-blue-200/45 blur-3xl"></div>
+<div class="absolute top-1/3 -right-20 w-80 h-80 rounded-full bg-indigo-200/40 blur-3xl"></div>
+<div class="absolute bottom-16 left-0 w-72 h-72 rounded-full bg-sky-200/35 blur-3xl"></div>
+</div>
+<!-- Screen Content Container (390px Mobile View) -->
+<div class="w-full max-w-[390px] min-h-[844px] flex flex-col justify-between relative z-10 mx-auto px-6 pt-safe">
+<!-- Top Region -->
+<div class="flex flex-col w-full">
+<!-- 1. Top bar: shield mark, Kannur City Police / Sports facilities, bell icon and round menu button -->
+<header class="h-16 flex items-center justify-between w-full pt-1">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-100/80 flex items-center justify-center text-[#1F6FFF] shadow-sm">
+<span class="material-symbols-outlined text-[24px]">local_police</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[16px] font-semibold text-[#111418] leading-tight">Kannur City Police</span>
+<span class="text-[12px] font-medium text-[#6B7280] leading-none mt-0.5">Sports facilities</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button aria-label="Notifications" class="w-10 h-10 rounded-full flex items-center justify-center text-[#4B5563] hover:bg-black/5 active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+</button>
+<button aria-label="Menu" class="w-10 h-10 rounded-full flex items-center justify-center text-[#4B5563] hover:bg-black/5 active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[24px]">menu</span>
+</button>
+</div>
+</header>
+<!-- 2. Under it (32px below): link "Back to home" with thin chevron-left on left, grey caption "Step 1 of 4" on right -->
+<div class="mt-8 flex items-center justify-between w-full">
+<a class="inline-flex items-center text-[#6B7280] hover:text-[#1F6FFF] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[19px] -ml-1 text-[#6B7280] group-hover:text-[#1F6FFF] transition-transform group-hover:-translate-x-0.5 font-light">chevron_left</span>
+<span class="text-[14px] font-medium text-[#4B5563] ml-0.5">Back to home</span>
+</a>
+<span class="text-[13px] font-medium text-[#6B7280]">Step 1 of 4</span>
+</div>
+<!-- 3. Directly beneath: slim 4-segment progress bar (first segment #1F6FFF, others #D1D5DB) -->
+<div class="grid grid-cols-4 gap-2 w-full mt-3">
+<div class="h-1 rounded-full bg-[#1F6FFF]"></div>
+<div class="h-1 rounded-full bg-[#D1D5DB]"></div>
+<div class="h-1 rounded-full bg-[#D1D5DB]"></div>
+<div class="h-1 rounded-full bg-[#D1D5DB]"></div>
+</div>
+<!-- 4. Directly beneath: title "Who is applying?" in 32px bold (#111418), followed by grey 15px text -->
+<div class="flex flex-col mt-7 mb-7">
+<h1 class="text-[32px] font-bold text-[#111418] tracking-tight leading-tight">Who is applying?</h1>
+<p class="text-[15px] text-[#6B7280] font-normal mt-2 leading-relaxed">Choose the category that applies to you.</p>
+</div>
+<!-- 5. Two selectable category cards stacked full width (16px gap between cards) -->
+<div aria-label="Applicant Category" class="flex flex-col gap-4 w-full" role="radiogroup">
+<!-- Card 1 (Selected): General Public -->
+<div aria-checked="true" class="cursor-pointer relative overflow-hidden rounded-[24px] p-5 border-2 border-[#1F6FFF] bg-white/90 backdrop-blur-md shadow-[0_4px_20px_rgba(31,111,255,0.14)] transition-all duration-200" id="card-general" onclick="selectCategory('general')" role="radio" tabindex="0">
+<div class="flex items-start gap-4">
+<!-- Blue-tint rounded-square icon tile (person icon) -->
+<div class="w-12 h-12 rounded-[16px] bg-[#EBF2FF] flex-shrink-0 flex items-center justify-center text-[#1F6FFF] mt-0.5">
+<svg class="w-6 h-6 stroke-current stroke-[1.8] fill-none" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24">
+<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+<circle cx="12" cy="7" r="4"></circle>
+</svg>
+</div>
+<!-- Title & wrapped description -->
+<div class="flex flex-col flex-1 min-w-0 pr-1">
+<h2 class="text-[20px] font-semibold text-[#111418] leading-tight">General public</h2>
+<p class="text-[14px] text-[#6B7280] mt-1.5 leading-snug">
+                Fill in your details and pay online to receive your membership card.
+              </p>
+</div>
+<!-- Solid blue circular radio indicator with white checkmark -->
+<div class="w-6 h-6 rounded-full bg-[#1F6FFF] flex-shrink-0 flex items-center justify-center shadow-sm mt-0.5" id="radio-general">
+<svg class="w-3.5 h-3.5 text-white stroke-current stroke-[2.8] fill-none" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</div>
+</div>
+</div>
+<!-- Card 2 (Unselected): Government personnel -->
+<div aria-checked="false" class="cursor-pointer relative overflow-hidden rounded-[24px] p-5 border border-white/60 bg-white/70 backdrop-blur-md shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:bg-white/85 transition-all duration-200" id="card-gov" onclick="selectCategory('gov')" role="radio" tabindex="0">
+<div class="flex items-start gap-4">
+<!-- Blue-tint rounded-square icon tile (badge icon) -->
+<div class="w-12 h-12 rounded-[16px] bg-[#EBF2FF] flex-shrink-0 flex items-center justify-center text-[#1F6FFF] mt-0.5">
+<svg class="w-6 h-6 stroke-current stroke-[1.8] fill-none" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24">
+<rect height="16" rx="3" width="18" x="3" y="4"></rect>
+<line x1="8" x2="16" y1="2" y2="2"></line>
+<circle cx="12" cy="10" r="2.5"></circle>
+<path d="M8 16c0-1.8 1.8-3 4-3s4 1.2 4 3"></path>
+</svg>
+</div>
+<!-- Title & wrapped description -->
+<div class="flex flex-col flex-1 min-w-0 pr-1">
+<h2 class="text-[20px] font-semibold text-[#111418] leading-tight">Government personnel</h2>
+<p class="text-[14px] text-[#6B7280] mt-1.5 leading-snug">
+                Upload proof of employment. Payment opens after the department approves your application.
+              </p>
+</div>
+<!-- Empty radio ring clearly visible (1.5px #9CA3AF) -->
+<div class="w-6 h-6 rounded-full border-[1.5px] border-[#9CA3AF] flex-shrink-0 mt-0.5" id="radio-gov"></div>
+</div>
+</div>
+</div>
+<!-- 6. Full-width solid blue "Continue" button positioned 24px below cards (56px high, rounded-[22px], no arrow icon) -->
+<div class="mt-6 w-full">
+<button class="w-full h-14 rounded-[22px] bg-[#1F6FFF] hover:bg-[#1a5fe0] text-white text-[17px] font-semibold flex items-center justify-center shadow-[0_8px_20px_rgba(31,111,255,0.28)] active:scale-[0.985] transition-all opacity-100" type="button">
+          Continue
+        </button>
+</div>
+</div>
+<!-- 7. At the very bottom: single centered grey caption "Kannur City Police" -->
+<footer class="w-full pb-safe pt-8 pb-4 flex items-center justify-center">
+<span class="text-[13px] font-medium text-[#9CA3AF]">Kannur City Police</span>
+</footer>
+</div>
+<!-- Interactive Selection Logic -->
+<script>
+    function selectCategory(type) {
+      const cardGeneral = document.getElementById('card-general');
+      const cardGov = document.getElementById('card-gov');
+      const radioGeneral = document.getElementById('radio-general');
+      const radioGov = document.getElementById('radio-gov');
+
+      if (type === 'general') {
+        cardGeneral.setAttribute('aria-checked', 'true');
+        cardGov.setAttribute('aria-checked', 'false');
+
+        // Select General
+        cardGeneral.className = "cursor-pointer relative overflow-hidden rounded-[24px] p-5 border-2 border-[#1F6FFF] bg-white/90 backdrop-blur-md shadow-[0_4px_20px_rgba(31,111,255,0.14)] transition-all duration-200";
+        radioGeneral.className = "w-6 h-6 rounded-full bg-[#1F6FFF] flex-shrink-0 flex items-center justify-center shadow-sm mt-0.5";
+        radioGeneral.innerHTML = '<svg class="w-3.5 h-3.5 text-white stroke-current stroke-[2.8] fill-none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
+        // Deselect Gov
+        cardGov.className = "cursor-pointer relative overflow-hidden rounded-[24px] p-5 border border-white/60 bg-white/70 backdrop-blur-md shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:bg-white/85 transition-all duration-200";
+        radioGov.className = "w-6 h-6 rounded-full border-[1.5px] border-[#9CA3AF] flex-shrink-0 mt-0.5";
+        radioGov.innerHTML = '';
+      } else {
+        cardGov.setAttribute('aria-checked', 'true');
+        cardGeneral.setAttribute('aria-checked', 'false');
+
+        // Select Gov
+        cardGov.className = "cursor-pointer relative overflow-hidden rounded-[24px] p-5 border-2 border-[#1F6FFF] bg-white/90 backdrop-blur-md shadow-[0_4px_20px_rgba(31,111,255,0.14)] transition-all duration-200";
+        radioGov.className = "w-6 h-6 rounded-full bg-[#1F6FFF] flex-shrink-0 flex items-center justify-center shadow-sm mt-0.5";
+        radioGov.innerHTML = '<svg class="w-3.5 h-3.5 text-white stroke-current stroke-[2.8] fill-none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
+        // Deselect General
+        cardGeneral.className = "cursor-pointer relative overflow-hidden rounded-[24px] p-5 border border-white/60 bg-white/70 backdrop-blur-md shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:bg-white/85 transition-all duration-200";
+        radioGeneral.className = "w-6 h-6 rounded-full border-[1.5px] border-[#9CA3AF] flex-shrink-0 mt-0.5";
+        radioGeneral.innerHTML = '';
+      }
+    }
+
+    [document.getElementById('card-general'), document.getElementById('card-gov')].forEach(card => {
+      card.addEventListener('keydown', (e) => {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          card.click();
+        }
+      });
+    });
+  </script>
+</body></html>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kannur City Police - Sports Facilities Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
+      background-color: #F7F9FC;
+      color: #111418;
+      min-height: 100vh;
+      overflow-x: hidden;
+      margin: 0;
+    }
+
+    /* Ambient background glows drift animation (20s loop) */
+    @keyframes glow-drift-1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-40px, 30px) scale(1.08); }
+    }
+    @keyframes glow-drift-2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(30px, -30px) scale(1.1); }
+    }
+
+    .ambient-glow-tr {
+      position: fixed;
+      top: -120px;
+      right: -100px;
+      width: 720px;
+      height: 720px;
+      border-radius: 9999px;
+      background: radial-gradient(circle, #BFD9FF 0%, rgba(191, 217, 255, 0.45) 45%, rgba(247, 249, 252, 0) 70%);
+      filter: blur(60px);
+      z-index: 0;
+      pointer-events: none;
+      animation: glow-drift-1 20s ease-in-out infinite;
+    }
+
+    .ambient-glow-bl {
+      position: fixed;
+      bottom: -140px;
+      left: -120px;
+      width: 680px;
+      height: 680px;
+      border-radius: 9999px;
+      background: radial-gradient(circle, #DCEBFF 0%, rgba(220, 235, 255, 0.5) 45%, rgba(247, 249, 252, 0) 70%);
+      filter: blur(60px);
+      z-index: 0;
+      pointer-events: none;
+      animation: glow-drift-2 20s ease-in-out infinite;
+    }
+
+    /* Apple Liquid Glass Card */
+    .liquid-glass-card {
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border-radius: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.70);
+      box-shadow: 0 20px 40px rgba(31, 111, 255, 0.08), 
+                  inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      animation: card-appear 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transition: height 300ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes card-appear {
+      0% {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Liquid Glass Top Bar */
+    .liquid-glass-bar {
+      background: rgba(255, 255, 255, 0.60);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.70);
+      box-shadow: 0 4px 20px rgba(31, 111, 255, 0.03);
+    }
+
+    /* Input styling */
+    .glass-input {
+      height: 56px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      font-size: 17px;
+      color: #111418;
+      outline: none;
+      transition: border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+    .glass-input::placeholder {
+      color: #9CA3AF;
+    }
+    .glass-input:focus {
+      background: rgba(255, 255, 255, 0.92);
+      border-color: #1F6FFF;
+      box-shadow: 0 0 0 4px rgba(31, 111, 255, 0.15);
+    }
+    .glass-input.input-error {
+      border-color: #E5484D !important;
+      box-shadow: 0 0 0 4px rgba(229, 72, 77, 0.12) !important;
+    }
+
+    /* Blue Primary Button */
+    .btn-primary {
+      height: 56px;
+      border-radius: 22px;
+      background: #1F6FFF;
+      color: #FFFFFF;
+      font-size: 17px;
+      font-weight: 600;
+      position: relative;
+      overflow: hidden;
+      transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), opacity 200ms ease, box-shadow 200ms ease;
+      box-shadow: 0 8px 24px rgba(31, 111, 255, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .btn-primary:active {
+      transform: scale(0.97);
+    }
+    .btn-primary.disabled, .btn-primary:disabled {
+      opacity: 0.30;
+      cursor: not-allowed;
+      pointer-events: none;
+      box-shadow: none;
+    }
+
+    /* Subtle Glass sheen overlay */
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 45%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%);
+      border-radius: 22px 22px 0 0;
+      pointer-events: none;
+    }
+
+    /* Segmented Control */
+    .segmented-control {
+      height: 48px;
+      background: rgba(0, 0, 0, 0.04);
+      border-radius: 9999px;
+      padding: 4px;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    .segmented-capsule {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: calc(50% - 4px);
+      height: calc(100% - 8px);
+      background: rgba(31, 111, 255, 0.12);
+      border: 1px solid rgba(31, 111, 255, 0.25);
+      border-radius: 9999px;
+      transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Error Shake Animation */
+    @keyframes shake-card {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+    .shake-active {
+      animation: shake-card 300ms ease-in-out;
+    }
+
+    /* Eye icon crossfade */
+    .eye-icon {
+      transition: opacity 150ms ease;
+    }
+  </style>
+</head>
+<body class="flex flex-col justify-between" style="max-width: 390px; min-height: 844px; margin: 0 auto; position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.1);">
+<!-- Ambient background glow elements -->
+<div class="ambient-glow-tr"></div>
+<div class="ambient-glow-bl"></div>
+<!-- 1. Top bar, glass, full width, 72 high -->
+<header class="liquid-glass-bar relative z-20 w-full h-[72px] px-4 flex items-center justify-between">
+<!-- Left: 40 rounded-square shield mark with "Kannur City Police" and "Sports facilities" -->
+<div class="flex items-center space-x-3.5">
+<div class="w-10 h-10 rounded-[14px] bg-[#1F6FFF]/10 border border-[#1F6FFF]/20 flex items-center justify-center shadow-sm">
+<svg class="w-5 h-5" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 3L19 6.5V11.5C19 16.3 16 20.4 12 21.8C8 20.4 5 16.3 5 11.5V6.5L12 3Z" fill="#1F6FFF" fill-opacity="0.16" stroke="#1F6FFF" stroke-linejoin="round" stroke-width="1.8"></path>
+<path d="M9 12L11 14L15 10" stroke="#1F6FFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</div>
+<div class="flex flex-col leading-tight">
+<span class="text-[17px] font-semibold text-[#111418] tracking-tight">Kannur City Police</span>
+</div>
+</div>
+<!-- Right: glass pill toggle with two segments, "EN" (selected, blue) and "മലയാളം" -->
+<div class="h-10 px-1.5 py-1 bg-white/60 backdrop-blur-md border border-white/80 rounded-full flex items-center space-x-1 shadow-sm">
+<button class="px-3.5 py-1 text-[13px] font-semibold rounded-full bg-[#1F6FFF]/12 text-[#1F6FFF] border border-[#1F6FFF]/20 transition-all" id="lang-en" onclick="setLanguage('EN')">
+        EN
+      </button>
+<button class="px-3.5 py-1 text-[13px] font-medium rounded-full text-[#6B7280] hover:text-[#111418] transition-all" id="lang-ml" onclick="setLanguage('ML')">
+        മലയാളം
+      </button>
+</div>
+</header>
+<!-- Main Viewport: Centred glass card (480px wide on desktop) -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-4 w-full">
+<div class="liquid-glass-card w-full p-6 flex flex-col" id="auth-card">
+<!-- Title & Subtitle -->
+<h1 class="text-[32px] font-bold text-[#111418] tracking-tight leading-none">Welcome</h1>
+<p class="text-[15px] text-[#6B7280] mt-3 leading-normal">
+        Sign in to book facilities and manage your track membership.
+      </p>
+<!-- Glass Segmented Control (48 high) -->
+<div class="segmented-control mt-8 w-full flex items-center">
+<div class="segmented-capsule" id="segment-capsule"></div>
+<button class="relative z-10 w-1/2 h-full text-[15px] font-semibold text-[#1F6FFF] transition-colors flex items-center justify-center" id="tab-signin" onclick="switchTab('signin')">
+          Sign in
+        </button>
+<button class="relative z-10 w-1/2 h-full text-[15px] font-medium text-[#6B7280] hover:text-[#111418] transition-colors flex items-center justify-center" id="tab-create" onclick="switchTab('create')">
+          Create account
+        </button>
+</div>
+<!-- State Simulator Pills (Interactive Preview of all prompt frames) -->
+<!-- Form Content: Sign In -->
+<div class="mt-6 flex flex-col space-y-4" id="signin-section">
+<!-- Field: Username -->
+<div class="flex flex-col">
+<input autocomplete="username" class="glass-input px-5 w-full" id="signin-username" placeholder="Username" type="text" value=""/>
+</div>
+<!-- Field: Password with eye icon -->
+<div class="flex flex-col relative">
+<input autocomplete="current-password" class="glass-input pl-5 pr-14 w-full" id="signin-password" placeholder="Password" type="password" value=""/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#111418] p-1.5 focus:outline-none" onclick="togglePasswordVisibility('signin-password', 'eye-signin')" type="button">
+<svg class="w-5 h-5 eye-icon" fill="none" id="eye-signin" stroke="currentColor" stroke-width="1.75" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<!-- Error message container for Sign in -->
+<div class="hidden text-[13px] text-[#E5484D] font-medium pt-0.5" id="signin-error-text">
+          Username or password is incorrect.
+        </div>
+<!-- Blue text link: Forgot password? aligned right -->
+<div class="flex justify-end pt-1">
+<a class="text-[14px] font-medium text-[#1F6FFF] hover:underline focus:outline-none focus:ring-1 focus:ring-[#1F6FFF] rounded" href="#">
+            Forgot password?
+          </a>
+</div>
+<!-- Full-width solid blue button "Sign in" -->
+<button class="btn-primary w-full mt-2 flex items-center justify-center" id="btn-submit-signin">
+          Sign in
+        </button>
+</div>
+<!-- Form Content: Create Account -->
+<div class="mt-6 flex flex-col space-y-4 hidden" id="create-section">
+<!-- Field: Username * -->
+<div class="flex flex-col">
+<input class="glass-input px-5 w-full" id="create-username" oninput="validateCreateForm()" placeholder="Username *" type="text"/>
+</div>
+<!-- Field: Password * with eye icon -->
+<div class="flex flex-col relative">
+<input class="glass-input pl-5 pr-14 w-full" id="create-password" oninput="validateCreateForm()" placeholder="Password *" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#111418] p-1.5 focus:outline-none" onclick="togglePasswordVisibility('create-password', 'eye-create-pw')" type="button">
+<svg class="w-5 h-5 eye-icon" fill="none" id="eye-create-pw" stroke="currentColor" stroke-width="1.75" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<!-- Grey 13 line under the password field -->
+<div class="text-[13px] text-[#6B7280] -mt-1 pl-1">
+          Use at least 8 characters.
+        </div>
+<!-- Field: Confirm password * with eye icon -->
+<div class="flex flex-col relative">
+<input class="glass-input pl-5 pr-14 w-full" id="create-confirm-password" oninput="validateCreateForm()" placeholder="Confirm password *" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#111418] p-1.5 focus:outline-none" onclick="togglePasswordVisibility('create-confirm-password', 'eye-create-cpw')" type="button">
+<svg class="w-5 h-5 eye-icon" fill="none" id="eye-create-cpw" stroke="currentColor" stroke-width="1.75" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<!-- Error message container for Create Account confirm password -->
+<div class="hidden text-[13px] text-[#E5484D] font-medium pt-0.5" id="create-error-text">
+          Passwords do not match.
+        </div>
+<!-- Checkbox with Terms and Privacy Notice -->
+<label class="flex items-start space-x-3 cursor-pointer pt-2 select-none">
+<input class="mt-1 w-5 h-5 rounded-[6px] border border-gray-300 text-[#1F6FFF] focus:ring-[#1F6FFF] accent-[#1F6FFF] cursor-pointer" id="terms-checkbox" onchange="validateCreateForm()" type="checkbox"/>
+<span class="text-[14px] text-[#6B7280] leading-snug">
+            I accept the <a class="text-[#1F6FFF] hover:underline" href="#">Terms and Conditions</a> and the <a class="text-[#1F6FFF] hover:underline" href="#">Privacy Notice</a>
+</span>
+</label>
+<!-- Full-width solid blue button "Create account" (disabled at 30% opacity until filled & ticked) -->
+<button class="btn-primary disabled w-full mt-2 flex items-center justify-center" disabled="" id="btn-submit-create">
+          Create account
+        </button>
+</div>
+</div>
+<!-- 3. Under the card, one small grey 13 caption, centred -->
+<div class="mt-6 text-[13px] text-[#6B7280] text-center font-normal tracking-wide">
+      Kannur City Police
+    </div>
+</main>
+<footer class="h-6"></footer>
+<!-- Motion & Interaction Logic (Apple iOS 26 Liquid Glass Specs) -->
+<script>
+    let currentTab = 'signin';
+
+    function switchTab(tab) {
+      currentTab = tab;
+      const capsule = document.getElementById('segment-capsule');
+      const tabSignin = document.getElementById('tab-signin');
+      const tabCreate = document.getElementById('tab-create');
+      const signinSection = document.getElementById('signin-section');
+      const createSection = document.getElementById('create-section');
+      const card = document.getElementById('auth-card');
+
+      // Clear any previous error states
+      clearErrors();
+
+      if (tab === 'signin') {
+        capsule.style.transform = 'translateX(0%)';
+        tabSignin.className = 'relative z-10 w-1/2 h-full text-[15px] font-semibold text-[#1F6FFF] transition-colors flex items-center justify-center';
+        tabCreate.className = 'relative z-10 w-1/2 h-full text-[15px] font-medium text-[#6B7280] hover:text-[#111418] transition-colors flex items-center justify-center';
+        
+        createSection.classList.add('hidden');
+        signinSection.classList.remove('hidden');
+      } else {
+        capsule.style.transform = 'translateX(100%)';
+        tabSignin.className = 'relative z-10 w-1/2 h-full text-[15px] font-medium text-[#6B7280] hover:text-[#111418] transition-colors flex items-center justify-center';
+        tabCreate.className = 'relative z-10 w-1/2 h-full text-[15px] font-semibold text-[#1F6FFF] transition-colors flex items-center justify-center';
+
+        signinSection.classList.add('hidden');
+        createSection.classList.remove('hidden');
+        validateCreateForm();
+      }
+    }
+
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+        `;
+      } else {
+        input.type = 'password';
+        icon.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        `;
+      }
+    }
+
+    function validateCreateForm() {
+      const u = document.getElementById('create-username').value.trim();
+      const p = document.getElementById('create-password').value;
+      const cp = document.getElementById('create-confirm-password').value;
+      const terms = document.getElementById('terms-checkbox').checked;
+      const btn = document.getElementById('btn-submit-create');
+
+      const isValid = (u.length > 0) && (p.length >= 8) && (cp.length > 0) && terms;
+      if (isValid) {
+        btn.removeAttribute('disabled');
+        btn.classList.remove('disabled');
+      } else {
+        btn.setAttribute('disabled', 'true');
+        btn.classList.add('disabled');
+      }
+    }
+
+    function triggerShake() {
+      const card = document.getElementById('auth-card');
+      card.classList.remove('shake-active');
+      void card.offsetWidth; // retrigger reflow
+      card.classList.add('shake-active');
+    }
+
+    function clearErrors() {
+      document.getElementById('signin-password').classList.remove('input-error');
+      document.getElementById('signin-error-text').classList.add('hidden');
+      document.getElementById('create-confirm-password').classList.remove('input-error');
+      document.getElementById('create-error-text').classList.add('hidden');
+    }
+
+    function applyPreset(state) {
+      clearErrors();
+      if (state === 'signin_default') {
+        switchTab('signin');
+        document.getElementById('signin-username').value = '';
+        document.getElementById('signin-password').value = '';
+      } else if (state === 'signin_error') {
+        switchTab('signin');
+        document.getElementById('signin-username').value = 'officer.kannur';
+        document.getElementById('signin-password').value = 'wrongpassword';
+        document.getElementById('signin-password').classList.add('input-error');
+        document.getElementById('signin-error-text').classList.remove('hidden');
+        triggerShake();
+      } else if (state === 'create_default') {
+        switchTab('create');
+        document.getElementById('create-username').value = '';
+        document.getElementById('create-password').value = '';
+        document.getElementById('create-confirm-password').value = '';
+        document.getElementById('terms-checkbox').checked = false;
+        validateCreateForm();
+      } else if (state === 'create_error') {
+        switchTab('create');
+        document.getElementById('create-username').value = 'kcp.athlete';
+        document.getElementById('create-password').value = 'SafeP@ssword2026';
+        document.getElementById('create-confirm-password').value = 'DifferentPass';
+        document.getElementById('terms-checkbox').checked = true;
+        document.getElementById('create-confirm-password').classList.add('input-error');
+        document.getElementById('create-error-text').classList.remove('hidden');
+        validateCreateForm();
+        triggerShake();
+      }
+    }
+
+    function setLanguage(lang) {
+      const enBtn = document.getElementById('lang-en');
+      const mlBtn = document.getElementById('lang-ml');
+      if (lang === 'EN') {
+        enBtn.className = 'px-3.5 py-1 text-[13px] font-semibold rounded-full bg-[#1F6FFF]/12 text-[#1F6FFF] border border-[#1F6FFF]/20 transition-all';
+        mlBtn.className = 'px-3.5 py-1 text-[13px] font-medium rounded-full text-[#6B7280] hover:text-[#111418] transition-all';
+      } else {
+        mlBtn.className = 'px-3.5 py-1 text-[13px] font-semibold rounded-full bg-[#1F6FFF]/12 text-[#1F6FFF] border border-[#1F6FFF]/20 transition-all';
+        enBtn.className = 'px-3.5 py-1 text-[13px] font-medium rounded-full text-[#6B7280] hover:text-[#111418] transition-all';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+// ============================================================================
+// KANNUR CITY POLICE SPORTS FACILITIES MANAGEMENT SYSTEM
+// On-Premise PostgreSQL Prisma Schema (Step 1)
+//
+// STRICT COMPLIANCE ENFORCED:
+// 1. ZERO mobile phone / SMS / OTP columns anywhere in the schema.
+// 2. ZERO Aadhaar or Government ID number columns anywhere in the schema.
+// 3. Immutable append-only `audit_logs` table enforced by PostgreSQL triggers.
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------------------------------
+// ENUMS
+// ----------------------------------------------------------------------------
+
+enum UserRole {
+  PUBLIC
+  GOVT_PERSONNEL
+  STAFF_ADMIN
+  GATE_OFFICER
+
+  @@map("user_role")
+}
+
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+
+  @@map("account_status")
+}
+
+enum FacilityCode {
+  SYNTHETIC_TRACK
+  FOOTBALL_GROUND
+  POLICE_TURF
+  BADMINTON_COURT
+
+  @@map("facility_code")
+}
+
+enum UserCategory {
+  PUBLIC
+  GOVT_PERSONNEL
+
+  @@map("user_category")
+}
+
+enum BookingType {
+  MONTHLY_PASS
+  FULL_COURT
+  HALF_COURT
+
+  @@map("booking_type")
+}
+
+enum SessionWindow {
+  MORNING
+  EVENING
+  BOTH
+
+  @@map("session_window")
+}
+
+enum MembershipStatus {
+  PENDING_APPROVAL
+  APPROVED_UNPAID
+  ACTIVE
+  REJECTED
+  EXPIRED
+  SUSPENDED
+
+  @@map("membership_status")
+}
+
+enum CourtPartition {
+  FULL
+  HALF_A
+  HALF_B
+
+  @@map("court_partition")
+}
+
+enum SlotBookingStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  CANCELLED
+  REFUNDED
+
+  @@map("slot_booking_status")
+}
+
+enum PaymentReferenceType {
+  MEMBERSHIP
+  SLOT_BOOKING
+
+  @@map("payment_reference_type")
+}
+
+enum PaymentMode {
+  ONLINE_GATEWAY
+  OFFICE_RECEIPT
+
+  @@map("payment_mode")
+}
+
+enum PaymentStatus {
+  SETTLED
+  PENDING_RECONCILIATION
+  FAILED
+  REFUNDED
+
+  @@map("payment_status")
+}
+
+enum VerificationType {
+  QR_ONLY
+  QR_AND_BIOMETRIC
+  MANUAL_OVERRIDE
+
+  @@map("verification_type")
+}
+
+// ----------------------------------------------------------------------------
+// MODELS
+// ----------------------------------------------------------------------------
+
+model User {
+  id                String        @id @default(uuid()) @db.Uuid
+  username          String        @unique @db.VarChar(64)
+  password_hash     String        @db.VarChar(255)
+  full_name         String        @db.VarChar(150)
+  email             String?       @unique @db.VarChar(150)
+  role              UserRole      @default(PUBLIC)
+  account_status    AccountStatus @default(ACTIVE)
+  ban_reason        String?       @db.Text
+  profile_photo_url String?       @db.Text
+  created_at        DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime      @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  memberships          Membership[]     @relation("UserMemberships")
+  reviewed_memberships Membership[]     @relation("OfficerReviewedMemberships")
+  slot_bookings        SlotBooking[]    @relation("UserSlotBookings")
+  authority_blocks     AuthorityBlock[] @relation("OfficerAuthorityBlocks")
+  payments             Payment[]        @relation("UserPayments")
+  recorded_payments    Payment[]        @relation("OfficerRecordedPayments")
+  gate_logs            GateLog[]        @relation("UserGateLogs")
+  verified_gate_logs   GateLog[]        @relation("OfficerVerifiedGateLogs")
+  audit_logs           AuditLog[]       @relation("OfficerAuditLogs")
+
+  @@index([username], name: "idx_users_username")
+  @@index([role, account_status], name: "idx_users_role_status")
+  @@map("users")
+}
+
+model Facility {
+  id                  String       @id @default(uuid()) @db.Uuid
+  code                FacilityCode @unique
+  name                String       @db.VarChar(150)
+  operating_start     DateTime     @db.Time(0)
+  operating_end       DateTime     @db.Time(0)
+  slot_duration_mins  Int          @default(60)
+  daily_user_hour_cap Int
+  monthly_member_cap  Int?
+  is_partitionable    Boolean      @default(false)
+
+  // Relations
+  tariffs          Tariff[]
+  memberships      Membership[]
+  slot_bookings    SlotBooking[]
+  authority_blocks AuthorityBlock[]
+  gate_logs        GateLog[]
+
+  @@map("facilities")
+}
+
+model Tariff {
+  id            String       @id @default(uuid()) @db.Uuid
+  facility_id   String       @db.Uuid
+  user_category UserCategory
+  booking_type  BookingType
+  base_price    Decimal      @db.Decimal(10, 2)
+  gst_percent   Decimal      @default(18.00) @db.Decimal(5, 2)
+  is_active     Boolean      @default(true)
+
+  // Relations
+  facility Facility @relation(fields: [facility_id], references: [id], onDelete: Restrict)
+
+  @@unique([facility_id, user_category, booking_type], name: "uq_tariff_facility_category_type")
+  @@index([facility_id, is_active], name: "idx_tariffs_facility_active")
+  @@map("tariffs")
+}
+
+model Membership {
+  id                     String           @id @default(uuid()) @db.Uuid
+  pass_code              String           @unique @db.VarChar(32)
+  user_id                String           @db.Uuid
+  facility_id            String           @db.Uuid
+  duration_months        Int
+  start_date             DateTime?        @db.Date
+  end_date               DateTime?        @db.Date
+  session_window         SessionWindow
+  govt_service_proof_url String?          @db.Text
+  status                 MembershipStatus @default(PENDING_APPROVAL)
+  reviewed_by_officer_id String?          @db.Uuid
+  officer_remarks        String?          @db.Text
+  qr_token_hash          String?          @unique @db.VarChar(128)
+  created_at             DateTime         @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  user                User     @relation("UserMemberships", fields: [user_id], references: [id], onDelete: Restrict)
+  facility            Facility @relation(fields: [facility_id], references: [id], onDelete: Restrict)
+  reviewed_by_officer User?    @relation("OfficerReviewedMemberships", fields: [reviewed_by_officer_id], references: [id], onDelete: SetNull)
+
+  @@index([user_id, status], name: "idx_memberships_user_status")
+  @@index([facility_id, status], name: "idx_memberships_facility_status")
+  @@map("memberships")
+}
+
+model SlotBooking {
+  id              String            @id @default(uuid()) @db.Uuid
+  booking_code    String            @unique @db.VarChar(32)
+  user_id         String            @db.Uuid
+  facility_id     String            @db.Uuid
+  booking_date    DateTime          @db.Date
+  start_time      DateTime          @db.Time(0)
+  end_time        DateTime          @db.Time(0)
+  court_partition CourtPartition    @default(FULL)
+  total_amount    Decimal           @db.Decimal(10, 2)
+  status          SlotBookingStatus @default(PENDING_PAYMENT)
+  qr_token_hash   String?           @unique @db.VarChar(128)
+  created_at      DateTime          @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  user     User     @relation("UserSlotBookings", fields: [user_id], references: [id], onDelete: Restrict)
+  facility Facility @relation(fields: [facility_id], references: [id], onDelete: Restrict)
+
+  @@index([facility_id, booking_date, status], name: "idx_slot_bookings_facility_date_status")
+  @@index([user_id, booking_date], name: "idx_slot_bookings_user_date")
+  @@map("slot_bookings")
+}
+
+model AuthorityBlock {
+  id                    String         @id @default(uuid()) @db.Uuid
+  facility_id           String         @db.Uuid
+  block_date            DateTime       @db.Date
+  start_time            DateTime       @db.Time(0)
+  end_time              DateTime       @db.Time(0)
+  court_partition       CourtPartition @default(FULL)
+  internal_reason       String         @db.Text
+  created_by_officer_id String         @db.Uuid
+  is_active             Boolean        @default(true)
+  created_at            DateTime       @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  facility           Facility @relation(fields: [facility_id], references: [id], onDelete: Restrict)
+  created_by_officer User     @relation("OfficerAuthorityBlocks", fields: [created_by_officer_id], references: [id], onDelete: Restrict)
+
+  @@index([facility_id, block_date, is_active], name: "idx_authority_blocks_facility_date_active")
+  @@map("authority_blocks")
+}
+
+model Payment {
+  id                     String               @id @default(uuid()) @db.Uuid
+  receipt_no             String               @unique @db.VarChar(48)
+  reference_type         PaymentReferenceType
+  reference_id           String               @db.Uuid
+  user_id                String               @db.Uuid
+  payment_mode           PaymentMode
+  base_amount            Decimal              @db.Decimal(10, 2)
+  gst_amount             Decimal              @db.Decimal(10, 2)
+  total_amount           Decimal              @db.Decimal(10, 2)
+  status                 PaymentStatus        @default(PENDING_RECONCILIATION)
+  recorded_by_officer_id String?              @db.Uuid
+  created_at             DateTime             @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  user                User  @relation("UserPayments", fields: [user_id], references: [id], onDelete: Restrict)
+  recorded_by_officer User? @relation("OfficerRecordedPayments", fields: [recorded_by_officer_id], references: [id], onDelete: SetNull)
+
+  @@index([reference_type, reference_id], name: "idx_payments_reference")
+  @@index([user_id, status], name: "idx_payments_user_status")
+  @@map("payments")
+}
+
+model GateLog {
+  id                         String           @id @default(uuid()) @db.Uuid
+  facility_id                String           @db.Uuid
+  gate_name                  String           @db.VarChar(100)
+  user_id                    String?          @db.Uuid
+  pass_or_booking_code       String           @db.VarChar(64)
+  verification_type          VerificationType
+  stage1_qr_passed           Boolean
+  stage2_biometric_passed    Boolean
+  access_granted             Boolean
+  failure_or_override_reason String?          @db.Text
+  verified_by_officer_id     String           @db.Uuid
+  scanned_at                 DateTime         @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  facility            Facility @relation(fields: [facility_id], references: [id], onDelete: Restrict)
+  user                User?    @relation("UserGateLogs", fields: [user_id], references: [id], onDelete: SetNull)
+  verified_by_officer User     @relation("OfficerVerifiedGateLogs", fields: [verified_by_officer_id], references: [id], onDelete: Restrict)
+
+  @@index([facility_id, scanned_at], name: "idx_gate_logs_facility_scanned")
+  @@index([pass_or_booking_code], name: "idx_gate_logs_code")
+  @@map("gate_logs")
+}
+
+model AuditLog {
+  id                 String   @id @default(uuid()) @db.Uuid
+  officer_id         String   @db.Uuid
+  action_category    String   @db.VarChar(64)
+  action_description String   @db.Text
+  target_ref_id      String?  @db.VarChar(64)
+  details            Json     @db.JsonB
+  ip_address         String   @db.VarChar(64)
+  created_at         DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  officer User @relation("OfficerAuditLogs", fields: [officer_id], references: [id], onDelete: Restrict)
+
+  @@index([officer_id, created_at], name: "idx_audit_logs_officer_created")
+  @@index([action_category, created_at], name: "idx_audit_logs_category_created")
+  @@map("audit_logs")
+}

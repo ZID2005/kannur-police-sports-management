@@ -1,0 +1,186 @@
+/* ------------------------------------------------------------------
+ * Page-specific styles for Auth (/login, /register) and Home (/)
+ * Extracted verbatim from Stitch exports:
+ * - kannur_city_police_sign_in_error / mobile_sign_in
+ * - kannur_city_police_create_account_default / error / mobile_create_account
+ * - kannur_city_police_home_default / hover / active_membership / upcoming_booking / mobile_home_default
+ * ------------------------------------------------------------------ */
+
+/* Ambient background glows drift animation (20s loop) */
+@keyframes glow-drift-1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-40px, 30px) scale(1.08);
+  }
+}
+
+@keyframes glow-drift-2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+}
+
+.ambient-glow-tr {
+  position: fixed;
+  top: -120px;
+  right: -100px;
+  width: 720px;
+  height: 720px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    #bfd9ff 0%,
+    rgba(191, 217, 255, 0.45) 45%,
+    rgba(247, 249, 252, 0) 70%
+  );
+  filter: blur(60px);
+  z-index: 0;
+  pointer-events: none;
+  animation: glow-drift-1 20s ease-in-out infinite;
+}
+
+.ambient-glow-bl {
+  position: fixed;
+  bottom: -140px;
+  left: -120px;
+  width: 680px;
+  height: 680px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    #dcebff 0%,
+    rgba(220, 235, 255, 0.5) 45%,
+    rgba(247, 249, 252, 0) 70%
+  );
+  filter: blur(60px);
+  z-index: 0;
+  pointer-events: none;
+  animation: glow-drift-2 20s ease-in-out infinite;
+}
+
+/* Apple Liquid Glass Card (Auth) */
+.liquid-glass-card {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 20px 40px rgba(31, 111, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  animation: card-appear 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: height 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes card-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.glass-input.input-error {
+  border-color: #e5484d !important;
+  box-shadow: 0 0 0 4px rgba(229, 72, 77, 0.12) !important;
+}
+
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary.disabled,
+.btn-primary:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+/* Subtle Glass sheen overlay */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%);
+  border-radius: 22px 22px 0 0;
+  pointer-events: none;
+}
+
+/* Segmented Control (Auth) */
+.segmented-control {
+  height: 48px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 9999px;
+  padding: 4px;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.segmented-capsule {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  background: rgba(31, 111, 255, 0.12);
+  border: 1px solid rgba(31, 111, 255, 0.25);
+  border-radius: 9999px;
+  transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Error Shake Animation */
+@keyframes shake-card {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-6px);
+  }
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+.shake-active {
+  animation: shake-card 300ms ease-in-out;
+}
+
+.eye-icon {
+  transition: opacity 150ms ease;
+}
+
+/* Home facility card hover state (from kannur_city_police_home_hover) */
+.home-facility-card {
+  transition:
+    transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.home-facility-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 40px -15px rgba(31, 111, 255, 0.25),
+    0 0 0 1.5px rgba(31, 111, 255, 0.6);
+}

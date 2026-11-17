@@ -1,0 +1,640 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-tertiary-fixed":"#0e1d2b","secondary-fixed":"#d2e4ff","on-secondary-container":"#465f7f","primary-container":"#166bfb","on-primary-fixed-variant":"#0040a1","on-tertiary":"#ffffff","error-container":"#ffdad6","outline-variant":"#c2c6d8","surface-container-high":"#e6e8ee","primary-fixed-dim":"#b2c5ff","surface-container-low":"#f2f3f9","primary-fixed":"#dae2ff","surface-container-highest":"#e1e2e8","on-surface-variant":"#424655","surface":"#f8f9ff","on-primary":"#ffffff","inverse-primary":"#b2c5ff","on-surface":"#191c20","surface-dim":"#d8dadf","on-tertiary-container":"#fdfcff","on-primary-container":"#fefcff","on-primary-fixed":"#001848","background":"#f8f9ff","inverse-surface":"#2e3135","tertiary":"#4f5d6e","primary":"#0053cd","inverse-on-surface":"#eff0f6","on-error-container":"#93000a","on-secondary-fixed":"#001c38","tertiary-fixed":"#d5e4f8","tertiary-fixed-dim":"#b9c8db","surface-container-lowest":"#ffffff","error":"#ba1a1a","on-secondary":"#ffffff","on-secondary-fixed-variant":"#2f4867","surface-variant":"#e1e2e8","secondary-fixed-dim":"#afc8ee","on-tertiary-fixed-variant":"#3a4858","surface-bright":"#f8f9ff","tertiary-container":"#677687","surface-container":"#eceef3","secondary-container":"#bfd9ff","surface-tint":"#0056d2","on-error":"#ffffff","outline":"#727787","secondary":"#476080","on-background":"#191c20"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-lg":"1.5rem","space-sm":"0.5rem","gutter-desktop":"1.5rem","space-md":"1rem","space-xl":"2.5rem","margin-desktop":"2.5rem","space-xs":"0.25rem","margin":"1.5rem","gutter":"1.5rem"},"fontFamily":{"title-portal":["Inter"],"label-primary":["Inter"],"headline-card":["Inter"],"body-default":["Inter"],"body-medium":["Inter"],"label-meta":["Inter"],"caption":["Inter"],"title-portal-mobile":["Inter"]},"fontSize":{"title-portal":["40px",{"lineHeight":"48px","letterSpacing":"-0.03em","fontWeight":"700"}],"label-primary":["15px",{"lineHeight":"20px","letterSpacing":"-0.005em","fontWeight":"500"}],"headline-card":["20px",{"lineHeight":"28px","letterSpacing":"-0.015em","fontWeight":"600"}],"body-default":["17px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"400"}],"body-medium":["17px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"500"}],"label-meta":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"500"}],"caption":["12px",{"lineHeight":"16px","letterSpacing":"0.01em","fontWeight":"400"}],"title-portal-mobile":["30px",{"lineHeight":"36px","letterSpacing":"-0.025em","fontWeight":"700"}]}}}}</script></head><body class="bg-background font-body-default text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-gutter-desktop flex items-center justify-between"><div class="flex items-center gap-4"><div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]"><span class="material-symbols-outlined text-[24px]">shield</span></div><div class="flex flex-col"><span class="font-label-primary text-label-primary font-bold text-on-surface tracking-tight">Kannur City Police</span><span class="font-caption text-caption text-on-surface-variant font-medium">Sports Administration Portal</span></div></div><nav class="hidden xl:flex items-center gap-space-xs p-1 bg-surface-container/60 backdrop-blur-md rounded-full" data-active-classes="bg-primary text-on-primary font-body-medium shadow-[0_6px_16px_rgba(31,111,255,0.20)]"><a class="px-3 py-1.5 rounded-full font-label-primary text-label-primary text-slate-600 hover:text-slate-900 transition-all" data-path="dashboard" href="#">Dashboard</a><a class="px-space-md py-2 rounded-full font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-path="memberships" href="#">Memberships</a><a class="px-4 py-1.5 rounded-full bg-[#1f6fff] text-white font-medium shadow-sm transition-all text-label-primary" data-path="facilities-slots" href="#">Facilities &amp; Slots</a><a class="px-space-md py-2 rounded-full font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-path="payments" href="#">Payments</a><a class="px-space-md py-2 rounded-full font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-path="gate-entries" href="#">Gate Entries</a><a class="px-space-md py-2 rounded-full font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-path="audit-log" href="#">Audit Log</a></nav><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center bg-surface-container-low px-3 py-1.5 rounded-full text-on-surface-variant font-label-meta text-label-meta"><span class="text-on-surface font-semibold cursor-pointer">EN</span><span class="mx-1.5 text-outline">|</span><span class="cursor-pointer hover:text-on-surface transition-colors">മലയാളം</span></div><button aria-label="Notifications" class="relative w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface"></span></button><div class="flex items-center gap-3 pl-2"><div class="hidden md:flex flex-col text-right"><span class="font-label-primary text-label-primary text-on-surface font-semibold leading-tight">Insp. Rajeev K.</span><span class="font-caption text-caption text-on-surface-variant">Duty Officer - Kannur City</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[0_2px_8px_rgba(0,83,205,0.25)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><main class="w-full pt-20 bg-background"><div class="flex flex-col w-full">
+<div class="relative w-full max-w-7xl mx-auto px-margin-desktop py-space-lg flex flex-col gap-space-lg">
+<!-- Ambient Backdrop Light Glows (Contained) -->
+<div class="pointer-events-none absolute -top-12 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-60"></div>
+<div class="pointer-events-none absolute top-48 right-12 w-80 h-80 bg-secondary-container/40 rounded-full blur-3xl opacity-50"></div>
+<!-- Facility Switcher: Segmented Pill Controller -->
+<div class="relative z-10 flex flex-col gap-space-sm">
+<div class="flex items-center justify-between flex-wrap gap-space-md">
+<!-- Switcher Bar -->
+<div class="p-1.5 bg-surface-container/80 backdrop-blur-xl rounded-full shadow-sm flex items-center gap-1 overflow-x-auto max-w-full">
+<!-- Synthetic Track -->
+<button class="group flex items-center gap-2 px-space-md py-2.5 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/60 transition-all text-left" type="button">
+<span class="material-symbols-outlined text-[18px]">timer</span>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-medium leading-none">Synthetic Track</span>
+<span class="font-caption text-caption text-on-surface-variant/80 scale-95 origin-left">400m 8-Lane</span>
+</div>
+</button>
+<!-- Football Ground -->
+<button class="group flex items-center gap-2 px-space-md py-2.5 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/60 transition-all text-left" type="button">
+<span class="material-symbols-outlined text-[18px]">sports_soccer</span>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-medium leading-none">Football Ground</span>
+<span class="font-caption text-caption text-on-surface-variant/80 scale-95 origin-left">Police Parade Ground</span>
+</div>
+</button>
+<!-- Police Turf (Active) -->
+<button class="flex items-center gap-2.5 px-space-lg py-2.5 rounded-full bg-primary text-on-primary shadow-[0_8px_20px_rgba(0,83,205,0.28)] transition-all text-left" type="button">
+<span class="material-symbols-outlined text-[19px]">sports_cricket</span>
+<div class="flex items-center gap-2">
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-semibold leading-none text-on-primary">Police Turf</span>
+<span class="font-caption text-caption text-primary-fixed-dim leading-none pt-0.5">Primary Pitch</span>
+</div>
+<span class="bg-primary-container/80 text-on-primary text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm">5-a-side Cage</span>
+</div>
+</button>
+<!-- Indoor Badminton Court -->
+<button class="group flex items-center gap-2 px-space-md py-2.5 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/60 transition-all text-left" type="button">
+<span class="material-symbols-outlined text-[18px]">sports_tennis</span>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-medium leading-none">Indoor Badminton</span>
+<span class="font-caption text-caption text-on-surface-variant/80 scale-95 origin-left">4 Wooden Courts</span>
+</div>
+</button>
+</div>
+<!-- Quick Facility Meta Pill -->
+<div class="flex items-center gap-3 bg-surface-container-lowest/80 backdrop-blur-md px-4 py-2 rounded-full shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="font-label-meta text-label-meta text-on-surface font-semibold">Operational &amp; Online</span>
+<span class="text-outline-variant font-light">•</span>
+<span class="font-label-meta text-label-meta text-on-surface-variant">Armed Reserve Police Grounds, Kannur</span>
+</div>
+</div>
+<!-- Occupancy & Facility Sub-strip -->
+<div class="flex items-center justify-between px-2 text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">analytics</span>
+<span class="font-label-meta text-label-meta font-medium">Today's Occupancy:</span>
+<span class="font-label-meta text-label-meta font-bold text-on-surface">82%</span>
+<span class="font-label-meta text-label-meta text-on-surface-variant">(14 of 17 slots booked/allocated)</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<span class="font-caption text-caption flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tertiary">stadium</span> AR Pitch 01
+          </span>
+<span class="font-caption text-caption flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tertiary">wb_incandescent</span> 8x High-Mast Floodlights
+          </span>
+</div>
+</div>
+</div>
+<!-- Section 2: Configuration & Operational Parameters Card -->
+<section class="relative z-10 bg-surface-container-lowest/90 backdrop-blur-xl rounded-[28px] p- space-lg md:p-space-xl shadow-[0_20px_40px_rgba(31,111,255,0.06)] flex flex-col gap-space-lg">
+<div class="flex items-start justify-between flex-wrap gap-4">
+<div class="flex flex-col gap-1 max-w-2xl">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">tune</span>
+<h2 class="font-headline-card text-headline-card text-on-surface font-bold tracking-tight">Facility Rules &amp; Operational Parameters (Police Turf)</h2>
+</div>
+<p class="font-body-default text-body-default text-on-surface-variant">
+            Live booking constraints, gate rules, and allocation policies enforced automatically across citizen registration and departmental squad portals.
+          </p>
+</div>
+<!-- Rules Action Cluster -->
+<div class="flex items-center gap-space-sm">
+<button class="h-11 px-4 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-primary text-label-primary font-semibold flex items-center gap-2 transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+            Edit Rules
+          </button>
+<button class="h-11 px-4 rounded-xl bg-error-container/60 hover:bg-error-container text-on-error-container font-label-primary text-label-primary font-semibold flex items-center gap-2 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">build_circle</span>
+            Block Facility / Maintenance Closure
+          </button>
+</div>
+</div>
+<!-- Operational Parameters Grid (4 Cols) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Operating Window -->
+<div class="bg-surface-container-low/70 rounded-2xl p-space-md flex flex-col justify-between gap-3">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption text-on-surface-variant font-medium uppercase tracking-wider">Operating Window</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">schedule</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">05:00 AM – 10:00 PM</span>
+<span class="font-label-meta text-label-meta text-on-surface-variant">17 Hours / Day (Floodlit from 18:00)</span>
+</div>
+</div>
+<!-- Slot Duration -->
+<div class="bg-surface-container-low/70 rounded-2xl p-space-md flex flex-col justify-between gap-3">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption text-on-surface-variant font-medium uppercase tracking-wider">Slot Duration</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">hourglass_bottom</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">60 Minutes</span>
+<span class="font-label-meta text-label-meta text-on-surface-variant">Standard interval + 5m buffer</span>
+</div>
+</div>
+<!-- Court Partitioning -->
+<div class="bg-surface-container-low/70 rounded-2xl p-space-md flex flex-col justify-between gap-3">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption text-on-surface-variant font-medium uppercase tracking-wider">Court Partitioning</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">grid_view</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">Linked Half A + B</span>
+<span class="font-label-meta text-label-meta text-on-surface-variant">Half Court locks full pitch automatically</span>
+</div>
+</div>
+<!-- Daily Booking Cap -->
+<div class="bg-surface-container-low/70 rounded-2xl p-space-md flex flex-col justify-between gap-3">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption text-on-surface-variant font-medium uppercase tracking-wider">Daily Booking Cap</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">shield_person</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">Max 2 Citizen / 4 Dept</span>
+<span class="font-label-meta text-label-meta text-on-surface-variant">Per member account</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Interactive Daily Slot Grid & Date Controls -->
+<div class="relative z-10 flex flex-col gap-space-md">
+<!-- Date Bar & Filter Controls -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-space-md shadow-sm flex flex-col lg:flex-row items-center justify-between gap-4">
+<!-- Date Navigator -->
+<div class="flex items-center gap-space-xs sm:gap-space-sm w-full lg:w-auto justify-between lg:justify-start">
+<button class="h-10 px-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-meta text-label-meta font-medium flex items-center gap-1 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+<span class="hidden sm:inline">Yesterday</span>
+</button>
+<div class="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-container text-on-surface shadow-inner">
+<span class="material-symbols-outlined text-[18px] text-primary">calendar_today</span>
+<span class="font-label-primary text-label-primary font-bold">Today, 24 Nov 2024</span>
+<span class="font-label-meta text-label-meta text-on-surface-variant">(Sunday)</span>
+</div>
+<button class="h-10 px-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-meta text-label-meta font-medium flex items-center gap-1 transition-all" type="button">
+<span class="hidden sm:inline">Tomorrow</span>
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+<button class="h-10 px-3.5 rounded-xl bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-all flex items-center gap-1.5 font-label-meta text-label-meta" type="button">
+<span class="material-symbols-outlined text-[16px]">edit_calendar</span>
+<span>Pick Date</span>
+</button>
+</div>
+<!-- Court Scope Filter -->
+<div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-xl w-full lg:w-auto overflow-x-auto">
+<button class="px-3.5 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-meta text-label-meta font-semibold shadow-sm" type="button">All Pitches</button>
+<button class="px-3.5 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-meta text-label-meta font-medium transition-colors" type="button">Full Court</button>
+<button class="px-3.5 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-meta text-label-meta font-medium transition-colors" type="button">Half Court A (North)</button>
+<button class="px-3.5 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-meta text-label-meta font-medium transition-colors" type="button">Half Court B (South)</button>
+</div>
+<!-- Visual Legend of Slot States -->
+<div class="flex items-center gap-4 flex-wrap text-caption font-caption text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+<span>Available</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-primary-container"></span>
+<span>Booked</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-amber-500"></span>
+<span>Authority Blocked</span>
+</div>
+</div>
+</div>
+<!-- Time Slots Grid Container -->
+<div class="flex flex-col gap-3">
+<!-- Slot 05:00 - 06:00 (Authority Blocked) -->
+<div class="group bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-4 min-w-[200px]">
+<div class="flex flex-col">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">05:00 – 06:00</span>
+<span class="font-label-meta text-label-meta text-on-surface-variant">Early Morning Window</span>
+</div>
+<span class="bg-amber-100 text-amber-900 font-caption text-caption font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+              Authority Blocked
+            </span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-amber-50/60 rounded-xl p-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-amber-200/70 flex items-center justify-center text-amber-900">
+<span class="material-symbols-outlined text-[20px]">fitness_center</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Police Commando Physical Fitness Drill</span>
+<span class="font-caption text-caption text-on-surface-variant">Duty Officer: Insp. Rajeev K. (PIN 51209) • Kannur Armed Reserve</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-right">
+<span class="font-caption text-caption text-amber-800 font-medium bg-amber-200/50 px-2 py-0.5 rounded-md">Public shows: 'Already Booked'</span>
+</div>
+</div>
+<div class="flex items-center gap-2 self-end md:self-auto">
+<button class="h-10 px-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-meta text-label-meta font-medium flex items-center gap-1 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">info</span>
+              Details
+            </button>
+<button class="h-10 px-3.5 rounded-xl bg-surface-container text-on-surface-variant hover:text-on-surface font-label-meta text-label-meta font-medium transition-all" type="button">
+              Release
+            </button>
+</div>
+</div>
+<!-- Slot 06:00 - 07:00 (Booked: Police Match) -->
+<div class="group bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-4 min-w-[200px]">
+<div class="flex flex-col">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">06:00 – 07:00</span>
+<span class="font-label-meta text-label-meta text-on-surface-variant">Full Court Reserved</span>
+</div>
+<span class="bg-secondary-container text-on-secondary-fixed font-caption text-caption font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sports_soccer</span>
+              Booked
+            </span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-secondary-fixed/30 rounded-xl p-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Officer Morning Friendly: AR Camp vs Traffic</span>
+<span class="font-caption text-caption text-on-surface-variant">Lead: SI Anil Kumar (Kerala Police PIN 49102) • Challan #KCP-TRF-091</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-meta text-label-meta text-primary font-semibold">₹1,200 (Dept Concession)</span>
+</div>
+</div>
+<div class="flex items-center gap-2 self-end md:self-auto">
+<button class="h-10 px-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-meta text-label-meta font-medium flex items-center gap-1 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">receipt_long</span>
+              Challan
+            </button>
+<button class="h-10 px-3.5 rounded-xl bg-surface-container text-on-surface-variant hover:text-on-surface font-label-meta text-label-meta font-medium transition-all" type="button">
+              Manage
+            </button>
+</div>
+</div>
+<!-- Slot 07:00 - 08:00 (Available Public Rate) -->
+<div class="group bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-4 min-w-[200px]">
+<div class="flex flex-col">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">07:00 – 08:00</span>
+<span class="font-label-meta text-label-meta text-emerald-600 font-medium">Free for Reservation</span>
+</div>
+<span class="bg-emerald-100 text-emerald-800 font-caption text-caption font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+              Available
+            </span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-surface-container-low/60 rounded-xl p-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-medium text-on-surface">Public Slot Available</span>
+<span class="font-caption text-caption text-on-surface-variant">Standard public fee ₹800/hr • Uniformed Personnel / Govt ₹400/hr</span>
+</div>
+</div>
+<span class="font-caption text-caption text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded">Live on Public Portal</span>
+</div>
+<div class="flex items-center gap-2 self-end md:self-auto">
+<button class="h-10 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 font-label-meta text-label-meta font-semibold flex items-center gap-1.5 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px] text-amber-700">lock_clock</span>
+              Quick Block Slot
+            </button>
+<button class="h-10 px-3.5 rounded-xl bg-primary text-on-primary hover:bg-primary/90 font-label-meta text-label-meta font-medium transition-all shadow-sm" type="button">
+              Manual Booking
+            </button>
+</div>
+</div>
+<!-- Slot 08:00 - 09:00 (Split Slot Court A / Court B) -->
+<div class="group bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-sm hover:shadow-md transition-all">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div class="flex items-center gap-3">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">08:00 – 09:00</span>
+<span class="bg-secondary-fixed text-on-secondary-fixed font-caption text-caption font-semibold px-2 py-0.5 rounded-md">Split Partition Booking</span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant">Turf Net Partition Lowered (Independent Session Mode)</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<!-- Half Court A: Booked -->
+<div class="bg-secondary-fixed/20 rounded-xl p-3 flex items-center justify-between gap-2">
+<div class="flex items-center gap-3">
+<span class="w-2 h-8 bg-primary rounded-full"></span>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label-primary text-label-primary font-bold text-on-surface">Half A (North Court)</span>
+<span class="text-caption text-[11px] bg-primary-container text-on-primary px-1.5 rounded font-medium">Booked</span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant">Priya Mohan (Govt High School Kannur) • #CIT-4819</span>
+</div>
+</div>
+<span class="font-label-meta text-label-meta font-semibold text-on-surface">₹400 Paid</span>
+</div>
+<!-- Half Court B: Available -->
+<div class="bg-emerald-50/50 rounded-xl p-3 flex items-center justify-between gap-2">
+<div class="flex items-center gap-3">
+<span class="w-2 h-8 bg-emerald-500 rounded-full"></span>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label-primary text-label-primary font-bold text-on-surface">Half B (South Court)</span>
+<span class="text-caption text-[11px] bg-emerald-100 text-emerald-800 px-1.5 rounded font-medium">Available</span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant">Rate ₹400/hr • Open for Public or Police Squad</span>
+</div>
+</div>
+<button class="h-8 px-3 rounded-lg bg-surface-container text-on-surface text-caption font-semibold hover:bg-surface-container-high transition-colors" type="button">
+                Block Half B
+              </button>
+</div>
+</div>
+</div>
+<!-- Slot 09:00 - 10:00 (Available) -->
+<div class="group bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-4 min-w-[200px]">
+<div class="flex flex-col">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">09:00 – 10:00</span>
+<span class="font-label-meta text-label-meta text-emerald-600 font-medium">Full Court Free</span>
+</div>
+<span class="bg-emerald-100 text-emerald-800 font-caption text-caption font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+              Available
+            </span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-surface-container-low/60 rounded-xl p-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">sports_soccer</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-medium text-on-surface">General Citizen Public Slot</span>
+<span class="font-caption text-caption text-on-surface-variant">No pending bookings • 0 cancellations logged</span>
+</div>
+</div>
+<span class="font-label-meta text-label-meta font-semibold text-on-surface-variant">Rate: ₹800/hr</span>
+</div>
+<div class="flex items-center gap-2 self-end md:self-auto">
+<button class="h-10 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 font-label-meta text-label-meta font-semibold flex items-center gap-1.5 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px] text-amber-700">lock_clock</span>
+              Quick Block Slot
+            </button>
+<button class="h-10 px-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-meta text-label-meta font-medium transition-all" type="button">
+              Details
+            </button>
+</div>
+</div>
+<!-- Slot 10:00 - 11:00 (Maintenance Closure) -->
+<div class="group bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-4 min-w-[200px]">
+<div class="flex flex-col">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">10:00 – 11:00</span>
+<span class="font-label-meta text-label-meta text-tertiary">Midday Service Block</span>
+</div>
+<span class="bg-amber-100 text-amber-900 font-caption text-caption font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">cleaning_services</span>
+              Authority Blocked
+            </span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-amber-50/50 rounded-xl p-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-amber-200/60 flex items-center justify-center text-amber-900">
+<span class="material-symbols-outlined text-[20px]">grass</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Pitch Maintenance &amp; Turf Debris Clearing</span>
+<span class="font-caption text-caption text-on-surface-variant">AR Camp Ground Staff Routine Sweeping &amp; Net Inspection</span>
+</div>
+</div>
+<span class="font-caption text-caption text-amber-900 font-medium bg-amber-200/40 px-2 py-0.5 rounded">Fixed Daily Block</span>
+</div>
+<div class="flex items-center gap-2 self-end md:self-auto">
+<button class="h-10 px-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-meta text-label-meta font-medium transition-all" type="button">
+              Maintenance Log
+            </button>
+</div>
+</div>
+<!-- Slot 17:00 - 18:00 (Citizen Booking: Kannur Rovers Club) -->
+<div class="group bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-4 min-w-[200px]">
+<div class="flex flex-col">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">17:00 – 18:00</span>
+<span class="font-label-meta text-label-meta text-secondary font-medium">Evening Prime Hour</span>
+</div>
+<span class="bg-secondary-container text-on-secondary-fixed font-caption text-caption font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sports_soccer</span>
+              Booked
+            </span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-secondary-fixed/20 rounded-xl p-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-bold text-caption">
+                RC
+              </div>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Citizen Team: Kannur Rovers Club (Full Court)</span>
+<span class="font-caption text-caption text-on-surface-variant">Captain: Afsal N. • Citizen ID #CIT-9028 • Paid ₹1,200 via UPI (Ref: 4391028301)</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-caption text-caption text-emerald-700 bg-emerald-100 font-semibold px-2 py-0.5 rounded-md">Gate Pass Issued #GP-883</span>
+</div>
+</div>
+<div class="flex items-center gap-2 self-end md:self-auto">
+<button class="h-10 px-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-meta text-label-meta font-medium flex items-center gap-1 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">qr_code_2</span>
+              Gate Pass
+            </button>
+<button class="h-10 px-3.5 rounded-xl bg-surface-container text-on-surface-variant hover:text-on-surface font-label-meta text-label-meta font-medium transition-all" type="button">
+              Actions
+            </button>
+</div>
+</div>
+<!-- Slot 18:00 - 19:00 (Floodlit Department Match) -->
+<div class="group bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-4 min-w-[200px]">
+<div class="flex flex-col">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">18:00 – 19:00</span>
+<span class="font-label-meta text-label-meta text-primary font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">wb_incandescent</span>
+                Floodlight Active
+              </span>
+</div>
+<span class="bg-secondary-container text-on-secondary-fixed font-caption text-caption font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+              Booked
+            </span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-secondary-fixed/30 rounded-xl p-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Floodlight Match: Sub-Inspector Batch XI</span>
+<span class="font-caption text-caption text-on-surface-variant">Kannur South Police Station &amp; Town East Combined • Full Pitch Locked</span>
+</div>
+</div>
+<span class="font-label-meta text-label-meta text-on-surface-variant font-medium">Department Quota #DEP-310</span>
+</div>
+<div class="flex items-center gap-2 self-end md:self-auto">
+<button class="h-10 px-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-meta text-label-meta font-medium transition-all" type="button">
+              Roster
+            </button>
+</div>
+</div>
+<!-- Slot 19:00 - 20:00 (HIGHLIGHTED: Active Inline Authority Block / Override Manager) -->
+<div class="relative bg-surface-container-lowest rounded-3xl p-5 sm:p-7 shadow-[0_24px_50px_rgba(0,83,205,0.12)] ring-2 ring-primary/20 flex flex-col gap-6">
+<!-- Modal / Card Header -->
+<div class="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-surface-container-high/60">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-2xl bg-amber-500/15 flex items-center justify-center text-amber-700">
+<span class="material-symbols-outlined text-[24px]">gavel</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">19:00 – 20:00</span>
+<span class="font-label-primary text-label-primary font-bold text-primary">(Police Turf - Full Court)</span>
+<span class="bg-amber-100 text-amber-900 font-caption text-caption font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Active Override</span>
+</div>
+<span class="font-label-meta text-label-meta text-on-surface-variant">Duty Officer Slot Override &amp; Authority Block Action Panel</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-caption text-caption text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">
+                Officer: Insp. Rajeev K. (Duty)
+              </span>
+</div>
+</div>
+<!-- Drawer Action Form Body -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Left Column: Override Reason Selection -->
+<div class="flex flex-col gap-3">
+<label class="font-label-primary text-label-primary font-bold text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">category</span>
+                Override Classification Reason
+              </label>
+<div class="grid grid-cols-2 gap-2">
+<button class="p-3 rounded-xl bg-primary/10 text-primary font-label-meta text-label-meta font-bold text-left flex items-center gap-2 shadow-sm ring-1 ring-primary/30" type="button">
+<span class="material-symbols-outlined text-[18px]">military_tech</span>
+                  Official Tournament
+                </button>
+<button class="p-3 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-meta text-label-meta font-medium text-left flex items-center gap-2 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-tertiary">sports_handball</span>
+                  Department Drill
+                </button>
+<button class="p-3 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-meta text-label-meta font-medium text-left flex items-center gap-2 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-tertiary">build</span>
+                  Facility Maintenance
+                </button>
+<button class="p-3 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-meta text-label-meta font-medium text-left flex items-center gap-2 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-tertiary">policy</span>
+                  Security Protocol
+                </button>
+</div>
+<!-- Reason Details Textarea -->
+<div class="flex flex-col gap-1.5 pt-2">
+<label class="font-label-meta text-label-meta font-medium text-on-surface-variant">Specific Internal Note / Event Details</label>
+<div class="bg-surface-container-low/70 rounded-xl p-3 flex flex-col">
+<span class="font-body-default text-body-default text-on-surface font-medium">KP XI Annual Inter-District Tournament warm-up session</span>
+<span class="font-caption text-caption text-on-surface-variant pt-1">Kannur District Squad + Malabar Special Police (MSP) joint preparation.</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Portal Masking & Audit Controls -->
+<div class="flex flex-col justify-between gap-4 bg-surface-container-low/50 rounded-2xl p-4 sm:p-5">
+<div class="flex flex-col gap-3">
+<span class="font-label-primary text-label-primary font-bold text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-secondary">visibility_off</span>
+                  Citizen Portal Masking &amp; Public Display
+                </span>
+<div class="bg-surface-container-lowest p-3.5 rounded-xl shadow-sm flex items-start gap-3">
+<span class="material-symbols-outlined text-[20px] text-emerald-600 mt-0.5">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-meta text-label-meta font-bold text-on-surface">Public Portal Mask Active</span>
+<span class="font-caption text-caption text-on-surface-variant">General public and citizen app users will see this slot as <strong class="text-on-surface font-semibold">"Already Booked"</strong> rather than an administrative or security block.</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-caption font-caption text-on-surface-variant px-1 pt-1">
+<span>Audited Internal Record</span>
+<span class="font-mono font-bold text-primary">#AUD-2024-819</span>
+</div>
+</div>
+<!-- Action Confirmation Strip -->
+<div class="flex items-center gap-2 pt-2 flex-wrap">
+<button class="h-11 px-5 rounded-xl bg-primary text-on-primary hover:bg-primary/95 font-label-primary text-label-primary font-semibold flex items-center gap-2 shadow-[0_4px_14px_rgba(0,83,205,0.30)] transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">check</span>
+                  Confirm Authority Block
+                </button>
+<button class="h-11 px-4 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-primary text-label-primary font-medium transition-colors" type="button">
+                  Release / Make Available
+                </button>
+<button class="h-11 px-4 rounded-xl text-on-surface-variant hover:text-on-surface font-label-primary text-label-primary font-medium transition-colors" type="button">
+                  Cancel
+                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Slot 20:00 - 21:00 (Evening Floodlit Slot) -->
+<div class="group bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-4 min-w-[200px]">
+<div class="flex flex-col">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">20:00 – 21:00</span>
+<span class="font-label-meta text-label-meta text-emerald-600 font-medium">Night Slot Free</span>
+</div>
+<span class="bg-emerald-100 text-emerald-800 font-caption text-caption font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+              Available
+            </span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-surface-container-low/60 rounded-xl p-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">wb_incandescent</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-medium text-on-surface">Floodlit Night Hour (Public or Dept)</span>
+<span class="font-caption text-caption text-on-surface-variant">Peak floodlight surcharge applies (+₹200) • Automated light shutdown at 22:05</span>
+</div>
+</div>
+<span class="font-label-meta text-label-meta font-semibold text-on-surface">Rate: ₹1,000/hr</span>
+</div>
+<div class="flex items-center gap-2 self-end md:self-auto">
+<button class="h-10 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 font-label-meta text-label-meta font-semibold flex items-center gap-1.5 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px] text-amber-700">lock_clock</span>
+              Quick Block Slot
+            </button>
+<button class="h-10 px-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-meta text-label-meta font-medium transition-all" type="button">
+              Assign
+            </button>
+</div>
+</div>
+<!-- Slot 21:00 - 22:00 (Last Slot of Day) -->
+<div class="group bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-4 min-w-[200px]">
+<div class="flex flex-col">
+<span class="font-headline-card text-headline-card font-bold text-on-surface">21:00 – 22:00</span>
+<span class="font-label-meta text-label-meta text-on-surface-variant">Final Operating Hour</span>
+</div>
+<span class="bg-secondary-container text-on-secondary-fixed font-caption text-caption font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sports_soccer</span>
+              Booked
+            </span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-secondary-fixed/20 rounded-xl p-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-bold text-caption">
+                MD
+              </div>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Kannur Medical College Resident Doctors XI</span>
+<span class="font-caption text-caption text-on-surface-variant">Authorized Community Partner • Paid ₹1,200 via Gateway</span>
+</div>
+</div>
+<span class="font-caption text-caption text-on-surface-variant font-medium">Gate Pass Validated</span>
+</div>
+<div class="flex items-center gap-2 self-end md:self-auto">
+<button class="h-10 px-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-meta text-label-meta font-medium transition-all" type="button">
+              Summary
+            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Clean Spacing Anchor (Preserving clean finish without extraneous footers) -->
+<div class="w-full h-8"></div>
+</div>
+</div></main>
+
+</body></html>

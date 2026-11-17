@@ -1,0 +1,92 @@
+# ==============================================================================
+# Kannur City Police Sports Facilities Management System
+# On-Premise Docker Compose Stack (Zero External Cloud Dependencies)
+# Services: postgres (PostgreSQL 16) + backend (Node.js/Express) + nginx
+# ==============================================================================
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: kcp_sports_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kcp_sports_db}
+      POSTGRES_USER: ${POSTGRES_USER:-kcp_app_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-KcpLocalDbPass2026!}
+      TZ: Asia/Kolkata
+    volumes:
+      - kcp_postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-kcp_app_user} -d ${POSTGRES_DB:-kcp_sports_db}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - kcp_intranet
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kcp_sports_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      HOST: 0.0.0.0
+      TZ: Asia/Kolkata
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kcp_app_user}:${POSTGRES_PASSWORD:-KcpLocalDbPass2026!}@postgres:5432/${POSTGRES_DB:-kcp_sports_db}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-kcp-on-premise-local-department-jwt-secret-key-2026-kannur-police}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
+      SESSION_COOKIE_NAME: kcp_session
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN:-http://localhost}
+      BCRYPT_SALT_ROUNDS: ${BCRYPT_SALT_ROUNDS:-12}
+    expose:
+      - "4000"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://127.0.0.1:4000/api/health || exit 1"
+        ]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
+    networks:
+      - kcp_intranet
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: kcp_sports_nginx
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend/dist:/usr/share/nginx/html:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    networks:
+      - kcp_intranet
+
+volumes:
+  kcp_postgres_data:
+    driver: local
+
+networks:
+  kcp_intranet:
+    driver: bridge

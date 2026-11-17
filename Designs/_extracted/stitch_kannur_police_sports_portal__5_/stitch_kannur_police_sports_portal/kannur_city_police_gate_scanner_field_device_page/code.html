@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kannur City Police - Gate Scanner Field Device Page</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+    body {
+      background: radial-gradient(130% 90% at 50% 0%, #eaf0fa 0%, #f4f6fb 50%, #edf1f8 100%);
+      min-height: 100vh;
+      color: #0f172a;
+      -webkit-font-smoothing: antialiased;
+    }
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.84);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+    .glass-panel-dark {
+      background: radial-gradient(circle at 50% 35%, #182438 0%, #0c1322 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 40px -15px rgba(12, 19, 34, 0.45);
+    }
+    .scan-reticle {
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border: 2px dashed rgba(59, 130, 246, 0.6);
+      border-radius: 20px;
+      box-shadow: 0 0 35px rgba(37, 99, 235, 0.25);
+    }
+    .corner-bracket {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-color: #3b82f6;
+    }
+    .corner-tl { top: -2px; left: -2px; border-top: 3.5px solid #3b82f6; border-left: 3.5px solid #3b82f6; border-top-left-radius: 12px; }
+    .corner-tr { top: -2px; right: -2px; border-top: 3.5px solid #3b82f6; border-right: 3.5px solid #3b82f6; border-top-right-radius: 12px; }
+    .corner-bl { bottom: -2px; left: -2px; border-bottom: 3.5px solid #3b82f6; border-left: 3.5px solid #3b82f6; border-bottom-left-radius: 12px; }
+    .corner-br { bottom: -2px; right: -2px; border-bottom: 3.5px solid #3b82f6; border-right: 3.5px solid #3b82f6; border-bottom-right-radius: 12px; }
+    
+    @keyframes scanLine {
+      0% { top: 8%; opacity: 0.2; }
+      50% { top: 90%; opacity: 0.9; }
+      100% { top: 8%; opacity: 0.2; }
+    }
+    .scan-laser {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, #38bdf8 30%, #3b82f6 50%, #38bdf8 70%, transparent 100%);
+      box-shadow: 0 0 16px 2px #38bdf8;
+      animation: scanLine 2.8s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden text-slate-800">
+
+  <!-- CONSOLIDATED SINGLE TOP NAVIGATION BAR -->
+  <header class="glass-nav h-16 px-6 flex items-center justify-between shrink-0 z-50">
+    <!-- Left: Brand / Title -->
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm shadow-blue-500/30">
+        <i data-lucide="shield-check" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-[15px] tracking-tight text-slate-900">Kannur City Police</span>
+          <span class="text-slate-300">•</span>
+          <span class="font-semibold text-[14px] text-blue-700 bg-blue-50/90 border border-blue-200/80 px-2 py-0.5 rounded-md">Gate Entry Scanner</span>
+        </div>
+        <div class="text-[11px] text-slate-500 font-medium">Entrance Kiosk Telemetry • Turnstile Subsystem v4.2</div>
+      </div>
+    </div>
+
+    <!-- Center: Venue selector dropdown & navigation pills -->
+    <div class="flex items-center gap-2">
+      <!-- Venue Selector Dropdown -->
+      <div class="flex items-center gap-1.5 bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200 px-3 py-1.5 rounded-full cursor-pointer transition text-[13px] font-semibold text-slate-800">
+        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-600"></i>
+        <span>Synthetic Track - Gate 2</span>
+        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 ml-0.5"></i>
+      </div>
+
+      <!-- Navigation Segmented Pills -->
+      <div class="flex items-center bg-slate-100 p-1 rounded-full border border-slate-200/80 text-[12px] font-medium ml-2">
+        <button class="px-3.5 py-1 rounded-full bg-blue-600 text-white font-semibold shadow-xs flex items-center gap-1.5">
+          <i data-lucide="scan" class="w-3.5 h-3.5"></i>
+          <span>Live Scanner</span>
+        </button>
+        <button class="px-3.5 py-1 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/60 transition">
+          Gate Log (542)
+        </button>
+        <button class="px-3.5 py-1 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/60 transition">
+          Manual Lookup
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: Offline Sync Status & Gate Officer Profile -->
+    <div class="flex items-center gap-3">
+      <!-- Status Badge -->
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[12px] font-medium shadow-xs">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-semibold text-emerald-900">Online</span>
+        <span class="text-emerald-300">•</span>
+        <span>Local Cache Synced</span>
+      </div>
+
+      <!-- Offline Mode Ready Pill -->
+      <div class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200/90 text-[11px] font-medium text-slate-600">
+        <i data-lucide="hard-drive-download" class="w-3 h-3 text-slate-500"></i>
+        <span>Offline Ready § 6.29</span>
+      </div>
+
+      <div class="h-6 w-px bg-slate-200"></div>
+
+      <!-- Officer Profile -->
+      <div class="flex items-center gap-2.5 pl-1">
+        <div class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs ring-2 ring-slate-100">
+          HP
+        </div>
+        <div class="text-left leading-tight">
+          <div class="text-[13px] font-semibold text-slate-900">HC Pradeep</div>
+          <div class="text-[11px] text-slate-500 font-medium">Duty Desk #KCP-4412</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN SPLIT WORKSPACE: SYMMETRICAL TWO-COLUMN LAYOUT -->
+  <main class="flex-1 p-6 overflow-hidden flex flex-col justify-between max-w-[1560px] mx-auto w-full">
+    
+    <!-- Top Venue Quick Select Bar (Pills per requirement) -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 text-[13px]">
+        <span class="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mr-1">Gates:</span>
+        <button class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80 border border-transparent hover:border-slate-200 transition font-medium">
+          All Gates
+        </button>
+        <button class="px-3.5 py-1.5 rounded-lg bg-white border border-blue-200/90 text-blue-700 font-bold shadow-xs flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+          Synthetic Track - Gate 2
+        </button>
+        <button class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80 border border-transparent hover:border-slate-200 transition font-medium">
+          Football Ground
+        </button>
+        <button class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80 border border-transparent hover:border-slate-200 transition font-medium">
+          Police Turf
+        </button>
+        <button class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80 border border-transparent hover:border-slate-200 transition font-medium">
+          Badminton Court
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3 text-[12px] text-slate-500 font-medium">
+        <span class="flex items-center gap-1.5">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
+          Turnstile Latency: <span class="font-mono font-semibold text-slate-700">64ms</span>
+        </span>
+        <span class="text-slate-300">•</span>
+        <span>Firmware: <span class="font-mono text-slate-700">v4.2.1-SEC</span></span>
+      </div>
+    </div>
+
+    <!-- Symmetrical Two Columns Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 flex-1 min-h-0 items-stretch">
+      
+      <!-- LEFT COLUMN: STAGE 1 OPTICAL QR CODE SCANNER -->
+      <section class="glass-card rounded-2xl p-5 flex flex-col justify-between h-full border border-white/80">
+        <div>
+          <!-- Panel Header -->
+          <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">1</span>
+              <div>
+                <h2 class="text-[15px] font-bold text-slate-900 leading-tight">Stage 1: Optical QR Code Scanner</h2>
+                <p class="text-[12px] text-slate-500">Scan Public Membership Pass or Hourly Slot QR Ticket</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-mono">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+              Cam 01 • UltraHD 60FPS
+            </div>
+          </div>
+
+          <!-- Camera Viewfinder Frame -->
+          <div class="relative glass-panel-dark rounded-xl h-[260px] 2xl:h-[300px] flex flex-col items-center justify-center overflow-hidden text-center p-4">
+            <!-- Grid Background Overlay -->
+            <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(rgba(255,255,255,0.4) 1px, transparent 1px); background-size: 20px 20px;"></div>
+            
+            <!-- Laser scan line -->
+            <div class="scan-reticle flex items-center justify-center">
+              <div class="corner-bracket corner-tl"></div>
+              <div class="corner-bracket corner-tr"></div>
+              <div class="corner-bracket corner-bl"></div>
+              <div class="corner-bracket corner-br"></div>
+              <div class="scan-laser"></div>
+
+              <!-- Optical QR icon graphic inside -->
+              <div class="w-20 h-20 bg-blue-500/10 rounded-xl border border-blue-400/30 flex items-center justify-center text-blue-300">
+                <i data-lucide="qr-code" class="w-12 h-12 stroke-[1.5]"></i>
+              </div>
+            </div>
+
+            <!-- Overlay Scanning Guides -->
+            <div class="absolute top-3 left-4 flex items-center gap-2 text-[11px] text-slate-400 font-mono">
+              <i data-lucide="focus" class="w-3.5 h-3.5 text-blue-400"></i>
+              AUTO-FOCUS LOCK: ACTIVE
+            </div>
+            <div class="absolute top-3 right-4 text-[11px] text-emerald-400 font-mono font-medium flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> PASS DETECTED
+            </div>
+
+            <div class="absolute bottom-3 inset-x-0 text-center">
+              <span class="inline-block bg-slate-900/80 backdrop-blur-md px-4 py-1 rounded-full text-slate-300 text-[12px] font-medium border border-white/10">
+                Align Digital Pass or Kerala Police mPass QR in brackets
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manual Lookup Form at bottom of Left Panel -->
+        <div class="mt-4 pt-3 border-t border-slate-100">
+          <label class="block text-[12px] font-semibold text-slate-700 mb-1.5">
+            Manual Pass / Booking ID Lookup
+          </label>
+          <div class="flex gap-2">
+            <div class="relative flex-1">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input 
+                type="text" 
+                value="KCP-PUB-2024-3194" 
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-[13px] font-mono font-semibold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                placeholder="e.g. KCP-PUB-2024-XXXX"
+              >
+            </div>
+            <button class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[13px] font-semibold transition flex items-center gap-1.5 shadow-xs shrink-0">
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              Check ID
+            </button>
+          </div>
+          <div class="flex items-center justify-between mt-2 text-[11px] text-slate-400">
+            <span>Supports Membership ID, Booking Ref, and Challan Token</span>
+            <span class="text-blue-600 font-semibold cursor-pointer hover:underline">Recent Queries (12)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: STAGE 2 VERIFICATION & ENTRY CLEARANCE -->
+      <section class="glass-card rounded-2xl p-5 flex flex-col justify-between h-full border border-white/80">
+        <div>
+          <!-- Panel Header -->
+          <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">2</span>
+              <div>
+                <h2 class="text-[15px] font-bold text-slate-900 leading-tight">Stage 2: Verification Result & Biometric Check</h2>
+                <p class="text-[12px] text-slate-500">Dual-factor clearance matrix under Kerala Police Rule § 6.25</p>
+              </div>
+            </div>
+            <!-- Stage 1 Status Box Badge -->
+            <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[12px] font-bold">
+              <i data-lucide="badge-check" class="w-4 h-4 text-emerald-600"></i>
+              <span>Stage 1: Optical QR Verified</span>
+            </div>
+          </div>
+
+          <!-- Verified Member Profile Summary Card -->
+          <div class="bg-white rounded-xl p-4 border border-slate-200/80 shadow-xs mb-3.5">
+            <div class="flex items-start gap-4">
+              <!-- Real Verified Portrait Photograph of Priya Mohan -->
+              <div class="relative shrink-0">
+                <img 
+                  src="https://lh3.googleusercontent.com/aida/ALJJyrB7tuXUPyXW9fYJM5AoTeNRY92R-I5DH-zeYatJ3rGweCNVHMbZf2B4f3M0lg0r_1iJjxM4vbXELaUR8KufQA5dPLotyKl535fQa7fZXvAgMB_1qSU5meTpF16apm4PBLfOcdv_zD5o-bdUqNrHVdmD5pcHB7l_-Vw7VxwbQkX7jLjdo17la0ZHT_yz7IR0mSw9wWvPruO9LymErxbcr9f1d40HKFDy-yRpddklBGc" 
+                  alt="Verified Member Priya Mohan" 
+                  class="w-20 h-20 rounded-xl object-cover border-2 border-emerald-400 shadow-sm"
+                >
+                <div class="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-xs">
+                  <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>
+                </div>
+              </div>
+
+              <!-- Member Information Details -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2">
+                  <h3 class="text-[18px] font-bold text-slate-900 truncate">Priya Mohan</h3>
+                  <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
+                    General Public • Citizen
+                  </span>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-y-1.5 gap-x-4 mt-2 text-[12px]">
+                  <div>
+                    <span class="text-slate-400 text-[11px] uppercase tracking-wider block font-medium">Pass ID:</span>
+                    <span class="font-mono font-bold text-slate-800">#KCP-PUB-2024-3194</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-400 text-[11px] uppercase tracking-wider block font-medium">Venue & Pass Type:</span>
+                    <span class="font-semibold text-slate-800">Synthetic Track • 3-Month Pass</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-400 text-[11px] uppercase tracking-wider block font-medium">Permitted Slot Window:</span>
+                    <span class="font-semibold text-slate-800">Morning & Evening (05:30 - 08:30 / 16:30 - 19:30)</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-400 text-[11px] uppercase tracking-wider block font-medium">Validity Period:</span>
+                    <span class="font-semibold text-emerald-700">01 Nov 2024 – 31 Jan 2025 (Active)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 2 Biometric Verification Status Box -->
+          <div class="rounded-xl p-4 bg-emerald-500/10 border-2 border-emerald-500/30">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                  <i data-lucide="fingerprint" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-[14px] font-bold text-emerald-950">
+                    Stage 2: Biometric Check Passed — Entry Granted
+                  </div>
+                  <div class="text-[11px] text-emerald-700 font-medium">
+                    Turnstile 2 Scanner Sensor #TN-02 • Match Confidence: 99.6%
+                  </div>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 bg-emerald-600 text-white text-[11px] font-bold rounded-md tracking-wider uppercase">
+                Turnstile Unlocked
+              </span>
+            </div>
+
+            <!-- Statutory Rule Note -->
+            <div class="mt-2.5 pt-2 border-t border-emerald-500/20 flex items-start gap-1.5 text-[11.5px] text-emerald-800 font-medium leading-relaxed">
+              <i data-lucide="info" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
+              <span><strong>Note:</strong> Hourly Turf, Football Ground & Badminton bookings clear automatically at Stage 1 (QR only). Synthetic Track requires Stage 2 biometric match per Section 6.25.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetry & Cryptographic Verification Footnote -->
+        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+          <span class="flex items-center gap-1">
+            <i data-lucide="shield" class="w-3.5 h-3.5 text-blue-500"></i>
+            Biometric SHA-256: <span class="font-mono text-slate-600">8c19...4f7a (Encrypted)</span>
+          </span>
+          <span class="text-emerald-600 font-medium flex items-center gap-1">
+            <i data-lucide="circle-dot" class="w-3 h-3"></i> Ready for gate cycle
+          </span>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- TOUCH-FRIENDLY GATE ACTION CONTROLS (BOTTOM ACTION BAR) -->
+    <div class="glass-card rounded-2xl p-4 mt-5 flex items-center justify-between border border-white/90 shrink-0 shadow-sm">
+      <!-- Left: Manual Override Trigger for Sensor Failures -->
+      <button class="px-5 py-3 rounded-xl border-2 border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 font-bold text-[14px] transition flex items-center gap-2 active:scale-95 shadow-xs">
+        <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i>
+        <span>Manual Override (Sensor Failure § 6.28)</span>
+      </button>
+
+      <!-- Right: Ready Next & Confirm Log Entry -->
+      <div class="flex items-center gap-3">
+        <button class="px-5 py-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-semibold text-[14px] transition flex items-center gap-2 active:scale-95">
+          <i data-lucide="rotate-ccw" class="w-4 h-4 text-slate-400"></i>
+          <span>Clear / Ready Next</span>
+        </button>
+        
+        <!-- Primary Confirm Action Button -->
+        <button class="px-7 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-[15px] transition flex items-center gap-2.5 shadow-md shadow-blue-500/25 active:scale-95">
+          <i data-lucide="unlock" class="w-4 h-4 stroke-[2.5]"></i>
+          <span>Confirm & Log Entry</span>
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Lucide script initialization -->
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<meta content="mobile_stack" name="shell-type"/>
+<title>Kannur City Police - Sports Facilities</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#1F6FFF",
+            "primary-container": "#1F6FFF",
+            "surface": "#F8F9FF",
+            "surface-dim": "#D8DADF",
+            "outline": "#727787",
+            "outline-variant": "#D1D5DB"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        background-color: #F8F9FF;
+        font-family: 'Inter', sans-serif;
+      }
+      .pb-safe {
+        padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+      }
+      .pt-safe {
+        padding-top: max(env(safe-area-inset-top, 0px), 12px);
+      }
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-[#F8F9FF] text-[#111418] antialiased min-h-screen flex flex-col justify-between selection:bg-[#1F6FFF]/20">
+<!-- Atmospheric Cool Blurred Shapes Background -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+<div class="absolute -top-16 -left-20 w-72 h-72 bg-[#D2E4FF] rounded-full blur-3xl opacity-70"></div>
+<div class="absolute top-[280px] -right-24 w-80 h-80 bg-[#DAE2FF] rounded-full blur-3xl opacity-60"></div>
+<div class="absolute bottom-20 left-4 w-64 h-64 bg-[#E0E7FF] rounded-full blur-3xl opacity-50"></div>
+</div>
+<div class="w-full max-w-[390px] mx-auto flex flex-col min-h-screen">
+<!-- Top bar -->
+<header class="w-full pt-safe px-6 flex items-center justify-between pb-3">
+<div class="flex items-center gap-3">
+<!-- Shield Mark -->
+<div class="w-10 h-10 rounded-xl bg-[#EBF1FF] flex items-center justify-center text-[#1F6FFF] shadow-sm border border-white/60">
+<span class="material-symbols-outlined text-[24px]">verified_user</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[16px] font-semibold text-[#111418] leading-tight">Kannur City Police</span>
+<span class="text-[12px] text-[#64748B] font-medium leading-none mt-1">Sports facilities</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="Notifications" class="w-10 h-10 flex items-center justify-center rounded-full text-[#4B5563] hover:bg-black/5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+</button>
+<button aria-label="Menu" class="w-10 h-10 flex items-center justify-center rounded-full text-[#4B5563] hover:bg-black/5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[24px]">menu</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 px-6 pt-8 flex flex-col">
+<!-- Step 2: Under top bar (32px below): link "Back to home" with thin chevron-left, grey caption "Step 1 of 4" -->
+<div class="flex items-center justify-between w-full mb-3.5">
+<a class="inline-flex items-center gap-1 text-[15px] font-medium text-[#4B5563] hover:text-[#1F6FFF] transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px] text-[#4B5563]">chevron_left</span>
+<span>Back to home</span>
+</a>
+<span class="text-[13px] font-medium text-[#6B7280]">Step 1 of 4</span>
+</div>
+<!-- Step 3: Directly beneath: slim 4-segment progress bar -->
+<div class="grid grid-cols-4 gap-2 w-full mb-8">
+<div class="h-1.5 rounded-full bg-[#1F6FFF]"></div>
+<div class="h-1.5 rounded-full bg-[#D1D5DB]"></div>
+<div class="h-1.5 rounded-full bg-[#D1D5DB]"></div>
+<div class="h-1.5 rounded-full bg-[#D1D5DB]"></div>
+</div>
+<!-- Step 4: Directly beneath: title and description -->
+<div class="mb-7">
+<h1 class="text-[32px] font-bold text-[#111418] leading-[38px] tracking-tight">Who is applying?</h1>
+<p class="text-[15px] text-[#6B7280] font-normal mt-1.5">Choose the category that applies to you.</p>
+</div>
+<!-- Step 5: Two selectable category cards stacked full width (24px side margins, 16px gap between cards) -->
+<div class="flex flex-col gap-4">
+<!-- Card 1: General public -->
+<div class="category-card cursor-pointer w-full rounded-[24px] p-5 bg-white/90 backdrop-blur-xl border border-white shadow-[0_8px_24px_rgba(31,111,255,0.06)] flex items-start justify-between gap-3 transition-all duration-200 active:scale-[0.99]" id="card-public" onclick="selectCategory('public')">
+<div class="flex items-start gap-4 flex-1">
+<!-- Blue-tint rounded-square icon tile (person icon) -->
+<div class="w-12 h-12 shrink-0 rounded-2xl bg-[#EBF3FF] flex items-center justify-center text-[#1F6FFF]">
+<svg class="w-6 h-6 stroke-current stroke-[1.8] fill-none" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24">
+<circle cx="12" cy="7" r="4.25"></circle>
+<path d="M5.5 20.5c0-3.5 3-6.25 6.5-6.25s6.5 2.75 6.5 6.25"></path>
+</svg>
+</div>
+<div class="flex flex-col flex-1 pr-1 pt-0.5">
+<h2 class="text-[20px] font-semibold text-[#111418] leading-tight mb-1.5">General public</h2>
+<p class="text-[13px] text-[#6B7280] leading-snug">Fill in your details and pay online to receive your membership card.</p>
+</div>
+</div>
+<!-- Empty radio ring clearly visible (1.5px #9CA3AF) -->
+<div class="pt-1 shrink-0">
+<div class="w-[22px] h-[22px] rounded-full border-[1.5px] border-[#9CA3AF] flex items-center justify-center bg-transparent transition-all" id="radio-public">
+<div class="w-2.5 h-2.5 rounded-full bg-white scale-0 transition-transform"></div>
+</div>
+</div>
+</div>
+<!-- Card 2: Government personnel -->
+<div class="category-card cursor-pointer w-full rounded-[24px] p-5 bg-white/90 backdrop-blur-xl border border-white shadow-[0_8px_24px_rgba(31,111,255,0.06)] flex items-start justify-between gap-3 transition-all duration-200 active:scale-[0.99]" id="card-personnel" onclick="selectCategory('personnel')">
+<div class="flex items-start gap-4 flex-1">
+<!-- Blue-tint rounded-square icon tile (badge icon) -->
+<div class="w-12 h-12 shrink-0 rounded-2xl bg-[#EBF3FF] flex items-center justify-center text-[#1F6FFF]">
+<svg class="w-6 h-6 stroke-current stroke-[1.8] fill-none" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24">
+<rect height="16" rx="2.5" width="16" x="4" y="4"></rect>
+<circle cx="12" cy="9.5" r="2.25"></circle>
+<path d="M8 16c0-1.6 1.8-2.5 4-2.5s4 .9 4 2.5"></path>
+<path d="M9.5 4v-1.5h5V4"></path>
+</svg>
+</div>
+<div class="flex flex-col flex-1 pr-1 pt-0.5">
+<h2 class="text-[20px] font-semibold text-[#111418] leading-tight mb-1.5">Government personnel</h2>
+<p class="text-[13px] text-[#6B7280] leading-snug">Upload proof of employment. Payment opens after the department approves your application.</p>
+</div>
+</div>
+<!-- Empty radio ring clearly visible (1.5px #9CA3AF) -->
+<div class="pt-1 shrink-0">
+<div class="w-[22px] h-[22px] rounded-full border-[1.5px] border-[#9CA3AF] flex items-center justify-center bg-transparent transition-all" id="radio-personnel">
+<div class="w-2.5 h-2.5 rounded-full bg-white scale-0 transition-transform"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 6: Full-width solid blue "Continue" button positioned 24px below the cards, disabled at 30% opacity -->
+<div class="mt-6 w-full">
+<button class="w-full h-14 rounded-[22px] bg-[#1F6FFF] text-white font-medium text-[17px] leading-none flex items-center justify-center shadow-[0_8px_20px_rgba(31,111,255,0.25)] opacity-30 cursor-not-allowed transition-all duration-200 active:scale-[0.985]" disabled="" id="btn-continue" type="button">
+          Continue
+        </button>
+</div>
+</main>
+<!-- Step 7: At the very bottom: single centered grey caption "Kannur City Police" -->
+<footer class="w-full py-6 pb-safe flex items-center justify-center">
+<span class="text-[13px] text-[#6B7280] font-normal select-none">Kannur City Police</span>
+</footer>
+</div>
+<script>
+    let selectedCategory = null;
+
+    function selectCategory(type) {
+      selectedCategory = type;
+      const isPublic = type === 'public';
+      const cardPublic = document.getElementById('card-public');
+      const cardPersonnel = document.getElementById('card-personnel');
+      const radioPublic = document.getElementById('radio-public');
+      const radioPersonnel = document.getElementById('radio-personnel');
+      const dotPublic = radioPublic.querySelector('div');
+      const dotPersonnel = radioPersonnel.querySelector('div');
+      const btn = document.getElementById('btn-continue');
+
+      if (isPublic) {
+        // Highlight public
+        cardPublic.classList.add('border-[#1F6FFF]', 'bg-[#F2F7FF]');
+        cardPublic.classList.remove('border-white', 'bg-white/90');
+        radioPublic.classList.add('bg-[#1F6FFF]', 'border-[#1F6FFF]');
+        radioPublic.classList.remove('border-[#9CA3AF]', 'bg-transparent');
+        dotPublic.classList.remove('scale-0');
+        dotPublic.classList.add('scale-100');
+
+        // Unhighlight personnel
+        cardPersonnel.classList.remove('border-[#1F6FFF]', 'bg-[#F2F7FF]');
+        cardPersonnel.classList.add('border-white', 'bg-white/90');
+        radioPersonnel.classList.remove('bg-[#1F6FFF]', 'border-[#1F6FFF]');
+        radioPersonnel.classList.add('border-[#9CA3AF]', 'bg-transparent');
+        dotPersonnel.classList.add('scale-0');
+        dotPersonnel.classList.remove('scale-100');
+      } else {
+        // Highlight personnel
+        cardPersonnel.classList.add('border-[#1F6FFF]', 'bg-[#F2F7FF]');
+        cardPersonnel.classList.remove('border-white', 'bg-white/90');
+        radioPersonnel.classList.add('bg-[#1F6FFF]', 'border-[#1F6FFF]');
+        radioPersonnel.classList.remove('border-[#9CA3AF]', 'bg-transparent');
+        dotPersonnel.classList.remove('scale-0');
+        dotPersonnel.classList.add('scale-100');
+
+        // Unhighlight public
+        cardPublic.classList.remove('border-[#1F6FFF]', 'bg-[#F2F7FF]');
+        cardPublic.classList.add('border-white', 'bg-white/90');
+        radioPublic.classList.remove('bg-[#1F6FFF]', 'border-[#1F6FFF]');
+        radioPublic.classList.add('border-[#9CA3AF]', 'bg-transparent');
+        dotPublic.classList.add('scale-0');
+        dotPublic.classList.remove('scale-100');
+      }
+
+      // Enable button
+      btn.removeAttribute('disabled');
+      btn.classList.remove('opacity-30', 'cursor-not-allowed');
+      btn.classList.add('opacity-100', 'cursor-pointer', 'hover:brightness-105');
+    }
+  </script>
+</body></html>

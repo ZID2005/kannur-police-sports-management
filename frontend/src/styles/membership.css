@@ -1,0 +1,14 @@
+/* Page-specific styles extracted from Kannur City Police Membership Stitch exports */
+
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+}
+
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top, 0px), 12px);
+}
+
+.membership-input-error {
+  border: 1.5px solid #e5484d !important;
+  box-shadow: 0 0 0 1px #e5484d !important;
+}

@@ -1,0 +1,99 @@
+/* ------------------------------------------------------------------
+ * Gate Entries, System Audit Log & Gate Scanner Field Device styles
+ * Extracted from Stitch HTML exports
+ * ------------------------------------------------------------------ */
+
+.gate-scanner-workspace {
+  background: radial-gradient(130% 90% at 50% 0%, #eaf0fa 0%, #f4f6fb 50%, #edf1f8 100%);
+  color: #0f172a;
+}
+
+.gate-scanner-workspace .font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+}
+
+.gate-scanner-workspace .glass-card {
+  background: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.glass-panel-dark {
+  background: radial-gradient(circle at 50% 35%, #182438 0%, #0c1322 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px -15px rgba(12, 19, 34, 0.45);
+}
+
+.scan-reticle {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border: 2px dashed rgba(59, 130, 246, 0.6);
+  border-radius: 20px;
+  box-shadow: 0 0 35px rgba(37, 99, 235, 0.25);
+}
+
+.corner-bracket {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: #3b82f6;
+}
+
+.corner-tl {
+  top: -2px;
+  left: -2px;
+  border-top: 3.5px solid #3b82f6;
+  border-left: 3.5px solid #3b82f6;
+  border-top-left-radius: 12px;
+}
+
+.corner-tr {
+  top: -2px;
+  right: -2px;
+  border-top: 3.5px solid #3b82f6;
+  border-right: 3.5px solid #3b82f6;
+  border-top-right-radius: 12px;
+}
+
+.corner-bl {
+  bottom: -2px;
+  left: -2px;
+  border-bottom: 3.5px solid #3b82f6;
+  border-left: 3.5px solid #3b82f6;
+  border-bottom-left-radius: 12px;
+}
+
+.corner-br {
+  bottom: -2px;
+  right: -2px;
+  border-bottom: 3.5px solid #3b82f6;
+  border-right: 3.5px solid #3b82f6;
+  border-bottom-right-radius: 12px;
+}
+
+@keyframes scanLine {
+  0% {
+    top: 8%;
+    opacity: 0.2;
+  }
+  50% {
+    top: 90%;
+    opacity: 0.9;
+  }
+  100% {
+    top: 8%;
+    opacity: 0.2;
+  }
+}
+
+.scan-laser {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #38bdf8 30%, #3b82f6 50%, #38bdf8 70%, transparent 100%);
+  box-shadow: 0 0 16px 2px #38bdf8;
+  animation: scanLine 2.8s ease-in-out infinite;
+}

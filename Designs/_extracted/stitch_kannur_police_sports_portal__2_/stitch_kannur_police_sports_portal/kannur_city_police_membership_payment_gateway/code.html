@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary":"#0053cd","on-primary":"#ffffff","surface-variant":"#e1e2e8","secondary":"#476080","surface-container-low":"#f2f3f9","inverse-on-surface":"#eff0f6","on-secondary":"#ffffff","tertiary-fixed":"#d5e4f8","tertiary":"#4f5d6e","tertiary-fixed-dim":"#b9c8db","primary-fixed-dim":"#b2c5ff","outline":"#727787","secondary-fixed":"#d2e4ff","on-tertiary":"#ffffff","on-tertiary-fixed-variant":"#3a4858","on-primary-container":"#fefcff","surface-container":"#eceef3","secondary-fixed-dim":"#afc8ee","background":"#f8f9ff","on-tertiary-fixed":"#0e1d2b","secondary-container":"#bfd9ff","surface-tint":"#0056d2","outline-variant":"#c2c6d8","primary-container":"#166bfb","surface":"#f8f9ff","on-background":"#191c20","on-secondary-fixed-variant":"#2f4867","inverse-primary":"#b2c5ff","error-container":"#ffdad6","surface-container-lowest":"#ffffff","on-secondary-fixed":"#001c38","on-error-container":"#93000a","on-primary-fixed-variant":"#0040a1","surface-container-high":"#e6e8ee","primary-fixed":"#dae2ff","error":"#ba1a1a","surface-bright":"#f8f9ff","tertiary-container":"#677687","on-surface":"#191c20","surface-container-highest":"#e1e2e8","on-tertiary-container":"#fdfcff","on-primary-fixed":"#001848","on-surface-variant":"#424655","on-secondary-container":"#465f7f","inverse-surface":"#2e3135","on-error":"#ffffff","surface-dim":"#d8dadf"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-xs":"0.25rem","gutter-desktop":"1.5rem","space-lg":"1.5rem","space-sm":"0.5rem","space-xl":"2.5rem","space-md":"1rem","gutter":"1.5rem","margin-desktop":"2.5rem","margin":"1.5rem"},fontFamily:{"label-meta":["Inter"],"body-default":["Inter"],"title-portal-mobile":["Inter"],"headline-card":["Inter"],"title-portal":["Inter"],"caption":["Inter"],"body-medium":["Inter"],"label-primary":["Inter"]},fontSize:{"label-meta":["13px",{lineHeight:"18px",letterSpacing:"0em",fontWeight:"500"}],"body-default":["17px",{lineHeight:"24px",letterSpacing:"-0.01em",fontWeight:"400"}],"title-portal-mobile":["30px",{lineHeight:"36px",letterSpacing:"-0.025em",fontWeight:"700"}],"headline-card":["20px",{lineHeight:"28px",letterSpacing:"-0.015em",fontWeight:"600"}],"title-portal":["40px",{lineHeight:"48px",letterSpacing:"-0.03em",fontWeight:"700"}],"caption":["12px",{lineHeight:"16px",letterSpacing:"0.01em",fontWeight:"400"}],"body-medium":["17px",{lineHeight:"24px",letterSpacing:"-0.01em",fontWeight:"500"}],"label-primary":["15px",{lineHeight:"20px",letterSpacing:"-0.005em",fontWeight:"500"}]}}}};</script></head><body class="bg-surface font-body-default text-body-default text-on-surface relative min-h-screen overflow-x-hidden selection:bg-secondary-container selection:text-on-secondary-container"><div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden"><div class="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full bg-secondary-container/50 blur-[130px]"></div><div class="absolute top-1/3 -left-32 w-[520px] h-[520px] rounded-full bg-primary-fixed/40 blur-[140px]"></div><div class="absolute -bottom-40 -right-20 w-[650px] h-[650px] rounded-full bg-secondary-fixed/40 blur-[150px]"></div></div><header class="fixed top-0 w-full z-50 bg-surface/60 backdrop-blur-[40px] shadow-[0_4px_24px_rgba(0,83,205,0.04)]"><div class="h-20 max-w-[1200px] mx-auto px-6 md:px-12 flex items-center justify-between"><a class="flex items-center gap-space-sm group text-left" data-path="home" href="#"><div class="w-11 h-11 rounded-xl bg-surface-container-lowest/80 shadow-[0_2px_8px_rgba(0,83,205,0.08)] flex items-center justify-center transition-transform group-hover:scale-105"><span class="material-symbols-outlined text-primary text-[24px]">shield</span></div><div class="flex flex-col"><span class="font-label-primary text-label-primary font-semibold text-on-surface tracking-tight leading-tight">Kannur City Police</span><span class="font-label-meta text-label-meta text-tertiary leading-tight">Sports facilities</span></div></a><nav class="hidden md:flex items-center p-1 bg-surface-container-lowest/60 backdrop-blur-xl rounded-full shadow-[inset_0_1px_2px_rgba(255,255,255,0.8)]" data-active-classes="bg-primary text-on-primary shadow-[0_8px_20px_rgba(0,83,205,0.28)] font-semibold"><a class="px-space-md py-space-xs rounded-full font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface transition-all duration-200" data-path="home" href="#">Home</a><a class="px-space-md py-space-xs rounded-full font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface transition-all duration-200" data-path="bookings" href="#">Bookings</a><a class="px-space-md py-space-xs rounded-full font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface transition-all duration-200" data-path="membership" href="#">Membership</a></nav><div class="flex items-center gap-space-sm"><div class="flex items-center px-space-sm py-1 rounded-full bg-surface-container-lowest/60 backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]"><button class="font-label-meta text-label-meta font-semibold text-primary px-space-xs transition-colors hover:text-primary-container" type="button">EN</button><span class="font-label-meta text-label-meta text-outline-variant">|</span><button class="font-label-meta text-label-meta font-medium text-tertiary px-space-xs transition-colors hover:text-on-surface" type="button">മലയാളം</button></div><button aria-label="Notifications" class="w-10 h-10 rounded-full bg-surface-container-lowest/60 backdrop-blur-xl flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors shadow-[0_2px_8px_rgba(0,83,205,0.06)]" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[0_4px_12px_rgba(0,83,205,0.25)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div><div class="w-full bg-surface-container-lowest/40 backdrop-blur-md"><div class="max-w-[1200px] mx-auto px-6 md:px-12 py-2 flex items-center"><a class="inline-flex items-center gap-1 font-label-meta text-label-meta text-tertiary hover:text-primary transition-colors group" data-path="home" href="#"><span class="material-symbols-outlined text-[16px] transition-transform group-hover:-translate-x-0.5">chevron_left</span><span>Back to home</span></a></div></div></header><main class="w-full pt-28 bg-transparent"><div class="flex flex-col w-full">
+<!-- Interactive Sub-header context trail -->
+<div class="max-w-[1200px] w-full mx-auto px-6 md:px-12 -mt-4 mb-6 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-meta text-label-meta font-semibold">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+        Step 3 of 3 • Final Checkout
+      </span>
+<span class="hidden sm:inline-block font-label-meta text-label-meta text-outline">Session ID: KCP-PAY-98421</span>
+</div>
+<div class="flex items-center gap-2 font-label-meta text-label-meta text-tertiary">
+<span class="material-symbols-outlined text-[16px] text-primary">verified_user</span>
+<span class="font-medium">256-bit GovVault Encryption</span>
+</div>
+</div>
+<!-- Main Container 2-Column Split -->
+<div class="max-w-[1200px] w-full mx-auto px-6 md:px-12 pb-16">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- LEFT COLUMN: Payment & Order Summary Card (5 Cols) -->
+<aside class="lg:col-span-5 flex flex-col gap-6">
+<!-- Summary Glassmorphic Card -->
+<div class="relative overflow-hidden rounded-[32px] bg-surface-container-lowest/60 backdrop-blur-[40px] shadow-[0_20px_40px_rgba(0,83,205,0.08)] p-6 md:p-8">
+<!-- Subtle top highlight overlay -->
+<div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent"></div>
+<!-- Card Header & Badge -->
+<div class="flex items-start justify-between pb-6 mb-6">
+<div>
+<span class="font-label-meta text-label-meta text-primary font-semibold uppercase tracking-wider">Facility Pass</span>
+<h2 class="font-headline-card text-headline-card text-on-surface mt-1">Membership Summary</h2>
+</div>
+<div class="w-12 h-12 rounded-2xl bg-secondary-container/50 flex items-center justify-center text-primary shadow-[inset_0_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[26px]">sports_score</span>
+</div>
+</div>
+<!-- Facility Preview Miniature -->
+<div class="relative rounded-2xl overflow-hidden mb-6 p-4 bg-surface-container-low/70 flex items-center gap-4">
+<div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 relative shadow-sm">
+<img class="w-full h-full object-cover" data-alt="High-angle aerial shot of an immaculate, professional 400-meter synthetic rubber running track in bright morning sun with crisp white lane lines, surrounded by manicured green turf under Kannur coastal clear skies, photorealistic, pristine athletics pavilion." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJr2CXAbF716s8poqTsLjmrHPXvpvfMRp2cWTgxF2zcVvBcrKyAn5z1Vwp2hOzlgS5ChYJicn7qW5tq8VWqr9uDwQgNOHGvhD8GbwS1w-3_Dmx3zPTXviSbWactECsUVjaIcb5SPTpfFf1a7wszC7LPkMA2qpQzJ8jsssoDBQuSkrKqJEhqd2QdkJ4IIE6RCBrYmxhe2Le_RJrWxbvSrWOLvNpiPb9iTTnPYwzFuU"/>
+</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center gap-1.5">
+<span class="font-caption text-caption text-primary font-semibold uppercase">Official Track #1</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/40"></span>
+<span class="font-caption text-caption text-tertiary">Outdoor</span>
+</div>
+<p class="font-body-medium text-body-medium font-semibold text-on-surface truncate">Synthetic 400m Athletic Track</p>
+<p class="font-label-meta text-label-meta text-tertiary truncate">Police Parade Grounds, Kannur</p>
+</div>
+</div>
+<!-- Membership Specs Matrix -->
+<div class="space-y-4 mb-6">
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-surface-container-lowest/50">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</div>
+<div>
+<span class="block font-caption text-caption text-tertiary">Duration</span>
+<span class="font-label-primary text-label-primary text-on-surface font-semibold">3 Months (1 Dec 2024 – 28 Feb 2025)</span>
+</div>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-caption text-caption font-semibold">Q4 Active</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-surface-container-lowest/50">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">badge</span>
+</div>
+<div>
+<span class="block font-caption text-caption text-tertiary">Registered Officer</span>
+<span class="font-label-primary text-label-primary text-on-surface font-semibold">Anil Kumar (PEN: 549210)</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-surface-container-lowest/50">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">policy</span>
+</div>
+<div>
+<span class="block font-caption text-caption text-tertiary">Quota Category</span>
+<span class="font-label-primary text-label-primary text-on-surface font-semibold">Government Personnel (Kerala Police)</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-primary-fixed-dim/40 text-on-primary-fixed-variant font-caption text-caption font-bold">50% SUB</span>
+</div>
+</div>
+<!-- Cost Breakdown List -->
+<div class="p-5 rounded-2xl bg-surface-container-low/60 space-y-3 mb-6">
+<div class="flex justify-between items-center font-label-primary text-label-primary">
+<span class="text-on-surface-variant">Standard Track Base Fee (90 Days)</span>
+<span class="text-on-surface font-medium">₹1,500.00</span>
+</div>
+<div class="flex justify-between items-center font-label-primary text-label-primary">
+<span class="text-primary flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-[16px]">local_offer</span>
+                Department Concession
+              </span>
+<span class="text-primary font-semibold">-₹750.00</span>
+</div>
+<div class="flex justify-between items-center font-label-primary text-label-primary">
+<span class="text-on-surface-variant flex items-center gap-1">
+                Turf Maintenance &amp; GST (18%)
+                <span class="material-symbols-outlined text-[14px] text-outline cursor-help" title="Goods and Services Tax as mandated by state revenue directives">info</span>
+</span>
+<span class="text-on-surface font-medium">₹135.00</span>
+</div>
+<div class="h-px w-full bg-outline-variant/30 my-2"></div>
+<div class="flex justify-between items-baseline pt-1">
+<div>
+<span class="block font-headline-card text-headline-card font-bold text-on-surface">Total Amount Due</span>
+<span class="font-caption text-caption text-tertiary">Inclusive of municipal athletic levy</span>
+</div>
+<div class="text-right">
+<span class="font-title-portal text-title-portal font-bold text-primary tracking-tight">₹885.00</span>
+</div>
+</div>
+</div>
+<!-- Official Guarantee Strip -->
+<div class="flex items-center gap-3 p-3.5 rounded-xl bg-surface-container-lowest/80 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[22px]">verified</span>
+<p class="font-caption text-caption leading-snug">
+              Official registration sanctioned by <strong>District Police Headquarters, Kannur</strong>. Instant e-receipt valid for tax reimbursement.
+            </p>
+</div>
+</div>
+<!-- Compliance and Security Module -->
+<div class="rounded-3xl bg-surface-container-lowest/40 backdrop-blur-xl p-5 shadow-[0_4px_16px_rgba(0,83,205,0.03)] space-y-3">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-secondary-fixed/50 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">enhanced_encryption</span>
+</div>
+<div>
+<p class="font-label-primary text-label-primary font-semibold text-on-surface">Cyber Safety Compliance</p>
+<p class="font-caption text-caption text-tertiary">Adheres to Kerala Police Cyber Safety Directives 2024</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 pt-1">
+<div class="text-center p-2 rounded-xl bg-surface-container-lowest/60">
+<span class="material-symbols-outlined text-[18px] text-primary mb-0.5">lock</span>
+<p class="font-caption text-caption font-medium text-on-surface-variant">256-Bit SSL</p>
+</div>
+<div class="text-center p-2 rounded-xl bg-surface-container-lowest/60">
+<span class="material-symbols-outlined text-[18px] text-primary mb-0.5">account_balance</span>
+<p class="font-caption text-caption font-medium text-on-surface-variant">Treasury Reg.</p>
+</div>
+<div class="text-center p-2 rounded-xl bg-surface-container-lowest/60">
+<span class="material-symbols-outlined text-[18px] text-primary mb-0.5">receipt_long</span>
+<p class="font-caption text-caption font-medium text-on-surface-variant">e-Challan</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- RIGHT COLUMN: Interactive Payment Checkout Card (7 Cols) -->
+<section class="lg:col-span-7 flex flex-col gap-6">
+<div class="relative overflow-hidden rounded-[32px] bg-surface-container-lowest/60 backdrop-blur-[40px] shadow-[0_20px_40px_rgba(0,83,205,0.08)] p-6 md:p-10">
+<div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent"></div>
+<!-- Section Title -->
+<div class="mb-8">
+<div class="flex items-center justify-between mb-1">
+<h1 class="font-headline-card text-headline-card text-on-surface font-bold">Select Payment Method</h1>
+<span class="inline-flex items-center gap-1 font-label-meta text-label-meta text-primary font-semibold">
+<span class="material-symbols-outlined text-[16px]">format_image_left</span>
+                Safe &amp; Encrypted
+              </span>
+</div>
+<p class="font-body-default text-body-default text-tertiary">All transactions are authenticated via the secure treasury payment gateway.</p>
+</div>
+<!-- Payment Tabs -->
+<div class="flex items-center gap-2 p-1.5 rounded-2xl bg-surface-container-low/80 mb-8 overflow-x-auto" id="payment-tabs-container">
+<button class="tab-btn flex-1 min-w-[120px] flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-label-primary text-label-primary font-semibold transition-all duration-200 bg-primary text-on-primary shadow-[0_4px_14px_rgba(0,83,205,0.24)]" data-target="tab-upi" type="button">
+<span class="material-symbols-outlined text-[20px]">qr_code_2</span>
+<span>UPI / QR</span>
+</button>
+<button class="tab-btn flex-1 min-w-[120px] flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-label-primary text-label-primary font-medium text-tertiary hover:text-on-surface transition-all duration-200" data-target="tab-debit" type="button">
+<span class="material-symbols-outlined text-[20px]">credit_card</span>
+<span>Debit Card</span>
+</button>
+<button class="tab-btn flex-1 min-w-[120px] flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-label-primary text-label-primary font-medium text-tertiary hover:text-on-surface transition-all duration-200" data-target="tab-credit" type="button">
+<span class="material-symbols-outlined text-[20px]">credit_card_heart</span>
+<span>Credit Card</span>
+</button>
+<button class="tab-btn flex-1 min-w-[120px] flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-label-primary text-label-primary font-medium text-tertiary hover:text-on-surface transition-all duration-200" data-target="tab-netbanking" type="button">
+<span class="material-symbols-outlined text-[20px]">account_balance</span>
+<span>Net Banking</span>
+</button>
+</div>
+<!-- TAB 1: UPI & QR Code (Active) -->
+<div class="tab-pane flex flex-col space-y-8" id="tab-upi">
+<!-- Dynamic QR Code Card -->
+<div class="p-6 md:p-8 rounded-3xl bg-surface-container-lowest/70 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9)] flex flex-col md:flex-row items-center gap-8">
+<!-- Clean SVG QR Code Container -->
+<div class="relative group flex-shrink-0">
+<div class="w-52 h-52 rounded-2xl bg-surface-container-lowest p-4 shadow-[0_12px_32px_rgba(0,83,205,0.12)] flex flex-col items-center justify-center relative overflow-hidden transition-transform duration-300 group-hover:scale-[1.02]">
+<!-- Authentic High Resolution Vector QR Construction -->
+<svg class="w-full h-full text-on-surface" fill="none" viewbox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+<!-- Top-Left Finder -->
+<rect fill="currentColor" height="40" rx="6" width="40" x="10" y="10"></rect>
+<rect fill="#ffffff" height="24" rx="3" width="24" x="18" y="18"></rect>
+<rect fill="currentColor" height="12" rx="2" width="12" x="24" y="24"></rect>
+<!-- Top-Right Finder -->
+<rect fill="currentColor" height="40" rx="6" width="40" x="110" y="10"></rect>
+<rect fill="#ffffff" height="24" rx="3" width="24" x="118" y="18"></rect>
+<rect fill="currentColor" height="12" rx="2" width="12" x="124" y="24"></rect>
+<!-- Bottom-Left Finder -->
+<rect fill="currentColor" height="40" rx="6" width="40" x="10" y="110"></rect>
+<rect fill="#ffffff" height="24" rx="3" width="24" x="18" y="118"></rect>
+<rect fill="currentColor" height="12" rx="2" width="12" x="24" y="124"></rect>
+<!-- QR Micro Grid Patterns (Simulated dynamic hash) -->
+<!-- Top middle cluster -->
+<rect fill="currentColor" height="8" rx="1.5" width="8" x="58" y="14"></rect>
+<rect fill="currentColor" height="8" rx="1.5" width="8" x="72" y="14"></rect>
+<rect fill="currentColor" height="8" rx="1.5" width="12" x="88" y="14"></rect>
+<rect fill="currentColor" height="8" rx="1.5" width="16" x="58" y="28"></rect>
+<rect fill="currentColor" height="14" rx="1.5" width="8" x="80" y="28"></rect>
+<rect fill="currentColor" height="6" rx="1" width="6" x="94" y="32"></rect>
+<!-- Timing Tracks -->
+<rect fill="currentColor" height="4" width="4" x="54" y="24"></rect>
+<rect fill="currentColor" height="4" width="4" x="54" y="32"></rect>
+<rect fill="currentColor" height="4" width="4" x="54" y="40"></rect>
+<rect fill="currentColor" height="4" width="4" x="24" y="54"></rect>
+<rect fill="currentColor" height="4" width="4" x="32" y="54"></rect>
+<rect fill="currentColor" height="4" width="4" x="40" y="54"></rect>
+<!-- Center Body -->
+<rect fill="currentColor" height="14" rx="2" width="14" x="62" y="54"></rect>
+<rect fill="currentColor" height="18" rx="1.5" width="8" x="84" y="50"></rect>
+<rect fill="currentColor" height="8" rx="1.5" width="14" x="98" y="54"></rect>
+<rect fill="currentColor" height="8" rx="1.5" width="18" x="120" y="56"></rect>
+<rect fill="currentColor" height="14" rx="1.5" width="8" x="144" y="60"></rect>
+<rect fill="currentColor" height="8" rx="1.5" width="10" x="14" y="68"></rect>
+<rect fill="currentColor" height="8" rx="1.5" width="14" x="32" y="70"></rect>
+<rect fill="currentColor" height="12" rx="1.5" width="10" x="52" y="74"></rect>
+<rect fill="currentColor" height="12" rx="2" width="20" x="70" y="74"></rect>
+<rect fill="currentColor" height="14" rx="2" width="16" x="96" y="68"></rect>
+<rect fill="currentColor" height="8" rx="1.5" width="14" x="118" y="72"></rect>
+<!-- Bottom Right and Middle Low -->
+<rect fill="currentColor" height="8" rx="1.5" width="14" x="56" y="94"></rect>
+<rect fill="currentColor" height="16" rx="1.5" width="10" x="76" y="92"></rect>
+<rect fill="currentColor" height="8" rx="1.5" width="14" x="92" y="90"></rect>
+<rect fill="currentColor" height="10" rx="1.5" width="22" x="112" y="90"></rect>
+<rect fill="currentColor" height="16" rx="1.5" width="12" x="140" y="82"></rect>
+<rect fill="currentColor" height="10" rx="1.5" width="18" x="58" y="112"></rect>
+<rect fill="currentColor" height="8" rx="1.5" width="10" x="82" y="114"></rect>
+<rect fill="currentColor" height="20" rx="1.5" width="8" x="98" y="106"></rect>
+<rect fill="currentColor" height="10" rx="1.5" width="16" x="112" y="108"></rect>
+<rect fill="currentColor" height="18" rx="2" width="16" x="134" y="112"></rect>
+<rect fill="currentColor" height="16" rx="1.5" width="10" x="58" y="130"></rect>
+<rect fill="currentColor" height="10" rx="1.5" width="18" x="74" y="130"></rect>
+<rect fill="currentColor" height="12" rx="2" width="24" x="98" y="134"></rect>
+<rect fill="currentColor" height="10" rx="1.5" width="14" x="128" y="138"></rect>
+<!-- Center Badge Icon -->
+<circle cx="80" cy="80" fill="#0053cd" r="14"></circle>
+<path d="M74 80L78 84L86 76" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+<div class="absolute bottom-1 text-[9px] font-semibold text-outline uppercase tracking-wider">Kannur City Police</div>
+</div>
+<!-- Animated scan radar bar -->
+<div class="absolute top-2 left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-75 animate-[pulse_2s_infinite]"></div>
+</div>
+<!-- QR Instructions & Countdowns -->
+<div class="flex-1 space-y-4 text-center md:text-left">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/60 text-on-secondary-container font-label-meta text-label-meta font-medium">
+<span class="material-symbols-outlined text-[16px] text-primary animate-spin">schedule</span>
+<span>QR active for <strong class="text-primary font-bold" id="countdown">09:42 mins</strong></span>
+</div>
+<div>
+<h3 class="font-headline-card text-headline-card font-bold text-on-surface">Scan with any UPI App</h3>
+<p class="font-body-default text-body-default text-tertiary mt-1">Open your preferred banking application and point camera at the screen.</p>
+</div>
+<!-- Supported Apps Pills -->
+<div class="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-1">
+<span class="px-3 py-1.5 rounded-full bg-surface-container-lowest/80 text-on-surface font-label-meta text-label-meta font-medium shadow-sm">Google Pay</span>
+<span class="px-3 py-1.5 rounded-full bg-surface-container-lowest/80 text-on-surface font-label-meta text-label-meta font-medium shadow-sm">PhonePe</span>
+<span class="px-3 py-1.5 rounded-full bg-surface-container-lowest/80 text-on-surface font-label-meta text-label-meta font-medium shadow-sm">Paytm</span>
+<span class="px-3 py-1.5 rounded-full bg-surface-container-lowest/80 text-on-surface font-label-meta text-label-meta font-medium shadow-sm">BHIM UPI</span>
+</div>
+</div>
+</div>
+<!-- Divider with subtle text -->
+<div class="relative flex items-center justify-center py-2">
+<div class="w-full h-px bg-outline-variant/30"></div>
+<span class="absolute px-4 bg-surface-container-lowest/80 backdrop-blur-md rounded-full font-label-meta text-label-meta text-tertiary font-semibold uppercase tracking-wider">Or Pay via VPA ID</span>
+</div>
+<!-- UPI ID / VPA Input Section -->
+<div class="space-y-2">
+<label class="block font-label-primary text-label-primary font-medium text-on-surface" for="vpa-field">
+                Enter UPI ID / Virtual Payment Address
+              </label>
+<div class="relative flex items-center">
+<input class="w-full h-14 pl-12 pr-36 rounded-2xl bg-surface-container-lowest/70 backdrop-blur-md text-on-surface placeholder:text-outline/70 font-body-default text-body-default focus:outline-none focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]" id="vpa-field" placeholder="e.g., officer@oksbi or 9447000000@paytm" type="text"/>
+<span class="material-symbols-outlined absolute left-4 text-tertiary pointer-events-none text-[22px]">alternate_email</span>
+<button class="absolute right-2 px-5 py-2.5 rounded-xl bg-secondary-container text-on-secondary-container hover:bg-primary hover:text-on-primary font-label-meta text-label-meta font-semibold transition-all shadow-sm" id="verify-vpa-btn" type="button">
+                  Verify &amp; Pay
+                </button>
+</div>
+<p class="font-caption text-caption text-tertiary flex items-center gap-1.5 pt-1">
+<span class="material-symbols-outlined text-[14px] text-primary">info</span>
+                A collect request will be sent directly to your registered UPI smartphone app.
+              </p>
+</div>
+<!-- Official Processing Directive Note -->
+<div class="p-4 rounded-2xl bg-surface-container-low/50 flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px] flex-shrink-0 mt-0.5">verified_user</span>
+<p class="font-caption text-caption text-tertiary leading-relaxed">
+                Transaction reference will be automatically linked to your <strong>KCP Sports ID #KCP-ATH-2024-5492</strong>. Official electronic receipt and printable barcode gate pass will be generated upon instantaneous success confirmation.
+              </p>
+</div>
+</div>
+<!-- TAB 2: Debit Card (Inactive mock state) -->
+<div class="tab-pane hidden flex flex-col space-y-5" id="tab-debit">
+<div class="space-y-4">
+<div>
+<label class="block font-label-primary text-label-primary font-medium text-on-surface mb-1">Cardholder Name</label>
+<input class="w-full h-14 px-4 rounded-2xl bg-surface-container-lowest/70 text-on-surface font-body-default focus:ring-2 focus:ring-primary focus:outline-none" type="text" value="ANIL KUMAR"/>
+</div>
+<div>
+<label class="block font-label-primary text-label-primary font-medium text-on-surface mb-1">Debit Card Number</label>
+<input class="w-full h-14 px-4 rounded-2xl bg-surface-container-lowest/70 text-on-surface font-body-default focus:ring-2 focus:ring-primary focus:outline-none" placeholder="XXXX XXXX XXXX XXXX" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block font-label-primary text-label-primary font-medium text-on-surface mb-1">Expiry Date</label>
+<input class="w-full h-14 px-4 rounded-2xl bg-surface-container-lowest/70 text-on-surface font-body-default focus:ring-2 focus:ring-primary focus:outline-none" placeholder="MM / YY" type="text"/>
+</div>
+<div>
+<label class="block font-label-primary text-label-primary font-medium text-on-surface mb-1">CVV / CVC</label>
+<input class="w-full h-14 px-4 rounded-2xl bg-surface-container-lowest/70 text-on-surface font-body-default focus:ring-2 focus:ring-primary focus:outline-none" maxlength="3" placeholder="•••" type="password"/>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 3: Credit Card (Inactive mock state) -->
+<div class="tab-pane hidden flex flex-col space-y-5" id="tab-credit">
+<div class="space-y-4">
+<div>
+<label class="block font-label-primary text-label-primary font-medium text-on-surface mb-1">Cardholder Name</label>
+<input class="w-full h-14 px-4 rounded-2xl bg-surface-container-lowest/70 text-on-surface font-body-default focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Name as embossed on credit card" type="text"/>
+</div>
+<div>
+<label class="block font-label-primary text-label-primary font-medium text-on-surface mb-1">Credit Card Number</label>
+<input class="w-full h-14 px-4 rounded-2xl bg-surface-container-lowest/70 text-on-surface font-body-default focus:ring-2 focus:ring-primary focus:outline-none" placeholder="4111 •••• •••• ••••" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block font-label-primary text-label-primary font-medium text-on-surface mb-1">Expiry Date</label>
+<input class="w-full h-14 px-4 rounded-2xl bg-surface-container-lowest/70 text-on-surface font-body-default focus:ring-2 focus:ring-primary focus:outline-none" placeholder="MM / YY" type="text"/>
+</div>
+<div>
+<label class="block font-label-primary text-label-primary font-medium text-on-surface mb-1">CVV</label>
+<input class="w-full h-14 px-4 rounded-2xl bg-surface-container-lowest/70 text-on-surface font-body-default focus:ring-2 focus:ring-primary focus:outline-none" maxlength="4" placeholder="•••" type="password"/>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 4: Net Banking (Inactive mock state) -->
+<div class="tab-pane hidden flex flex-col space-y-4" id="tab-netbanking">
+<p class="font-body-default text-body-default text-tertiary">Select official authorized government depository partner bank:</p>
+<div class="grid grid-cols-2 gap-3">
+<button class="p-4 rounded-2xl bg-surface-container-lowest/70 text-left hover:border-primary transition-all flex items-center justify-between" type="button">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">State Bank of India</span>
+<span class="material-symbols-outlined text-primary text-[20px]">account_balance</span>
+</button>
+<button class="p-4 rounded-2xl bg-surface-container-lowest/70 text-left hover:border-primary transition-all flex items-center justify-between" type="button">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Canara Bank</span>
+<span class="material-symbols-outlined text-primary text-[20px]">account_balance</span>
+</button>
+<button class="p-4 rounded-2xl bg-surface-container-lowest/70 text-left hover:border-primary transition-all flex items-center justify-between" type="button">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Federal Bank</span>
+<span class="material-symbols-outlined text-primary text-[20px]">account_balance</span>
+</button>
+<button class="p-4 rounded-2xl bg-surface-container-lowest/70 text-left hover:border-primary transition-all flex items-center justify-between" type="button">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Kerala Gramin Bank</span>
+<span class="material-symbols-outlined text-primary text-[20px]">account_balance</span>
+</button>
+</div>
+</div>
+<!-- Primary Actions Footer (Matches Style Guidance) -->
+<div class="pt-8 mt-6 flex flex-col-reverse sm:flex-row items-center gap-4">
+<!-- Glassmorphic Cancel Action -->
+<button class="w-full sm:w-auto px-8 h-14 rounded-[22px] bg-surface-container-lowest/60 hover:bg-surface-container-lowest/90 text-on-surface font-label-primary text-label-primary font-semibold transition-all duration-200 active:scale-[0.985] text-center" type="button">
+              Cancel
+            </button>
+<!-- Primary Blue Payment Trigger -->
+<button class="flex-1 w-full h-14 rounded-[22px] bg-primary text-on-primary hover:bg-primary-container font-body-medium text-body-medium font-semibold flex items-center justify-center gap-2 shadow-[0_8px_24px_rgba(0,83,205,0.28)] hover:shadow-[0_12px_28px_rgba(0,83,205,0.36)] hover:-translate-y-0.5 active:scale-[0.985] transition-all duration-200" id="submit-payment-btn" type="button">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+<span>Pay Securely ₹885.00</span>
+</button>
+</div>
+</div>
+<!-- Additional Security Guarantee Footer Strip -->
+<div class="flex items-center justify-between px-6 py-2 text-tertiary">
+<div class="flex items-center gap-2 font-caption text-caption">
+<span class="material-symbols-outlined text-[16px] text-outline">account_balance_wallet</span>
+<span>Electronic Challan generated under Section 43B IT Act</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-caption text-caption text-outline">Portal Version 4.12.8</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+    (function initPaymentPortal() {
+      // Tab switcher handling
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const tabPanes = document.querySelectorAll('.tab-pane');
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-target');
+          
+          // Style resets
+          tabBtns.forEach(b => {
+            b.classList.remove('bg-primary', 'text-on-primary', 'shadow-[0_4px_14px_rgba(0,83,205,0.24)]');
+            b.classList.add('text-tertiary');
+          });
+
+          // Style active
+          btn.classList.add('bg-primary', 'text-on-primary', 'shadow-[0_4px_14px_rgba(0,83,205,0.24)]');
+          btn.classList.remove('text-tertiary');
+
+          // Show correct pane
+          tabPanes.forEach(pane => {
+            if (pane.id === targetId) {
+              pane.classList.remove('hidden');
+            } else {
+              pane.classList.add('hidden');
+            }
+          });
+        });
+      });
+
+      // Countdown Timer for QR Validity
+      let remainingSeconds = 9 * 60 + 42;
+      const countdownEl = document.getElementById('countdown');
+
+      const timerInterval = setInterval(() => {
+        if (remainingSeconds <= 0) {
+          clearInterval(timerInterval);
+          if (countdownEl) countdownEl.textContent = 'Expired. Refresh QR.';
+          return;
+        }
+        remainingSeconds--;
+        const mins = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
+        const secs = String(remainingSeconds % 60).padStart(2, '0');
+        if (countdownEl) {
+          countdownEl.textContent = `${mins}:${secs} mins`;
+        }
+      }, 1000);
+
+      // Verify VPA button interactive feedback
+      const verifyBtn = document.getElementById('verify-vpa-btn');
+      const vpaField = document.getElementById('vpa-field');
+      const mainPayBtn = document.getElementById('submit-payment-btn');
+
+      if (verifyBtn && vpaField) {
+        verifyBtn.addEventListener('click', () => {
+          const val = vpaField.value.trim();
+          if (!val || !val.includes('@')) {
+            vpaField.classList.add('ring-2', 'ring-error');
+            setTimeout(() => vpaField.classList.remove('ring-2', 'ring-error'), 2500);
+            return;
+          }
+          verifyBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span> Verifying';
+          setTimeout(() => {
+            verifyBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">check</span> Verified';
+            verifyBtn.classList.remove('bg-secondary-container');
+            verifyBtn.classList.add('bg-primary', 'text-on-primary');
+          }, 800);
+        });
+      }
+
+      if (mainPayBtn) {
+        mainPayBtn.addEventListener('click', () => {
+          mainPayBtn.innerHTML = '<span class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span> Authenticating Treasury Node...';
+          setTimeout(() => {
+            mainPayBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">check_circle</span> Payment Sanctioned!';
+            mainPayBtn.classList.remove('bg-primary');
+            mainPayBtn.classList.add('bg-secondary');
+          }, 1400);
+        });
+      }
+    })();
+  </script>
+</div></main><footer class="w-full bg-transparent py-space-lg mt-auto"><div class="max-w-[1200px] mx-auto px-6 md:px-12 flex justify-center items-center"><p class="font-label-meta text-label-meta text-tertiary text-center">Kannur City Police</p></div></footer></body></html>

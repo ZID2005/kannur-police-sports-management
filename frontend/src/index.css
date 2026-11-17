@@ -1,0 +1,178 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+ * Kannur City Police — "Liquid Glass" design system
+ * Source: Designs/_extracted/(archive)/kannur_police_sports_portal/DESIGN.md
+ * ------------------------------------------------------------------ */
+
+@layer base {
+  * {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', sans-serif;
+    box-sizing: border-box;
+  }
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    background-color: #f7f9fc;
+    color: #111418;
+    overflow-x: hidden;
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: #dbeafe;
+    color: #1e3a8a;
+  }
+}
+
+@layer components {
+  /* Material Symbols (admin & membership screens) */
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .material-symbols-outlined.filled {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+
+  /* Level 2 — Liquid glass main card / header */
+  .liquid-glass {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 20px 40px -15px rgba(31, 111, 255, 0.07), 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+  }
+  .liquid-glass-bar {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+  }
+  .liquid-glass-strip {
+    background: rgba(244, 248, 255, 0.78);
+    backdrop-filter: blur(32px) saturate(140%);
+    -webkit-backdrop-filter: blur(32px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.1);
+  }
+  .glass-circle {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 20px 40px rgba(31, 111, 255, 0.08), inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+  }
+  /* Level 3 — modals / flyouts */
+  .glass-modal {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(50px);
+    -webkit-backdrop-filter: blur(50px);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 30px 60px rgba(31, 111, 255, 0.12), 0 4px 12px rgba(17, 20, 24, 0.04), inset 0 1px 1px 0 #ffffff;
+  }
+  /* Level 1 — inset wells / input trays */
+  .glass-well {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+  /* Gate scanner header */
+  .glass-nav {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  }
+
+  /* Form primitives */
+  .glass-input {
+    height: 56px;
+    width: 100%;
+    padding: 0 20px;
+    border-radius: 20px;
+    font-size: 17px;
+    color: #111418;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    outline: none;
+    transition: all 150ms ease;
+  }
+  .glass-input::placeholder {
+    color: #9ca3af;
+  }
+  .glass-input:focus {
+    border-color: #1f6fff;
+    box-shadow: 0 0 0 4px rgba(31, 111, 255, 0.15);
+    background: rgba(255, 255, 255, 0.85);
+  }
+  .glass-input.is-error {
+    border-color: #e5484d;
+  }
+  .glass-input.is-error:focus {
+    box-shadow: 0 0 0 4px rgba(229, 72, 77, 0.15);
+  }
+
+  .btn-primary {
+    height: 56px;
+    border-radius: 22px;
+    background: #1f6fff;
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(31, 111, 255, 0.28), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(31, 111, 255, 0.35);
+  }
+  .btn-primary:active {
+    transform: scale(0.985);
+  }
+  .btn-glass {
+    height: 56px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    color: #111418;
+    font-size: 17px;
+    font-weight: 600;
+    transition: background 150ms ease;
+  }
+  .btn-glass:hover {
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

@@ -1,0 +1,248 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Kannur City Police - Menu</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+    * {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #EBF0F7;
+      color: #111418;
+      overflow-x: hidden;
+    }
+    .frosted-strip {
+      background: rgba(244, 248, 255, 0.78);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+    }
+    .sliding-glass-sheet {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(36px);
+      -webkit-backdrop-filter: blur(36px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 24px 48px -12px rgba(15, 35, 75, 0.16), 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+    .frosted-btn {
+      background: rgba(242, 245, 250, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#E5ECF6] relative flex justify-center selection:bg-blue-100 selection:text-blue-900 p-0 sm:py-6">
+<!-- Mobile Frame (390 x 844) -->
+<div class="w-full max-w-[390px] min-h-[844px] h-[844px] bg-[#F4F7FC] relative overflow-hidden shadow-2xl flex flex-col mx-auto sm:rounded-[44px] sm:border sm:border-black/10">
+<!-- Glowing Background Lighting Orbs -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+<div class="absolute -top-[50px] -right-[50px] w-[280px] h-[280px] rounded-full bg-[#BFD9FF] opacity-65 blur-[85px]"></div>
+<div class="absolute top-[38%] -left-[70px] w-[260px] h-[260px] rounded-full bg-[#C9DCFF] opacity-55 blur-[85px]"></div>
+<div class="absolute -bottom-[50px] right-[10%] w-[270px] h-[270px] rounded-full bg-[#DAEBFF] opacity-75 blur-[95px]"></div>
+</div>
+<!-- 1. Dimmed and Blurred Backdrop (Default Frame + Header + Facility Cards) -->
+<div class="absolute inset-0 z-[5] filter blur-[6px] opacity-45 pointer-events-none select-none flex flex-col justify-between overflow-hidden"><!-- Mobile Header Underneath -->
+<div class="w-full h-14 px-5 flex items-center justify-between border-b border-black/[0.06] bg-white/60">
+  <div class="flex items-center gap-2.5">
+    <div class="w-8 h-8 rounded-xl bg-[#0053CD] flex items-center justify-center text-white shadow-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </div>
+    <div>
+      <div class="text-[13px] font-bold text-[#191C20] leading-tight">Kannur City Police</div>
+      <div class="text-[11px] text-[#476080]">Sports Facility Portal</div>
+    </div>
+  </div>
+  <div class="w-9 h-9 rounded-full bg-white/80 border border-white flex items-center justify-center text-[#191C20]">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+  </div>
+</div>
+
+<!-- Mobile Home Main Scrollable Content Underneath -->
+<div class="p-5 flex-1 flex flex-col gap-4 overflow-hidden">
+  <!-- Greeting Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-[20px] font-bold text-[#191C20] leading-tight">Good morning Anil Kumar</h1>
+      <p class="text-[12px] text-[#476080]">Explore and book available sports facilities</p>
+    </div>
+  </div>
+
+  <!-- Hero Featured Card: Synthetic Track with cool frosted white-blue strip -->
+  <div class="h-44 rounded-[26px] bg-gradient-to-tr from-slate-300 via-slate-200 to-blue-200 relative overflow-hidden shadow-sm">
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCkVK9gwpFD5q9OICuCRttssJnOhRAPpLdW1XxGZUEVkTUN8h_9gETKBIwLE803vXbc9yhWG3R2sI2-cFx5R0W1QiAj2LF0scgaEIJBxgvQqHLwmlK937YOSK_o9RJ-8rMZbGc_YD9wPQbVQydumiAPVNAfFD2RFLzQcmnB1rlQwSo0MIWGMPkxCrmdsn1t5QJSVT0PDdQnGtdBxP126pbPZ21rYeGogOIRy6yIOuU');"></div>
+    <div class="absolute bottom-3 left-3 right-3 h-14 rounded-2xl frosted-strip px-3.5 flex items-center justify-between shadow-sm">
+      <div>
+        <div class="text-[14px] font-bold text-[#191C20]">Synthetic Track</div>
+        <div class="text-[11px] text-[#476080]">Main Stadium • 8 Lanes</div>
+      </div>
+      <span class="text-[12px] font-semibold text-[#0053CD] bg-blue-50 px-2.5 py-0.5 rounded-full">Available</span>
+    </div>
+  </div>
+
+  <!-- 2-Column Facility Cards (Football Ground reading 'Book by the hour') -->
+  <div class="grid grid-cols-2 gap-3">
+    <!-- Facility 1: Football Ground -->
+    <div class="p-3.5 rounded-2xl bg-white/80 border border-white flex flex-col justify-between shadow-sm h-32">
+      <div>
+        <div class="w-7 h-7 rounded-lg bg-[#0053CD]/10 text-[#0053CD] flex items-center justify-center mb-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2a14.5 14.5 0 000 20M2 12h20"></path>
+          </svg>
+        </div>
+        <div class="text-[13px] font-bold text-[#191C20]">Football Ground</div>
+        <div class="text-[11px] text-[#476080]">Natural Grass Pitch</div>
+      </div>
+      <div class="text-[11px] font-medium text-[#0053CD]">Book by the hour</div>
+    </div>
+
+    <!-- Facility 2: Badminton Court -->
+    <div class="p-3.5 rounded-2xl bg-white/80 border border-white flex flex-col justify-between shadow-sm h-32">
+      <div>
+        <div class="w-7 h-7 rounded-lg bg-[#0053CD]/10 text-[#0053CD] flex items-center justify-center mb-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M18 6L6 18M6 6l12 12"></path>
+          </svg>
+        </div>
+        <div class="text-[13px] font-bold text-[#191C20]">Badminton Court</div>
+        <div class="text-[11px] text-[#476080]">Indoor Wooden Court</div>
+      </div>
+      <div class="text-[11px] font-medium text-[#0053CD]">2 slots open</div>
+    </div>
+  </div>
+
+  <!-- Your Activity Card -->
+  <div class="p-3.5 rounded-2xl bg-white/80 border border-white flex items-center justify-between shadow-sm">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-blue-50 text-[#0053CD] flex items-center justify-center font-bold text-[13px]">1</div>
+      <div>
+        <div class="text-[13px] font-bold text-[#191C20]">Your activity</div>
+        <div class="text-[11px] text-[#476080]">1 active booking today</div>
+      </div>
+    </div>
+    <div class="text-[12px] font-semibold text-[#0053CD]">View</div>
+  </div>
+</div>
+
+<!-- Background Footer -->
+<div class="pb-4 pt-2 text-center">
+  <p class="text-[11px] text-[#476080] font-normal tracking-wide">Kannur City Police Sports Council</p>
+</div></div>
+<!-- Soft Dark Dim Backdrop Overlay -->
+<div class="absolute inset-0 z-10 bg-slate-900/25 backdrop-blur-[5px]"></div>
+<!-- 2. Sliding Glass Sheet from Top (White/Translucent Rounded Bottom, Backdrop Blur) -->
+<aside class="relative z-50 w-full rounded-b-[34px] sliding-glass-sheet px-6 pt-5 pb-7 flex flex-col gap-1.5 transition">
+<!-- Top Row: Top-right Circular Frosted Close Button with Thin Outline 'X' (SVG) -->
+<div class="flex items-center justify-end pb-2">
+<button aria-label="Close" class="w-10 h-10 rounded-full frosted-btn hover:bg-white active:scale-95 flex items-center justify-center text-[#191C20] transition shadow-sm" type="button">
+<svg class="w-4 h-4 text-[#191C20]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<!-- Navigation Rows -->
+<nav class="flex flex-col gap-1">
+<!-- a. "Home" row (Selected/Active) -->
+<a class="h-12 px-3.5 rounded-2xl bg-[#0053CD]/10 text-[#0053CD] flex items-center justify-between font-semibold text-[15px] transition" href="#">
+<div class="flex items-center gap-3">
+<svg class="w-5 h-5 text-[#0053CD]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M3 9.75L12 3l9 6.75V20.25A1.5 1.5 0 0119.5 21.75h-4.5v-6h-6v6H4.5A1.5 1.5 0 013 20.25V9.75z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Home</span>
+</div>
+<!-- Blue-tinted capsule with a blue thin check SVG icon -->
+<div class="w-7 h-7 rounded-full bg-[#0053CD]/15 flex items-center justify-center">
+<svg class="w-4 h-4 text-[#0053CD]" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+<path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</a>
+<!-- b. "Bookings" row -->
+<a class="h-12 px-3.5 rounded-2xl text-[#191C20] hover:bg-black/[0.03] active:bg-black/[0.06] flex items-center justify-between font-medium text-[15px] transition" href="#">
+<div class="flex items-center gap-3">
+<svg class="w-5 h-5 text-[#476080]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M6.75 3v2.25M17.25 3v2.25M3 8.25h18M4.5 5.25h15A1.5 1.5 0 0121 6.75v13.5A1.5 1.5 0 0119.5 21.75h-15A1.5 1.5 0 013 20.25V6.75A1.5 1.5 0 014.5 5.25z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Bookings</span>
+</div>
+</a>
+<!-- c. "Membership" row -->
+<a class="h-12 px-3.5 rounded-2xl text-[#191C20] hover:bg-black/[0.03] active:bg-black/[0.06] flex items-center justify-between font-medium text-[15px] transition" href="#">
+<div class="flex items-center gap-3">
+<svg class="w-5 h-5 text-[#476080]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15A2.25 2.25 0 002.25 6.75v10.5A2.25 2.25 0 004.5 19.5zm6-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-3 6.75c0-1.657 1.343-3 3-3s3 1.343 3 3H7.5z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Membership</span>
+</div>
+</a>
+<!-- d. Thin subtle divider line -->
+<div class="my-1.5 border-t border-black/[0.07]"></div>
+<!-- e. "Terms and conditions" row -->
+<a class="h-12 px-3.5 rounded-2xl text-[#191C20] hover:bg-black/[0.03] active:bg-black/[0.06] flex items-center justify-between font-medium text-[15px] transition" href="#">
+<div class="flex items-center gap-3">
+<svg class="w-5 h-5 text-[#476080]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Terms and conditions</span>
+</div>
+<svg class="w-4 h-4 text-[#727787]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<!-- f. "Privacy notice" row -->
+<a class="h-12 px-3.5 rounded-2xl text-[#191C20] hover:bg-black/[0.03] active:bg-black/[0.06] flex items-center justify-between font-medium text-[15px] transition" href="#">
+<div class="flex items-center gap-3">
+<svg class="w-5 h-5 text-[#476080]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Privacy notice</span>
+</div>
+<svg class="w-4 h-4 text-[#727787]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<!-- g. "Portal Language" row -->
+<div class="h-12 px-3.5 rounded-2xl flex items-center justify-between font-medium text-[15px]">
+<div class="flex items-center gap-3 text-[#191C20]">
+<svg class="w-5 h-5 text-[#476080]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Portal Language</span>
+</div>
+<!-- Neat pill toggle showing EN (active solid blue) and Malayalam -->
+<div class="bg-black/[0.04] p-0.5 rounded-full flex items-center border border-black/[0.06]">
+<button class="bg-[#0053CD] text-white text-[12px] font-semibold px-2.5 py-1 rounded-full shadow-sm" type="button">EN</button>
+<button class="text-[#476080] hover:text-[#191C20] text-[12px] font-medium px-2.5 py-1 rounded-full" type="button">മലയാളം</button>
+</div>
+</div>
+<!-- h. Thin subtle divider line -->
+<div class="my-1.5 border-t border-black/[0.07]"></div>
+<!-- i. "Log out" row (Red #E5484D) -->
+<button class="h-12 px-3.5 rounded-2xl text-[#E5484D] hover:bg-red-50/60 active:bg-red-100/60 flex items-center justify-between font-medium text-[15px] transition text-left w-full" type="button">
+<div class="flex items-center gap-3">
+<svg class="w-5 h-5 text-[#E5484D]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[#E5484D] font-medium">Log out</span>
+</div>
+</button>
+</nav>
+</aside>
+<!-- Bottom Signature -->
+<div class="mt-auto pb-4 pt-2 text-center pointer-events-none select-none z-10 opacity-35">
+<p class="text-[11px] text-[#476080] font-normal tracking-wide">Kannur City Police</p>
+</div>
+</div>
+
+
+</body></html>

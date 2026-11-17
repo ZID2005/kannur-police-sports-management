@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-container-highest":"#e1e2e8","on-secondary":"#ffffff","tertiary":"#4f5d6e","primary":"#0053cd","tertiary-fixed":"#d5e4f8","primary-container":"#166bfb","surface-bright":"#f8f9ff","on-tertiary-fixed":"#0e1d2b","primary-fixed":"#dae2ff","on-error-container":"#93000a","inverse-on-surface":"#eff0f6","on-tertiary-container":"#fdfcff","on-secondary-fixed-variant":"#2f4867","tertiary-container":"#677687","surface-variant":"#e1e2e8","on-primary":"#ffffff","surface-container":"#eceef3","on-primary-fixed":"#001848","primary-fixed-dim":"#b2c5ff","on-tertiary-fixed-variant":"#3a4858","outline":"#727787","on-surface":"#191c20","inverse-surface":"#2e3135","secondary":"#476080","secondary-fixed-dim":"#afc8ee","surface-container-high":"#e6e8ee","secondary-container":"#bfd9ff","surface-dim":"#d8dadf","on-tertiary":"#ffffff","secondary-fixed":"#d2e4ff","on-error":"#ffffff","tertiary-fixed-dim":"#b9c8db","background":"#f8f9ff","inverse-primary":"#b2c5ff","error-container":"#ffdad6","surface-container-lowest":"#ffffff","on-secondary-container":"#465f7f","outline-variant":"#c2c6d8","surface-container-low":"#f2f3f9","on-secondary-fixed":"#001c38","surface-tint":"#0056d2","on-background":"#191c20","on-surface-variant":"#424655","on-primary-fixed-variant":"#0040a1","error":"#ba1a1a","surface":"#f8f9ff","on-primary-container":"#fefcff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-sm":"0.5rem","space-md":"1rem","space-lg":"1.5rem","space-xl":"2.5rem","margin-desktop":"2.5rem","gutter-desktop":"1.5rem","margin":"1.5rem","gutter":"1.5rem","space-xs":"0.25rem"},"fontFamily":{"title-portal":["Inter"],"label-meta":["Inter"],"body-medium":["Inter"],"caption":["Inter"],"headline-card":["Inter"],"title-portal-mobile":["Inter"],"label-primary":["Inter"],"body-default":["Inter"]},"fontSize":{"title-portal":["40px",{"lineHeight":"48px","letterSpacing":"-0.03em","fontWeight":"700"}],"label-meta":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"500"}],"body-medium":["17px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"500"}],"caption":["12px",{"lineHeight":"16px","letterSpacing":"0.01em","fontWeight":"400"}],"headline-card":["20px",{"lineHeight":"28px","letterSpacing":"-0.015em","fontWeight":"600"}],"title-portal-mobile":["30px",{"lineHeight":"36px","letterSpacing":"-0.025em","fontWeight":"700"}],"label-primary":["15px",{"lineHeight":"20px","letterSpacing":"-0.005em","fontWeight":"500"}],"body-default":["17px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"400"}]}}}}</script></head><body class="bg-surface font-body-default text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-margin-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-[0_4px_12px_rgba(0,83,205,0.24)]"><span class="material-symbols-outlined text-[24px]">local_police</span></div><div class="flex flex-col"><span class="font-headline-card text-headline-card text-on-surface tracking-tight leading-tight">Kannur City Police</span><span class="font-label-meta text-label-meta text-primary font-medium tracking-wide">Sports Administration Portal</span></div></div><div class="h-8 w-px bg-surface-container-high hidden xl:block"></div><nav class="hidden lg:flex items-center gap-space-xs p-1 bg-surface-container-low/60 rounded-xl" data-active-classes="bg-primary-container text-on-primary-container font-label-primary rounded-xl shadow-[0_4px_12px_rgba(22,107,251,0.2)]"><a aria-current="page" class="px-3.5 py-2 transition-all bg-primary-container text-on-primary-container font-label-primary rounded-xl shadow-[0_4px_12px_rgba(22,107,251,0.2)]" data-path="dashboard" href="#">Dashboard</a><a class="px-3.5 py-2 rounded-lg font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="memberships" href="#">Memberships</a><a class="px-3.5 py-2 rounded-lg font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="facilities-and-slots" href="#">Facilities & Slots</a><a class="px-3.5 py-2 rounded-lg font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="payments" href="#">Payments</a><a class="px-3.5 py-2 rounded-lg font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="gate-entries" href="#">Gate Entries</a><a class="px-3.5 py-2 rounded-lg font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="audit-log" href="#">Audit Log</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden 2xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-low"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span></span><span class="font-caption text-caption text-secondary font-medium">Turnstiles Connected • Gate 2 Active</span></div><div class="hidden sm:flex items-center px-2.5 py-1 rounded-lg bg-surface-container-low font-label-meta text-label-meta text-on-surface-variant gap-1.5"><span class="text-primary font-semibold">EN</span><span class="text-outline-variant">|</span><span class="hover:text-on-surface cursor-pointer">മലയാളം</span></div><button class="relative p-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-error ring-2 ring-surface"></span></button><div class="h-8 w-px bg-surface-container-high hidden md:block"></div><div class="flex items-center gap-space-sm pl-1"><div class="hidden md:flex flex-col text-right"><span class="font-label-primary text-label-primary text-on-surface font-semibold leading-tight">Insp. Rajeev K.</span><span class="font-caption text-caption text-secondary flex items-center justify-end gap-1"><span class="material-symbols-outlined text-[13px] text-primary">verified_user</span>Duty Officer - Kannur City</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full">
+<!-- Dynamic Atmospheric Underglow (ambient blue light) -->
+<div class="relative w-full overflow-hidden px-margin-desktop py-space-xl flex flex-col gap-space-xl">
+<!-- Top Decorative Ambient Glow -->
+<div class="absolute -top-32 left-1/3 w-[600px] h-[350px] bg-primary/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+<div class="absolute top-64 right-10 w-[400px] h-[250px] bg-secondary-container/30 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+<!-- 1. Header & Quick Controls -->
+<div class="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-space-lg">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-meta text-label-meta font-semibold shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            Shift Active • IST 11:42 AM
+          </span>
+<span class="inline-flex items-center gap-1 text-on-surface-variant font-label-meta text-label-meta">
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">badge</span>
+            Inspector Rajeev K. (PIN: 51209)
+          </span>
+</div>
+<div class="flex items-baseline gap-space-md mt-1">
+<h1 class="font-title-portal text-title-portal text-on-surface tracking-tight">Duty Command & Facility Operations</h1>
+<span class="hidden md:inline-block px-2.5 py-0.5 rounded bg-surface-container font-label-meta text-label-meta text-secondary font-medium">Kannur Armed Reserve Police Grounds</span>
+</div>
+<p class="font-body-default text-body-default text-on-surface-variant max-w-3xl">
+          Real-time surveillance of membership verifications, revenue tally, and biometric gate turnstile entries.
+        </p>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-wrap items-center gap-space-sm self-stretch xl:self-auto">
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-surface-container-lowest text-on-surface shadow-sm hover:bg-surface-container-low transition-all active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[20px] text-secondary">file_download</span>
+<span class="font-label-primary text-label-primary font-semibold">Export Manifest (CSV)</span>
+</button>
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-surface-container-highest text-on-surface shadow-sm hover:bg-surface-container transition-all active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[20px] text-error">lock_open</span>
+<span class="font-label-primary text-label-primary font-semibold">Gate Override</span>
+</button>
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-primary text-on-primary shadow-lg shadow-primary/25 hover:bg-primary-container transition-all active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[22px]">how_to_reg</span>
+<span class="font-label-primary text-label-primary font-bold">New Walk-in Registration</span>
+</button>
+</div>
+</div>
+<!-- 2. Key Metrics & Overview Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Card 1: Active Track Memberships -->
+<div class="relative overflow-hidden bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-meta text-label-meta uppercase tracking-wider text-secondary font-semibold">Active Track Members</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-[34px] font-bold text-on-surface leading-tight tracking-tight">242</span>
+<span class="font-headline-card text-headline-card text-outline font-normal">/ 300</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[26px]">sprint</span>
+</div>
+</div>
+<div class="mt-4 flex flex-col gap-2">
+<div class="flex justify-between items-center text-caption font-caption text-on-surface-variant">
+<span>80.6% Cap Utilized</span>
+<span class="font-semibold text-primary">58 Slots Open</span>
+</div>
+<div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 80.6%;"></div>
+</div>
+<div class="flex items-center gap-1.5 mt-1 font-caption text-caption text-secondary font-medium">
+<span class="material-symbols-outlined text-[15px] text-primary">trending_up</span>
+<span>+14 this week • 96% renewals</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Pending Applications -->
+<div class="relative overflow-hidden bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-meta text-label-meta uppercase tracking-wider text-secondary font-semibold">Pending Approval</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-[34px] font-bold text-on-surface leading-tight tracking-tight">18</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-caption text-caption font-semibold">
+                4 > 24h
+              </span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-xl bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[26px]">pending_actions</span>
+</div>
+</div>
+<div class="mt-4 flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-md bg-surface-container font-caption text-caption font-semibold text-on-surface">12 Govt / Police</span>
+<span class="px-2.5 py-1 rounded-md bg-surface-container font-caption text-caption font-semibold text-secondary">6 Public</span>
+</div>
+<a class="inline-flex items-center justify-between pt-1 font-label-meta text-label-meta text-primary font-semibold hover:underline" href="#applications-queue">
+<span>View Verification Queue</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Card 3: Today's Ground Bookings -->
+<div class="relative overflow-hidden bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-meta text-label-meta uppercase tracking-wider text-secondary font-semibold">Today's Bookings</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-[34px] font-bold text-on-surface leading-tight tracking-tight">14</span>
+<span class="font-headline-card text-headline-card text-outline font-normal">Slots</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[26px]">sports_soccer</span>
+</div>
+</div>
+<div class="mt-4 flex flex-col gap-2">
+<div class="flex items-center justify-between font-caption text-caption text-on-surface-variant font-medium">
+<span>8 Turf</span>
+<span>•</span>
+<span>4 Badminton</span>
+<span>•</span>
+<span>2 Police Drill</span>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-surface-container-low text-on-surface">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+<span class="font-caption text-caption font-medium truncate">Next: 12:30 PM (Turf #1 - KP XI)</span>
+</div>
+</div>
+</div>
+<!-- Card 4: Today's Online Collections -->
+<div class="relative overflow-hidden bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-meta text-label-meta uppercase tracking-wider text-secondary font-semibold">Today's Collections</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="text-[34px] font-bold text-primary leading-tight tracking-tight">₹42,850</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[26px]">account_balance</span>
+</div>
+</div>
+<div class="mt-4 flex flex-col gap-1.5">
+<div class="flex justify-between font-caption text-caption text-on-surface-variant">
+<span>₹26.5k Track Passes</span>
+<span>₹16.3k Turf Slots</span>
+</div>
+<div class="flex items-center justify-between font-caption text-caption pt-1 text-on-surface-variant">
+<span class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+              K-Challan Treasury
+            </span>
+<span class="text-outline font-medium">Vault Synced</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Live Operations & Action Panels (Two Columns) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT COLUMN: Recent Membership Applications (7 Cols) -->
+<section class="lg:col-span-7 bg-surface-container-lowest rounded-3xl p-space-lg shadow-sm flex flex-col gap-space-md" id="applications-queue">
+<!-- Header & Filter Row -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">assignment_turned_in</span>
+</div>
+<h2 class="font-headline-card text-headline-card text-on-surface font-semibold tracking-tight">Membership Verification Queue</h2>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-caption text-caption font-bold">18 Action Items</span>
+</div>
+</div>
+<!-- Search & Filter Chips -->
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-space-sm pt-2">
+<!-- Search Bar -->
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+<input class="w-full h-10 pl-10 pr-4 rounded-xl bg-surface-container-low font-label-meta text-label-meta text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container transition-all" placeholder="Search by PEN, Name, or Aadhaar ref..." type="text"/>
+</div>
+<!-- Quick Chips -->
+<div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+<button class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-label-meta text-label-meta font-medium whitespace-nowrap shadow-sm" type="button">All (18)</button>
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-label-meta text-label-meta font-medium whitespace-nowrap transition-colors" type="button">Police & Govt (12)</button>
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-label-meta text-label-meta font-medium whitespace-nowrap transition-colors" type="button">Public (6)</button>
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-label-meta text-label-meta font-medium whitespace-nowrap transition-colors" type="button">Medalists (3)</button>
+</div>
+</div>
+</div>
+<!-- High-density Application Records -->
+<div class="flex flex-col gap-space-sm divide-y divide-surface-container-low">
+<!-- Row 1 -->
+<div class="pt-space-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md p-space-sm rounded-xl hover:bg-surface-container-low/50 transition-colors">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed-dim text-primary flex items-center justify-center font-bold text-label-primary">
+                AK
+              </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Sub-Inspector Anil Kumar</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-caption text-caption text-secondary font-medium">PEN: 549210</span>
+</div>
+<div class="flex items-center gap-2 text-caption font-caption text-on-surface-variant mt-0.5">
+<span class="font-medium text-primary">Kerala Police (Govt)</span>
+<span>•</span>
+<span>Synthetic Track (3 Months)</span>
+<span>•</span>
+<span>Today 10:14 AM</span>
+</div>
+<div class="mt-1 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span class="font-caption text-caption font-semibold text-primary">Pending Final Approval</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 self-end sm:self-center">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-label-meta text-label-meta font-semibold hover:bg-surface-container-high transition-colors" type="button">
+                Review Dossier
+              </button>
+<button class="px-4 py-1.5 rounded-lg bg-primary text-on-primary font-label-meta text-label-meta font-bold shadow hover:bg-primary-container transition-all" type="button">
+                Approve
+              </button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="pt-space-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md p-space-sm rounded-xl hover:bg-surface-container-low/50 transition-colors">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center font-bold text-label-primary">
+                PM
+              </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Priya Mohan</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-caption text-caption text-secondary font-medium">Govt HS PD</span>
+</div>
+<div class="flex items-center gap-2 text-caption font-caption text-on-surface-variant mt-0.5">
+<span>Education Dept (Govt)</span>
+<span>•</span>
+<span>Synthetic Track (6 Months)</span>
+<span>•</span>
+<span>Today 09:30 AM</span>
+</div>
+<div class="mt-1 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-caption text-caption font-semibold text-secondary">Identity Cleared (SP Office)</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 self-end sm:self-center">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-label-meta text-label-meta font-semibold hover:bg-surface-container-high transition-colors" type="button">
+                Review
+              </button>
+<button class="px-4 py-1.5 rounded-lg bg-primary text-on-primary font-label-meta text-label-meta font-bold shadow hover:bg-primary-container transition-all" type="button">
+                Approve
+              </button>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="pt-space-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md p-space-sm rounded-xl hover:bg-surface-container-low/50 transition-colors">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold text-label-primary">
+                MH
+              </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Mohammed Haris</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-caption text-caption text-outline font-medium">Citizen Quota</span>
+</div>
+<div class="flex items-center gap-2 text-caption font-caption text-on-surface-variant mt-0.5">
+<span>General Public</span>
+<span>•</span>
+<span>Track (1 Month)</span>
+<span>•</span>
+<span>23 Nov, 04:15 PM</span>
+</div>
+<div class="mt-1 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+<span class="font-caption text-caption font-semibold text-error">Police Verification Form Pending</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 self-end sm:self-center">
+<button class="px-3.5 py-1.5 rounded-lg bg-surface-container-high text-on-surface font-label-meta text-label-meta font-semibold hover:bg-surface-container-highest transition-colors" type="button">
+                Verify Documents
+              </button>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="pt-space-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md p-space-sm rounded-xl hover:bg-surface-container-low/50 transition-colors">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-label-primary">
+                RV
+              </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Constable Rahul V.</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-caption text-caption text-secondary font-medium">Armed Reserve Camp</span>
+</div>
+<div class="flex items-center gap-2 text-caption font-caption text-on-surface-variant mt-0.5">
+<span class="font-medium text-primary">Kerala Police</span>
+<span>•</span>
+<span>Synthetic Track (12 Months)</span>
+<span>•</span>
+<span>23 Nov, 02:20 PM</span>
+</div>
+<div class="mt-1 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed-dim"></span>
+<span class="font-caption text-caption font-semibold text-secondary">Approved (Challan Gen: ₹1,200)</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 self-end sm:self-center">
+<button class="px-3.5 py-1.5 rounded-lg bg-surface-container text-on-surface font-label-meta text-label-meta font-semibold hover:bg-surface-container-high transition-colors" type="button">
+                View Challan
+              </button>
+</div>
+</div>
+<!-- Row 5 -->
+<div class="pt-space-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md p-space-sm rounded-xl hover:bg-surface-container-low/50 transition-colors">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-bold text-label-primary">
+                AK
+              </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Ananya K.</span>
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-caption text-caption font-semibold">State Medalist</span>
+</div>
+<div class="flex items-center gap-2 text-caption font-caption text-on-surface-variant mt-0.5">
+<span>Sports Quota (Subsidized)</span>
+<span>•</span>
+<span>Badminton & Track</span>
+<span>•</span>
+<span>23 Nov, 11:05 AM</span>
+</div>
+<div class="mt-1 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="font-caption text-caption font-semibold text-primary">Certificate Authenticated by DSO</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 self-end sm:self-center">
+<button class="px-4 py-1.5 rounded-lg bg-primary text-on-primary font-label-meta text-label-meta font-bold shadow hover:bg-primary-container transition-all" type="button">
+                Approve Pass
+              </button>
+</div>
+</div>
+</div>
+<!-- Table Sub-Footer -->
+<div class="pt-space-sm flex items-center justify-between border-t border-surface-container font-label-meta text-label-meta text-secondary">
+<span>Showing 5 of 18 pending applications</span>
+<div class="flex items-center gap-2">
+<button class="font-semibold text-primary hover:underline" type="button">Batch Select</button>
+<span class="text-outline-variant">•</span>
+<button class="font-semibold text-primary hover:underline" type="button">Full Registry</button>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN: Gate Entry & Turnstile Stream (5 Cols) -->
+<section class="lg:col-span-5 bg-surface-container-lowest rounded-3xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<!-- Turnstile Header -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+</span>
+<h2 class="font-headline-card text-headline-card text-on-surface font-semibold tracking-tight">Turnstile Stream</h2>
+</div>
+<span class="font-caption text-caption text-secondary font-medium">Pavilion Gate 2</span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant">Live biometric telemetry from entrance lanes & fields.</p>
+</div>
+<!-- Filter Pill Bar -->
+<div class="flex items-center p-1 rounded-xl bg-surface-container-low text-on-surface-variant font-label-meta text-label-meta">
+<button class="flex-1 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface font-semibold shadow-xs" type="button">All Gates</button>
+<button class="flex-1 py-1.5 rounded-lg hover:text-on-surface transition-colors" type="button">Gate 2 (Track)</button>
+<button class="flex-1 py-1.5 rounded-lg hover:text-on-surface transition-colors" type="button">Turf Turnstile</button>
+</div>
+<!-- Real-Time Activity Feed -->
+<div class="flex flex-col gap-space-sm">
+<!-- Event 1 (Just Now) -->
+<div class="p-3 rounded-2xl bg-surface-container-low flex items-start gap-3 transition-all hover:bg-surface-container">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<span class="font-label-primary text-label-primary font-bold text-on-surface truncate">SI Anil Kumar</span>
+<span class="font-caption text-caption text-primary font-semibold shrink-0">11:41 AM</span>
+</div>
+<span class="font-caption text-caption text-secondary">Pass #KCP-ATH-2024-5492 • Gate 2 Lane A</span>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-caption text-caption font-semibold">
+                  ACCESS GRANTED
+                </span>
+<span class="font-caption text-caption text-outline">Biometric QR</span>
+</div>
+</div>
+</div>
+<!-- Event 2 -->
+<div class="p-3 rounded-2xl bg-surface-container-low flex items-start gap-3 transition-all hover:bg-surface-container">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[18px]">contactless</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<span class="font-label-primary text-label-primary font-bold text-on-surface truncate">Rajesh C. (Turf Squad)</span>
+<span class="font-caption text-caption text-outline shrink-0">11:38 AM</span>
+</div>
+<span class="font-caption text-caption text-secondary">Police Turf North Turnstile</span>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-caption text-caption font-semibold">
+                  ACCESS GRANTED
+                </span>
+<span class="font-caption text-caption text-outline">RFID Tap</span>
+</div>
+</div>
+</div>
+<!-- Event 3 (Alert: Access Denied) -->
+<div class="p-3 rounded-2xl bg-error-container/40 flex items-start gap-3 transition-all">
+<div class="w-8 h-8 rounded-full bg-error flex items-center justify-center text-on-error shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[18px]">gpp_bad</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<span class="font-label-primary text-label-primary font-bold text-error truncate">Unregistered Tag #UNR-9921</span>
+<span class="font-caption text-caption text-error font-semibold shrink-0">11:32 AM</span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant">Gate 2 Lane B • Expired Pass #KCP-PUB-1102</span>
+<div class="flex items-center justify-between mt-1">
+<span class="px-2 py-0.5 rounded bg-error text-on-error font-caption text-caption font-bold">
+                  ACCESS DENIED
+                </span>
+<button class="text-caption font-caption text-error font-bold hover:underline" type="button">
+                  Alert Guard Intercom
+                </button>
+</div>
+</div>
+</div>
+<!-- Event 4 -->
+<div class="p-3 rounded-2xl bg-surface-container-low flex items-start gap-3 transition-all hover:bg-surface-container">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[18px]">face</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<span class="font-label-primary text-label-primary font-bold text-on-surface truncate">Officer S. Suresh</span>
+<span class="font-caption text-caption text-outline shrink-0">11:25 AM</span>
+</div>
+<span class="font-caption text-caption text-secondary">Gate 2 Lane A • Facial PEN Match</span>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-caption text-caption font-semibold">
+                  ACCESS GRANTED
+                </span>
+<span class="font-caption text-caption text-outline">Face ID #8812</span>
+</div>
+</div>
+</div>
+<!-- Event 5 -->
+<div class="p-3 rounded-2xl bg-surface-container-low flex items-start gap-3 transition-all hover:bg-surface-container">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[18px]">qr_code_scanner</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<span class="font-label-primary text-label-primary font-bold text-on-surface truncate">Dr. Vivek Menon</span>
+<span class="font-caption text-caption text-outline shrink-0">11:14 AM</span>
+</div>
+<span class="font-caption text-caption text-secondary">Gate 2 Lane A • Dynamic App Pass</span>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-caption text-caption font-semibold">
+                  ACCESS GRANTED
+                </span>
+<span class="font-caption text-caption text-outline">App QR Verified</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Turnstile Action Controls -->
+<div class="pt-2 flex flex-col gap-2 border-t border-surface-container">
+<div class="grid grid-cols-2 gap-2">
+<button class="px-3 py-2.5 rounded-xl bg-surface-container text-on-surface hover:bg-surface-container-high font-label-meta text-label-meta font-semibold flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">qr_code_scanner</span>
+<span>Manual Scan</span>
+</button>
+<button class="px-3 py-2.5 rounded-xl bg-surface-container text-on-surface hover:bg-surface-container-high font-label-meta text-label-meta font-semibold flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">phone_in_talk</span>
+<span>Guard Intercom</span>
+</button>
+</div>
+<button class="w-full px-3 py-2 rounded-xl bg-surface-container-low hover:bg-error-container text-outline hover:text-on-error-container font-caption text-caption font-semibold flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">emergency_home</span>
+<span>Emergency Safe-Lock Turnstiles</span>
+</button>
+</div>
+</section>
+</div>
+<!-- 4. Facility Schedule & Occupancy Visual Matrix -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-md">
+<!-- Facility Zone 1: Synthetic Running Track -->
+<div class="p-space-lg rounded-3xl bg-surface-container-lowest shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<h3 class="font-headline-card text-headline-card font-semibold text-on-surface">Synthetic Athletics Track</h3>
+</div>
+<span class="font-caption text-caption text-secondary mt-1">400m 8-Lane Polyurethane Surface</span>
+</div>
+<span class="px-2.5 py-1 rounded-md bg-primary-fixed text-on-primary-fixed font-caption text-caption font-bold">In-Session</span>
+</div>
+<div class="grid grid-cols-3 gap-2 py-2">
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low text-center">
+<span class="text-caption font-caption text-outline">Current Users</span>
+<span class="font-headline-card text-headline-card font-bold text-on-surface mt-0.5">38</span>
+</div>
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low text-center">
+<span class="text-caption font-caption text-outline">Daily Entrants</span>
+<span class="font-headline-card text-headline-card font-bold text-on-surface mt-0.5">149</span>
+</div>
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low text-center">
+<span class="text-caption font-caption text-outline">Night Floodlights</span>
+<span class="font-headline-card text-headline-card font-bold text-primary mt-0.5">Sched</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-caption font-caption text-on-surface-variant pt-2 border-t border-surface-container">
+<span>Duty Marshal: HC Pradeep</span>
+<span class="text-primary font-semibold">Morning Session (05:00 - 12:00)</span>
+</div>
+</div>
+<!-- Facility Zone 2: Police Turf & Football Ground -->
+<div class="p-space-lg rounded-3xl bg-surface-container-lowest shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<h3 class="font-headline-card text-headline-card font-semibold text-on-surface">Main Police Football Ground</h3>
+</div>
+<span class="font-caption text-caption text-secondary mt-1">FIFA Grade AstroTurf + Pavilion</span>
+</div>
+<span class="px-2.5 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed font-caption text-caption font-bold">Preparation</span>
+</div>
+<div class="grid grid-cols-3 gap-2 py-2">
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low text-center">
+<span class="text-caption font-caption text-outline">Slots Booked</span>
+<span class="font-headline-card text-headline-card font-bold text-on-surface mt-0.5">8 / 10</span>
+</div>
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low text-center">
+<span class="text-caption font-caption text-outline">Next Match</span>
+<span class="font-headline-card text-headline-card font-bold text-on-surface mt-0.5">12:30</span>
+</div>
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low text-center">
+<span class="text-caption font-caption text-outline">Ground Condition</span>
+<span class="font-headline-card text-headline-card font-bold text-primary mt-0.5">Optimal</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-caption font-caption text-on-surface-variant pt-2 border-t border-surface-container">
+<span>Maintenance Team: Alpha Squad</span>
+<span class="text-secondary font-semibold">KP XI vs District Police Team</span>
+</div>
+</div>
+<!-- Facility Zone 3: Badminton & Indoor Courts -->
+<div class="p-space-lg rounded-3xl bg-surface-container-lowest shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<h3 class="font-headline-card text-headline-card font-semibold text-on-surface">Officers Badminton Courts</h3>
+</div>
+<span class="font-caption text-caption text-secondary mt-1">4 Synthetic Wooden Hybrid Courts</span>
+</div>
+<span class="px-2.5 py-1 rounded-md bg-surface-container text-on-surface font-caption text-caption font-bold">Open</span>
+</div>
+<div class="grid grid-cols-3 gap-2 py-2">
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low text-center">
+<span class="text-caption font-caption text-outline">Courts Active</span>
+<span class="font-headline-card text-headline-card font-bold text-on-surface mt-0.5">2 / 4</span>
+</div>
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low text-center">
+<span class="text-caption font-caption text-outline">Evening Resv</span>
+<span class="font-headline-card text-headline-card font-bold text-on-surface mt-0.5">100%</span>
+</div>
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low text-center">
+<span class="text-caption font-caption text-outline">Shuttle Store</span>
+<span class="font-headline-card text-headline-card font-bold text-secondary mt-0.5">Stocked</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-caption font-caption text-on-surface-variant pt-2 border-t border-surface-container">
+<span>Duty Desk: Ext. 402</span>
+<span class="text-primary font-semibold">Evening League 17:00 IST</span>
+</div>
+</div>
+</div>
+<!-- 5. Footer & System Diagnostics Bar -->
+<div class="w-full bg-surface-container-lowest rounded-2xl p-space-md shadow-xs flex flex-wrap items-center justify-between gap-space-md font-caption text-caption text-secondary">
+<div class="flex flex-wrap items-center gap-space-lg">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span><strong>Server Health:</strong> 99.98% Uptime (Trivandrum SDC)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span><strong>Biometric Turnstile Controller:</strong> Online (Ping: 12ms)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span><strong>Treasury Payment Webhook:</strong> Active (0 delays)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span><strong>GovVault Encryption:</strong> 256-bit AES Synced</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-outline">
+<span>Kannur City Police Intranet Node: #KCP-SRV-04</span>
+</div>
+</div>
+</div>
+</div></main><footer class="w-full bg-surface-container-low shadow-[0_-1px_6px_rgba(0,0,0,0.02)]"><div class="w-full px-margin-desktop py-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md font-label-meta text-label-meta text-on-surface-variant"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-primary">shield</span><span class="text-on-surface font-semibold">Official Kannur City Police Sports Council</span><span class="text-outline-variant hidden sm:inline">•</span><span class="hidden sm:inline">Government of Kerala Intranet System</span></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container-high font-caption text-caption text-secondary"><span class="material-symbols-outlined text-[14px] text-primary">lock</span><span>GovVault Node: KNR-PD-04</span></div><span class="font-caption text-caption text-outline">System v4.12.8</span><span class="font-caption text-caption text-on-surface-variant font-medium">Kannur City Police © 2025</span></div></div></footer></body></html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kannur City Police - Home (Default)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif !important;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #F7F9FC;
+      color: #111418;
+      overflow-x: hidden;
+    }
+    .liquid-glass {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 20px 40px -15px rgba(31, 111, 255, 0.07), 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+    }
+    .liquid-glass-strip {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.1);
+    }
+    .glass-circle {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+  </style>
+</head>
+<body class="min-h-screen relative flex flex-col justify-between selection:bg-blue-100 selection:text-blue-900">
+  <!-- Glowing Background Orbs -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-[120px] -right-[120px] w-[580px] h-[580px] rounded-full bg-[#BFD9FF] opacity-60 blur-[130px]"></div>
+    <div class="absolute top-[35%] -left-[140px] w-[520px] h-[520px] rounded-full bg-[#C9D8FF] opacity-50 blur-[130px]"></div>
+    <div class="absolute -bottom-[100px] right-[10%] w-[540px] h-[540px] rounded-full bg-[#DCEBFF] opacity-70 blur-[140px]"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 w-full h-[72px] liquid-glass border-b border-white/60 px-8 flex items-center justify-between">
+    <!-- Brand -->
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-[#1F6FFF] flex items-center justify-center text-white shadow-sm shadow-blue-500/20">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-[17px] font-semibold text-[#111418] leading-tight">Kannur City Police</h1>
+        <p class="text-[13px] text-[#6B7280] leading-none mt-0.5">Sports facilities</p>
+      </div>
+    </div>
+
+    <!-- Center Nav Pills -->
+    <nav class="liquid-glass rounded-full p-1.5 flex items-center gap-1 shadow-sm">
+      <a href="#" class="px-5 py-2 rounded-full bg-[#1F6FFF]/10 text-[#1F6FFF] text-[15px] font-semibold transition">Home</a>
+      <a href="#" class="px-5 py-2 rounded-full text-[#6B7280] hover:text-[#111418] text-[15px] font-medium transition">Bookings</a>
+      <a href="#" class="px-5 py-2 rounded-full text-[#6B7280] hover:text-[#111418] text-[15px] font-medium transition">Membership</a>
+    </nav>
+
+    <!-- Right Controls -->
+    <div class="flex items-center gap-3">
+      <div class="liquid-glass rounded-full px-3 py-1.5 text-[13px] font-medium text-[#111418] flex items-center gap-1.5 shadow-sm">
+        <span class="font-semibold text-[#1F6FFF]">EN</span>
+        <span class="text-gray-300">|</span>
+        <span class="text-[#6B7280]">മലയാളം</span>
+      </div>
+      <button class="w-11 h-11 rounded-full liquid-glass flex items-center justify-center text-[#111418] hover:bg-white/80 transition relative shadow-sm" aria-label="Notifications">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#1F6FFF]"></span>
+      </button>
+      <button class="w-11 h-11 rounded-full liquid-glass flex items-center justify-center text-[#1F6FFF] hover:bg-white/80 transition shadow-sm" aria-label="Account">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="w-full max-w-[1200px] mx-auto px-6 pt-10 pb-6 relative z-10 flex-1 flex flex-col justify-start">
+    <!-- Greeting -->
+    <section class="mb-8">
+      <p class="text-[17px] text-[#6B7280] font-normal mb-1">Good morning</p>
+      <h2 class="text-[56px] font-bold text-[#111418] tracking-tight leading-none">Anil Kumar</h2>
+    </section>
+
+    <!-- Bento Grid (3 Columns) -->
+    <div class="grid grid-cols-3 gap-5 items-stretch">
+      <!-- Col 1: Synthetic Track (Tall Card) -->
+      <div class="relative rounded-[36px] overflow-hidden shadow-lg shadow-blue-900/5 border border-white/80 h-[560px] flex flex-col justify-between p-4 group">
+        <!-- Photo Background -->
+        <img src="https://lh3.googleusercontent.com/aida/ALJJyrDrCwEjrgcdsFVTBjEoiUWpOuDLAnk1vtGV6to2_hLSazCeBTokWMmMTZQTmBe9DKU6LNYynTdeSrGf8lw3LrIkqLQrmEXTKDg765a8hQEXgy7zIIi5WeHysS4Lf-eaovp3VLMYwvRD33U7hwV-P5hj0Qlp-HSY5kWaE5ynkrOuJvd1GLdopt9_BOK7elmgX_wxvbGK-3AtoWLYn0gmGFtT3pxkXnFXr5kY0sUfUYI1" alt="Synthetic Track" class="absolute inset-0 w-full h-full object-cover object-center z-0 transition duration-300">
+        <!-- Subtle dark/light gradient overlay for contrast -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/25 z-[1]"></div>
+
+        <!-- Top Badges -->
+        <div class="relative z-10 flex items-center justify-between p-2">
+          <div class="w-12 h-12 rounded-full glass-circle flex items-center justify-center text-[#1F6FFF]">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+              <line x1="6" y1="1" x2="6" y2="4"></line>
+              <line x1="10" y1="1" x2="10" y2="4"></line>
+              <line x1="14" y1="1" x2="14" y2="4"></line>
+            </svg>
+          </div>
+          <div class="w-10 h-10 rounded-full glass-circle flex items-center justify-center text-[#6B7280]">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="7" y1="17" x2="17" y2="7"></line>
+              <polyline points="7 7 17 7 17 17"></polyline>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Frosted Glass Bottom Strip -->
+        <div class="relative z-10 rounded-[28px] liquid-glass-strip p-6 flex flex-col justify-between min-h-[210px]" style="background: rgba(244, 248, 255, 0.78); backdrop-filter: blur(32px) saturate(140%); border: 1px solid rgba(255, 255, 255, 0.9);"><div>
+            <h3 class="text-[22px] font-semibold text-[#111418] leading-tight">Synthetic Track</h3>
+            <p class="text-[15px] text-[#6B7280] mt-1">Monthly membership</p>
+          </div>
+          <a href="#" class="w-full h-12 rounded-[22px] bg-[#1F6FFF] hover:bg-blue-600 text-white font-semibold text-[15px] flex items-center justify-center shadow-sm shadow-blue-500/25 transition mt-4">Apply for membership</a></div>
+      </div>
+
+      <!-- Col 2: Football Ground & Police Turf (Two Stacked Cards) -->
+      <div class="flex flex-col gap-5 h-[560px]">
+        <!-- Football Ground -->
+        <div class="relative rounded-[36px] overflow-hidden shadow-lg shadow-blue-900/5 border border-white/80 flex-1 flex flex-col justify-between p-4 group">
+          <img src="https://lh3.googleusercontent.com/aida/ALJJyrDN8uRQ2Bc7rXPf_fS1zxIoJOZJJ4hZ6wZZaOhbBVuA0NJ9wf8rNiT3q5zWnLV_vqUjpfEMQ-ruvjO7RgXjUYxu1QGepkTvmFzhYgeIjkOQKFAAQWFwdA7z4KfCwYd33p0cvyc5o34pwKZ4ZueMtqH5lIDWoKvENpB4KhDpdE39EtHeJEDMca6Bym4VOqO0fkvZkKXaG4o3vnZ9HlgT_s0mKT2ynQiYWgf_Oz54ryNn" alt="Football Ground" class="absolute inset-0 w-full h-full object-cover object-center z-0 transition duration-300">
+          <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/25 z-[1]"></div>
+          
+          <!-- Top Badges -->
+          <div class="relative z-10 flex items-center justify-between p-1">
+            <div class="w-12 h-12 rounded-full glass-circle flex items-center justify-center text-[#1F6FFF]">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m4.93 4.93 4.24 4.24"></path>
+                <path d="m14.83 9.17 4.24-4.24"></path>
+                <path d="m14.83 14.83 4.24 4.24"></path>
+                <path d="m9.17 14.83-4.24 4.24"></path>
+                <circle cx="12" cy="12" r="4"></circle>
+              </svg>
+            </div>
+            <div class="w-10 h-10 rounded-full glass-circle flex items-center justify-center text-[#6B7280]">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="7" y1="17" x2="17" y2="7"></line>
+                <polyline points="7 7 17 7 17 17"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Bottom Strip -->
+          <div class="relative z-10 rounded-[28px] liquid-glass-strip p-4 flex items-center justify-between" style="background: rgba(244, 248, 255, 0.78); backdrop-filter: blur(32px) saturate(140%); border: 1px solid rgba(255, 255, 255, 0.9);"><div><h3 class="text-[20px] font-semibold text-[#111418] leading-tight">Football Ground</h3><p class="text-[14px] text-[#6B7280] mt-0.5">Book by the hour</p></div><div class="flex items-end gap-1 h-7"><span class="w-1.5 h-2 rounded-full bg-[#DCEBFF]"></span><span class="w-1.5 h-2.5 rounded-full bg-[#DCEBFF]"></span><span class="w-1.5 h-3 rounded-full bg-[#BFD9FF]"></span><span class="w-1.5 h-3.5 rounded-full bg-[#BFD9FF]"></span><span class="w-1.5 h-4.5 rounded-full bg-[#1F6FFF]/50"></span><span class="w-1.5 h-5.5 rounded-full bg-[#1F6FFF]/80"></span><span class="w-1.5 h-7 rounded-full bg-[#1F6FFF]"></span><span class="w-1.5 h-6.5 rounded-full bg-[#1F6FFF]"></span><span class="w-1.5 h-4 rounded-full bg-[#BFD9FF]"></span><span class="w-1.5 h-2 rounded-full bg-[#DCEBFF]"></span></div></div>
+        </div>
+
+        <!-- Police Turf -->
+        <div class="relative rounded-[36px] overflow-hidden shadow-lg shadow-blue-900/5 border border-white/80 flex-1 flex flex-col justify-between p-4 group">
+          <img src="https://lh3.googleusercontent.com/aida/ALJJyrAFBDnGdeb0rUmkkWXoQ1MUtNaT7gWhT9TVNy6lNIYsLs4zfRoBRjCNJhYpHyQmtQrzgH5zPVQAi_cjlRoL9VZTb4oZRtvCSqFd3FkGVtYcHjRzkJZkfmhUJGBdWNRPXgJM-JR_rqmyVnyrh8MChJgCHmyW0yI-aQ7YZ-rFhw-mgp_As1pxHEiNwythgLR0KdMFjVS5Li_2DwrSA7iDl8Gra57fb5oGNuEsg_NiGSak" alt="Police Turf" class="absolute inset-0 w-full h-full object-cover object-center z-0 transition duration-300">
+          <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/25 z-[1]"></div>
+
+          <!-- Top Badges -->
+          <div class="relative z-10 flex items-center justify-between p-1">
+            <div class="w-12 h-12 rounded-full glass-circle flex items-center justify-center text-[#1F6FFF]">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+                <path d="M3 12h18"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </div>
+            <div class="w-10 h-10 rounded-full glass-circle flex items-center justify-center text-[#6B7280]">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="7" y1="17" x2="17" y2="7"></line>
+                <polyline points="7 7 17 7 17 17"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Bottom Strip -->
+          <div class="relative z-10 rounded-[28px] liquid-glass-strip p-4 flex items-center justify-between" style="background: rgba(244, 248, 255, 0.78); backdrop-filter: blur(32px) saturate(140%); border: 1px solid rgba(255, 255, 255, 0.9);"><div><h3 class="text-[20px] font-semibold text-[#111418] leading-tight">Police Turf</h3><p class="text-[14px] text-[#6B7280] mt-0.5">Full or half court</p></div><div class="flex items-end gap-1 h-7"><span class="w-1.5 h-2 rounded-full bg-[#DCEBFF]"></span><span class="w-1.5 h-2.5 rounded-full bg-[#DCEBFF]"></span><span class="w-1.5 h-3 rounded-full bg-[#BFD9FF]"></span><span class="w-1.5 h-4.5 rounded-full bg-[#1F6FFF]/60"></span><span class="w-1.5 h-6 rounded-full bg-[#1F6FFF]"></span><span class="w-1.5 h-7 rounded-full bg-[#1F6FFF]"></span><span class="w-1.5 h-5.5 rounded-full bg-[#1F6FFF]/80"></span><span class="w-1.5 h-3.5 rounded-full bg-[#BFD9FF]"></span><span class="w-1.5 h-2 rounded-full bg-[#DCEBFF]"></span></div></div>
+        </div>
+      </div>
+
+      <!-- Col 3: Badminton Court & Your activity -->
+      <div class="flex flex-col gap-5 h-[560px]">
+        <!-- Badminton Court -->
+        <div class="relative rounded-[36px] overflow-hidden shadow-lg shadow-blue-900/5 border border-white/80 flex-1 flex flex-col justify-between p-4 group">
+          <img src="https://lh3.googleusercontent.com/aida/ALJJyrC7KOf9xQIbPWG6nTXqt2xbZ--BYTjbf2lWHK5Z3F55dUanEAd8FU5CPibUK5aLx_BGsw97czT-eNg2nTJ4hhhEqMIT9k8itPJGh2QKouwPXQkl-5qydWR1Pl-A06mpTO2vdOH7bWh3SLZOq1Bu_3NRR0pByokaR5uLh1umQa03-mSwSSL3E-9Rga5BNuGgLffOMArvkw-6anIofNTrDlxkrbk0oLkbXgRPVA5MS3A" alt="Badminton Court" class="absolute inset-0 w-full h-full object-cover object-center z-0 transition duration-300">
+          <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/25 z-[1]"></div>
+
+          <!-- Top Badges -->
+          <div class="relative z-10 flex items-center justify-between p-1">
+            <div class="w-12 h-12 rounded-full glass-circle flex items-center justify-center text-[#1F6FFF]">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 9v6"></path>
+                <path d="m8.5 15.5 7-7"></path>
+                <path d="m8.5 8.5 7 7"></path>
+              </svg>
+            </div>
+            <div class="w-10 h-10 rounded-full glass-circle flex items-center justify-center text-[#6B7280]">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="7" y1="17" x2="17" y2="7"></line>
+                <polyline points="7 7 17 7 17 17"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Bottom Strip -->
+          <div class="relative z-10 rounded-[28px] liquid-glass-strip p-4 flex items-center justify-between" style="background: rgba(244, 248, 255, 0.78); backdrop-filter: blur(32px) saturate(140%); border: 1px solid rgba(255, 255, 255, 0.9);"><div><h3 class="text-[20px] font-semibold text-[#111418] leading-tight">Badminton Court</h3><p class="text-[14px] text-[#6B7280] mt-0.5">Book by court</p></div><div class="flex items-end gap-1 h-7"><span class="w-1.5 h-2 rounded-full bg-[#DCEBFF]"></span><span class="w-1.5 h-3 rounded-full bg-[#BFD9FF]"></span><span class="w-1.5 h-4.5 rounded-full bg-[#1F6FFF]/60"></span><span class="w-1.5 h-5.5 rounded-full bg-[#1F6FFF]/80"></span><span class="w-1.5 h-7 rounded-full bg-[#1F6FFF]"></span><span class="w-1.5 h-6.5 rounded-full bg-[#1F6FFF]"></span><span class="w-1.5 h-4 rounded-full bg-[#BFD9FF]"></span><span class="w-1.5 h-2.5 rounded-full bg-[#DCEBFF]"></span></div></div>
+        </div>
+
+        <!-- Your Activity Card -->
+        <div class="liquid-glass rounded-[36px] p-6 flex flex-col justify-between flex-1 border border-white/80 shadow-lg shadow-blue-900/5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[22px] font-semibold text-[#111418]">Your activity</h3>
+            <span class="text-[13px] text-[#6B7280]">This month</span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 py-3 border-t border-black/[0.04] mt-2">
+            <div>
+              <p class="text-[40px] font-semibold text-[#111418] leading-none tracking-tight">6</p>
+              <p class="text-[13px] text-[#6B7280] mt-1.5 font-normal">Bookings</p>
+            </div>
+            <div>
+              <p class="text-[40px] font-semibold text-[#111418] leading-none tracking-tight">9</p>
+              <p class="text-[13px] text-[#6B7280] mt-1.5 font-normal">Hours played</p>
+            </div>
+            <div>
+              <p class="text-[40px] font-semibold text-[#111418] leading-none tracking-tight">2</p>
+              <p class="text-[13px] text-[#6B7280] mt-1.5 font-normal">Coming up</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Centered Footer Caption -->
+  <footer class="w-full pb-6 pt-2 text-center relative z-10">
+    <p class="text-[13px] text-[#6B7280] font-normal tracking-wide">Kannur City Police</p>
+  </footer>
+
+
+
+
+
+
+
+</body></html>

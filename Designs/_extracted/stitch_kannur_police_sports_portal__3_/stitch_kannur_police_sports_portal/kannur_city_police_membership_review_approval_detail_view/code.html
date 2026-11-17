@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-container-highest":"#e1e2e8","on-secondary":"#ffffff","tertiary":"#4f5d6e","primary":"#0053cd","tertiary-fixed":"#d5e4f8","primary-container":"#166bfb","surface-bright":"#f8f9ff","on-tertiary-fixed":"#0e1d2b","primary-fixed":"#dae2ff","on-error-container":"#93000a","inverse-on-surface":"#eff0f6","on-tertiary-container":"#fdfcff","on-secondary-fixed-variant":"#2f4867","tertiary-container":"#677687","surface-variant":"#e1e2e8","on-primary":"#ffffff","surface-container":"#eceef3","on-primary-fixed":"#001848","primary-fixed-dim":"#b2c5ff","on-tertiary-fixed-variant":"#3a4858","outline":"#727787","on-surface":"#191c20","inverse-surface":"#2e3135","secondary":"#476080","secondary-fixed-dim":"#afc8ee","surface-container-high":"#e6e8ee","secondary-container":"#bfd9ff","surface-dim":"#d8dadf","on-tertiary":"#ffffff","secondary-fixed":"#d2e4ff","on-error":"#ffffff","tertiary-fixed-dim":"#b9c8db","background":"#f8f9ff","inverse-primary":"#b2c5ff","error-container":"#ffdad6","surface-container-lowest":"#ffffff","on-secondary-container":"#465f7f","outline-variant":"#c2c6d8","surface-container-low":"#f2f3f9","on-secondary-fixed":"#001c38","surface-tint":"#0056d2","on-background":"#191c20","on-surface-variant":"#424655","on-primary-fixed-variant":"#0040a1","error":"#ba1a1a","surface":"#f8f9ff","on-primary-container":"#fefcff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-sm":"0.5rem","space-md":"1rem","space-lg":"1.5rem","space-xl":"2.5rem","margin-desktop":"2.5rem","gutter-desktop":"1.5rem","margin":"1.5rem","gutter":"1.5rem","space-xs":"0.25rem"},"fontFamily":{"title-portal":["Inter"],"label-meta":["Inter"],"body-medium":["Inter"],"caption":["Inter"],"headline-card":["Inter"],"title-portal-mobile":["Inter"],"label-primary":["Inter"],"body-default":["Inter"]},"fontSize":{"title-portal":["40px",{"lineHeight":"48px","letterSpacing":"-0.03em","fontWeight":"700"}],"label-meta":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"500"}],"body-medium":["17px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"500"}],"caption":["12px",{"lineHeight":"16px","letterSpacing":"0.01em","fontWeight":"400"}],"headline-card":["20px",{"lineHeight":"28px","letterSpacing":"-0.015em","fontWeight":"600"}],"title-portal-mobile":["30px",{"lineHeight":"36px","letterSpacing":"-0.025em","fontWeight":"700"}],"label-primary":["15px",{"lineHeight":"20px","letterSpacing":"-0.005em","fontWeight":"500"}],"body-default":["17px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"400"}]}}}}</script></head><body class="bg-surface font-body-default text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-margin-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-[0_4px_12px_rgba(0,83,205,0.24)]"><span class="material-symbols-outlined text-[24px]">local_police</span></div><div class="flex flex-col"><span class="font-headline-card text-headline-card text-on-surface tracking-tight leading-tight">Kannur City Police</span><span class="font-label-meta text-label-meta text-primary font-medium tracking-wide">Sports Administration Portal</span></div></div><div class="h-8 w-px bg-surface-container-high hidden xl:block"></div><nav class="hidden lg:flex items-center gap-space-xs p-1 bg-surface-container-low/60 rounded-xl" data-active-classes="bg-primary-container text-on-primary-container font-label-primary rounded-xl shadow-[0_4px_12px_rgba(22,107,251,0.2)]"><a class="px-3.5 py-2 rounded-lg font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="dashboard" href="#">Dashboard</a><a class="px-3.5 py-2 rounded-lg font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="memberships" href="#">Memberships</a><a class="px-3.5 py-2 rounded-lg font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="facilities-and-slots" href="#">Facilities &amp; Slots</a><a class="px-3.5 py-2 rounded-lg font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="payments" href="#">Payments</a><a class="px-3.5 py-2 rounded-lg font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="gate-entries" href="#">Gate Entries</a><a class="px-3.5 py-2 rounded-lg font-label-primary text-label-primary text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="audit-log" href="#">Audit Log</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden 2xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-low"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span></span><span class="font-caption text-caption text-secondary font-medium">Turnstiles Connected • Gate 2 Active</span></div><div class="hidden sm:flex items-center px-2.5 py-1 rounded-lg bg-surface-container-low font-label-meta text-label-meta text-on-surface-variant gap-1.5"><span class="text-primary font-semibold">EN</span><span class="text-outline-variant">|</span><span class="hover:text-on-surface cursor-pointer">മലയാളം</span></div><button class="relative p-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-error ring-2 ring-surface"></span></button><div class="h-8 w-px bg-surface-container-high hidden md:block"></div><div class="flex items-center gap-space-sm pl-1"><div class="hidden md:flex flex-col text-right"><span class="font-label-primary text-label-primary text-on-surface font-semibold leading-tight">Insp. Rajeev K.</span><span class="font-caption text-caption text-secondary flex items-center justify-end gap-1"><span class="material-symbols-outlined text-[13px] text-primary">verified_user</span>Duty Officer - Kannur City</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full">
+<!-- Subtle ambient decorative glow backdrop (contained, pure css) -->
+<div class="relative w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-margin-desktop py-space-md sm:py-space-lg flex flex-col gap-space-lg">
+<!-- Atmospheric Ambient Glows behind workspace -->
+<div class="absolute -top-16 left-1/4 w-[480px] h-[320px] bg-primary/5 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+<div class="absolute top-1/2 right-12 w-[420px] h-[380px] bg-secondary-container/20 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+<!-- 1. Top Sub-header / Breadcrumbs & Priority SLA Bar -->
+<section class="w-full bg-surface-container-low/80 backdrop-blur-xl rounded-[24px] p-space-md sm:p-space-lg shadow-sm flex flex-col xl:flex-row xl:items-center xl:justify-between gap-space-md">
+<!-- Breadcrumb path & Identity Tag -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs flex-wrap font-label-meta text-label-meta text-on-surface-variant">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">dashboard</span>
+<span>Dashboard</span>
+</a>
+<span class="text-outline-variant">/</span>
+<a class="hover:text-primary transition-colors" href="#">Memberships</a>
+<span class="text-outline-variant">/</span>
+<span class="text-on-surface font-semibold">Review Dossier #KCP-MEM-2024-8842</span>
+</div>
+<div class="flex items-center gap-space-sm flex-wrap mt-0.5">
+<a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high transition-colors font-label-primary text-label-primary text-on-surface" href="#">
+<span class="material-symbols-outlined text-[16px] text-primary">arrow_back</span>
+<span>Back to Verification Queue</span>
+</a>
+<span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-error-container/30 text-on-error-container font-label-meta text-label-meta">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-error opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-error"></span>
+</span>
+<span class="font-semibold">Status: Pending Final Officer Sign-Off</span>
+</span>
+<span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-highest text-secondary font-label-meta text-label-meta font-medium">
+<span class="material-symbols-outlined text-[15px] text-primary">timer</span>
+<span>Priority: &lt; 24h SLA (Expires in 4h 18m)</span>
+</span>
+</div>
+</div>
+<!-- Quick Action Utilities -->
+<div class="flex items-center gap-space-sm flex-wrap">
+<button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-primary text-label-primary shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99]" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">picture_as_pdf</span>
+<span>Print Dossier (PDF)</span>
+</button>
+<button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container hover:bg-error-container/30 text-error font-label-primary text-label-primary shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99]" type="button">
+<span class="material-symbols-outlined text-[18px]">flag</span>
+<span>Flag for Intelligence Clearance</span>
+</button>
+</div>
+</section>
+<!-- 2. Main Workspace Layout (Two-Column Dossier Grid) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT COLUMN: Applicant Credentials & Identity Verification (7 Cols) -->
+<div class="lg:col-span-7 flex flex-col gap-space-lg">
+<!-- Profile & Biometric Card -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-2xl rounded-[32px] p-space-md sm:p-space-xl shadow-md relative overflow-hidden flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="p-2.5 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">badge</span>
+</span>
+<div>
+<span class="font-label-meta text-label-meta text-secondary font-medium tracking-wide uppercase">Dossier Profile</span>
+<h2 class="font-headline-card text-headline-card text-on-surface">Applicant Identity &amp; Bio-Credentials</h2>
+</div>
+</div>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-meta text-label-meta font-semibold">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+              Identity Validated
+            </span>
+</div>
+<!-- Main Officer Identity Tile -->
+<div class="p-space-md rounded-[24px] bg-surface-container-low flex flex-col sm:flex-row gap-space-md items-start sm:items-center">
+<!-- Photo with Biometric Verified Badge -->
+<div class="relative shrink-0 w-32 h-36 rounded-2xl overflow-hidden shadow-sm bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="Professional frontal portrait of Indian male police sub-inspector in sharp uniform against a neutral administrative studio background, crisp high-key lighting with Kerala police uniform accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDc189uigt6KENgt-Cf29HylawB0GniPKBYxYh8pqD592_C37woHI_YKwLU6r7tlf9FN1Lb2EaRM8QSy2I5I-3rhOLN81rs2wowMzdwmz_3t7En3R6qwXJc9JMhSnUMzqekEd2WKxtv1XIHfnFd-YxvQAW_nQe_Nrl96LEpramgT6bGvFL_VFuCDrU5VZ9-Qge3Lp9Mh4JkGSS-pm93Ti0T5kY25xLOb1cLxcmxt2I"/>
+<div class="absolute bottom-0 inset-x-0 bg-primary/90 backdrop-blur-md px-1.5 py-1 text-center">
+<span class="text-on-primary font-caption text-[10px] leading-tight block font-medium">99.4% Biometric Match</span>
+</div>
+</div>
+<!-- Profile Attributes -->
+<div class="flex flex-col gap-1.5 min-w-0 flex-1">
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="font-headline-card text-headline-card text-on-surface font-bold tracking-tight">Anil Kumar</h3>
+<span class="px-2.5 py-0.5 rounded-md bg-primary text-on-primary font-caption text-caption font-semibold">PEN: 549210</span>
+</div>
+<p class="font-label-primary text-label-primary text-primary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">military_tech</span>
+                Sub-Inspector of Police • Badge #KCP-8842
+              </p>
+<div class="inline-flex items-center gap-2 mt-1 px-3 py-1.5 rounded-xl bg-primary-fixed/60 text-on-primary-fixed font-label-meta text-label-meta">
+<span class="material-symbols-outlined text-[16px] text-primary">percent</span>
+<span>Government Personnel (Kerala Police) — <strong>50% Concession Approved</strong></span>
+</div>
+<!-- Quick Vital Indicators -->
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2 pt-2 text-on-surface-variant font-label-meta text-label-meta">
+<div>
+<span class="text-secondary block font-caption text-caption">DOB / Age</span>
+<span class="text-on-surface font-medium">28 Aug 1994 (29y)</span>
+</div>
+<div>
+<span class="text-secondary block font-caption text-caption">Gender</span>
+<span class="text-on-surface font-medium">Male</span>
+</div>
+<div>
+<span class="text-secondary block font-caption text-caption">Father's Name</span>
+<span class="text-on-surface font-medium">Sreedharan Nair</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Employment & Service Card -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-2xl rounded-[32px] p-space-md sm:p-space-xl shadow-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="p-2.5 rounded-2xl bg-secondary-fixed text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">corporate_fare</span>
+</span>
+<div>
+<span class="font-label-meta text-label-meta text-secondary font-medium uppercase tracking-wide">Official Posting</span>
+<h4 class="font-headline-card text-headline-card text-on-surface">Service Records &amp; Station Deputation</h4>
+</div>
+</div>
+<span class="flex items-center gap-1 text-primary font-caption text-caption font-semibold">
+<span class="material-symbols-outlined text-[15px]">lan</span>
+              SP Net Synced
+            </span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-1">
+<div class="p-space-md rounded-2xl bg-surface-container-low flex flex-col gap-1">
+<span class="font-caption text-caption text-secondary">Deputed Station / Unit</span>
+<span class="font-label-primary text-label-primary text-on-surface font-semibold">District Police Office (DPO)</span>
+<span class="font-caption text-caption text-on-surface-variant">South Bazaar, Kannur, Kerala 670002</span>
+</div>
+<div class="p-space-md rounded-2xl bg-surface-container-low flex flex-col gap-1">
+<span class="font-caption text-caption text-secondary">Intranet Confirmation Status</span>
+<div class="flex items-center gap-1.5 text-primary font-label-primary text-label-primary font-semibold">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span>Active Service Confirmed</span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant">Authenticated via Spark Kerala HR Node</span>
+</div>
+</div>
+</div>
+<!-- Address Details Card -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-2xl rounded-[32px] p-space-md sm:p-space-xl shadow-md flex flex-col gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="p-2.5 rounded-2xl bg-tertiary-fixed text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">home_pin</span>
+</span>
+<div>
+<span class="font-label-meta text-label-meta text-secondary font-medium uppercase tracking-wide">Residence Verification</span>
+<h4 class="font-headline-card text-headline-card text-on-surface">Jurisdiction &amp; Address Verification</h4>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="p-space-md rounded-2xl bg-surface-container-low flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption text-secondary uppercase font-semibold">Present Address</span>
+<span class="px-2 py-0.5 rounded text-[11px] bg-secondary-fixed text-on-secondary-fixed font-medium">Local Ward 14</span>
+</div>
+<p class="font-body-default text-body-default text-on-surface leading-snug">
+                Haritha Nagar, House No. 24,<br/>
+                Thottada Post, Kannur District,<br/>
+                Kerala — 670007
+              </p>
+</div>
+<div class="p-space-md rounded-2xl bg-surface-container-low flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption text-secondary uppercase font-semibold">Permanent Address</span>
+<span class="px-2 py-0.5 rounded text-[11px] bg-surface-container-high text-on-surface-variant font-medium">Identical</span>
+</div>
+<p class="font-body-default text-body-default text-on-surface leading-snug">
+                Haritha Nagar, House No. 24,<br/>
+                Thottada Post, Kannur District,<br/>
+                Kerala — 670007
+              </p>
+</div>
+</div>
+</div>
+<!-- Facility Usage & Intent Card -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-2xl rounded-[32px] p-space-md sm:p-space-xl shadow-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="p-2.5 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">sports_score</span>
+</span>
+<div>
+<span class="font-label-meta text-label-meta text-secondary font-medium uppercase tracking-wide">Facility Selection</span>
+<h4 class="font-headline-card text-headline-card text-on-surface">Athletic Facility &amp; Slot Allocation</h4>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full bg-primary-fixed/60 text-primary font-label-meta text-label-meta font-bold">Annual Slot</span>
+</div>
+<div class="p-space-md rounded-2xl bg-surface-container-low flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<span class="font-headline-card text-headline-card text-on-surface">Synthetic 400m Athletic Track</span>
+<span class="font-label-meta text-label-meta text-secondary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">stadium</span>
+                Police Parade Grounds, Kannur Headquarters
+              </span>
+<span class="font-caption text-caption text-on-surface-variant mt-1">
+<strong>Declared Purpose:</strong> Daily cardiovascular conditioning &amp; Kerala State Police Games marathon trials.
+              </span>
+</div>
+<!-- Mini Visual Track Capacity Chart SVG -->
+<div class="flex flex-col items-center bg-surface-container-lowest p-3 rounded-2xl shadow-sm shrink-0">
+<div class="relative w-16 h-16 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="80.6, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-label-meta text-label-meta font-bold text-on-surface">81%</span>
+</div>
+<span class="font-caption text-[11px] text-secondary mt-1 font-medium">58 Slots Open</span>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Verified Documents Viewer & Audit History (5 Cols) -->
+<div class="lg:col-span-5 flex flex-col gap-space-lg">
+<!-- Official Document Preview Container -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-2xl rounded-[32px] p-space-md sm:p-space-lg shadow-md flex flex-col gap-space-md">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-space-sm">
+<span class="p-2 rounded-xl bg-primary-fixed text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">document_scanner</span>
+</span>
+<div class="min-w-0">
+<h4 class="font-headline-card text-headline-card text-on-surface truncate">Official Credentials Document</h4>
+<p class="font-caption text-caption text-secondary truncate">KCP_Service_ID_AnilKumar.pdf (1.4 MB)</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-caption text-caption font-bold shrink-0">
+              Digitally Signed
+            </span>
+</div>
+<!-- Document Visual Frame / Faux PDF Inspection Canvas -->
+<div class="relative w-full rounded-2xl overflow-hidden bg-surface-container-low p-4 sm:p-6 shadow-inner flex flex-col gap-3">
+<!-- Simulated Official Document Card Header -->
+<div class="flex items-center justify-between pb-3 border-b-0">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold text-[12px]">KP</div>
+<div class="flex flex-col">
+<span class="font-label-meta text-label-meta font-bold text-on-surface uppercase tracking-tight">Kerala Police Department</span>
+<span class="text-[10px] text-secondary">Govt. of Kerala • Official Identity Card</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-[28px]">shield</span>
+</div>
+<!-- Faux ID Card Layout -->
+<div class="p-3 bg-surface-container-lowest rounded-xl shadow-sm flex items-center gap-3">
+<div class="w-14 h-16 bg-surface-container-high rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Micro thumbnail scan of Indian police officer identification card photograph with official watermarking and red department seal" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBY-6zXFfxlMRnVPLoiorGCA2GCjv2Qmvw_faAd1s4sZ-xU2K7YdqNmQaci0-FLms6MdhuBs3XDG09-hFhD6amZCAQpTeE_nYhw6tCOTUNKIvw4qIJwOvXbxejtjlXPQizEigifx3l3ui4I3_aLGx9oCddP739DT6SXsDRzDlcohl8-axm4cWIZXcMW3rElYOByVqnn3NttcW8j6D1lzPGK0EP-bcjQbulfsIKwvA8"/>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="font-label-primary text-label-primary font-bold text-on-surface">ANIL KUMAR S.</span>
+<span class="font-caption text-caption text-secondary">Sub-Inspector (GE Branch)</span>
+<span class="text-[11px] font-mono text-primary font-medium">PEN: 549210 • VALID TILL: 2028</span>
+</div>
+</div>
+<!-- Digital Seal & Cryptographic Watermark Graphic -->
+<div class="pt-2 flex items-center justify-between text-[11px] text-secondary">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">enhanced_encryption</span>
+<span class="font-mono">SHA-256: e3b0c44298fc1c14...</span>
+</div>
+<span class="font-semibold text-primary">GovVault Verified</span>
+</div>
+<!-- Document Tools -->
+<div class="grid grid-cols-2 gap-2 pt-2">
+<button class="w-full py-2 px-3 rounded-xl bg-surface-container-high hover:bg-surface-container-highest transition-colors font-label-meta text-label-meta text-on-surface flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">fullscreen</span>
+<span>Inspect PDF</span>
+</button>
+<button class="w-full py-2 px-3 rounded-xl bg-surface-container-high hover:bg-surface-container-highest transition-colors font-label-meta text-label-meta text-on-surface flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Download Vault Copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Automated Clearance & Risk Assessment Card -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-2xl rounded-[32px] p-space-md sm:p-space-lg shadow-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="p-2 rounded-xl bg-secondary-fixed text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">security</span>
+</span>
+<div>
+<span class="font-label-meta text-label-meta text-secondary font-medium uppercase tracking-wide">Multi-Tier Clearance</span>
+<h4 class="font-headline-card text-headline-card text-on-surface">Automated Background Checks</h4>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-[22px]">gpp_good</span>
+</div>
+<div class="flex flex-col gap-2.5">
+<!-- CCTNS Check -->
+<div class="p-3 rounded-xl bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="w-7 h-7 rounded-lg bg-surface-container-highest text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">database</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">CCTNS Criminal Database Check</span>
+<span class="font-caption text-caption text-on-surface-variant">Police Central Query #CCTNS-24-9982</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed font-caption text-caption font-bold">
+                CLEAR
+              </span>
+</div>
+<!-- Medical Fitness Certificate -->
+<div class="p-3 rounded-xl bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="w-7 h-7 rounded-lg bg-surface-container-highest text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">medical_services</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Medical Fitness Certificate</span>
+<span class="font-caption text-caption text-on-surface-variant">Dr. K. V. Joseph, Civil Hospital Kannur</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed font-caption text-caption font-bold">
+                VALID
+              </span>
+</div>
+<!-- Turnstile Violations -->
+<div class="p-3 rounded-xl bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="w-7 h-7 rounded-lg bg-surface-container-highest text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">door_front</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-primary text-label-primary font-semibold text-on-surface">Turnstile &amp; RFID Discipline History</span>
+<span class="font-caption text-caption text-on-surface-variant">Gate logs across all Kannur Police gymnasiums</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed font-caption text-caption font-bold">
+                0 VIOLATIONS
+              </span>
+</div>
+</div>
+</div>
+<!-- Application Timeline & Action Audit Log -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-2xl rounded-[32px] p-space-md sm:p-space-lg shadow-md flex flex-col gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="p-2 rounded-xl bg-surface-container-high text-on-surface flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">history_edu</span>
+</span>
+<div>
+<span class="font-label-meta text-label-meta text-secondary font-medium uppercase tracking-wide">Audit Trail</span>
+<h4 class="font-headline-card text-headline-card text-on-surface">Chronological Workflow Log</h4>
+</div>
+</div>
+<!-- Timeline items -->
+<div class="relative pl-6 flex flex-col gap-4">
+<!-- Timeline vertical track line -->
+<div class="absolute left-2.5 top-2 bottom-2 w-0.5 bg-surface-container-high"></div>
+<!-- Event 1 -->
+<div class="relative flex items-start gap-3">
+<div class="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-primary ring-4 ring-surface-container-lowest"></div>
+<div class="flex flex-col">
+<span class="font-label-meta text-label-meta text-on-surface font-semibold">Application Submitted by Applicant</span>
+<span class="font-caption text-caption text-secondary">24 Nov 2024, 10:14 AM • Online Registration Portal</span>
+</div>
+</div>
+<!-- Event 2 -->
+<div class="relative flex items-start gap-3">
+<div class="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-primary ring-4 ring-surface-container-lowest"></div>
+<div class="flex flex-col">
+<span class="font-label-meta text-label-meta text-on-surface font-semibold">Automated CCTNS &amp; PEN Clearance Succeeded</span>
+<span class="font-caption text-caption text-secondary">24 Nov 2024, 10:15 AM • Backend Inter-Gov API Check</span>
+</div>
+</div>
+<!-- Event 3 -->
+<div class="relative flex items-start gap-3">
+<div class="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-primary ring-4 ring-surface-container-lowest"></div>
+<div class="flex flex-col">
+<span class="font-label-meta text-label-meta text-on-surface font-semibold">Document Authentication Passed</span>
+<span class="font-caption text-caption text-secondary">24 Nov 2024, 10:30 AM • Sports Council Desk Review</span>
+</div>
+</div>
+<!-- Event 4 (Active/Pending) -->
+<div class="relative flex items-start gap-3">
+<div class="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-error ring-4 ring-surface-container-lowest animate-pulse"></div>
+<div class="flex flex-col">
+<span class="font-label-meta text-label-meta text-primary font-bold">Awaiting Duty Officer Sign-Off</span>
+<span class="font-caption text-caption text-secondary">Currently Assigned: Insp. Rajeev K. (PIN: 51209)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Decision & Approval Toolbar (Reviewing Officer Workspace at Bottom) -->
+<section class="w-full bg-surface-container-lowest/90 backdrop-blur-3xl rounded-[32px] p-space-md sm:p-space-xl shadow-xl flex flex-col gap-space-md">
+<!-- Duty Officer Credential Header -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm pb-2">
+<div class="flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-on-primary shadow-md">
+<span class="material-symbols-outlined text-[26px]">rate_review</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-headline-card text-headline-card text-on-surface font-bold">Officer Determination &amp; Sign-Off</h3>
+<span class="font-label-meta text-label-meta text-secondary">Reviewing Authority: <strong>Insp. Rajeev K. (PIN: 51209)</strong> • Kannur City Duty Officer</span>
+</div>
+</div>
+<div class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-container-low font-caption text-caption text-secondary">
+<span class="material-symbols-outlined text-[16px] text-primary">verified_user</span>
+<span>Digital Signature Token: Active (Token ID: KCP-CERT-8842)</span>
+</div>
+</div>
+<!-- Remarks / Concession Notes Input Tray -->
+<div class="flex flex-col gap-2">
+<label class="font-label-primary text-label-primary font-semibold text-on-surface flex items-center justify-between" for="officer-remarks">
+<span>Officer Remarks / Concession Verification Notes</span>
+<span class="text-secondary font-caption text-caption">Mandatory for subsidized police welfare memberships</span>
+</label>
+<div class="w-full bg-surface-container-low/70 rounded-2xl p-3 sm:p-4 shadow-inner">
+<textarea class="w-full bg-transparent text-on-surface font-body-default text-body-default placeholder:text-outline focus:outline-none resize-none" id="officer-remarks" placeholder="Enter reason for approval or document clarifications..." rows="2">Verified police service credentials and valid medical clearance. Approved for 50% departmental subsidized membership on the synthetic track.</textarea>
+</div>
+</div>
+<!-- Legal Compliance Checkbox -->
+<label class="flex items-start sm:items-center gap-3 cursor-pointer select-none group py-1">
+<input checked="" class="w-5 h-5 rounded-lg accent-primary text-primary focus:ring-0 focus:outline-none cursor-pointer mt-0.5 sm:mt-0" id="confirm-checkbox" type="checkbox"/>
+<span class="font-label-primary text-label-primary text-on-surface leading-tight">
+          I confirm physical/digital verification of original credentials under <strong>Kerala Police Sports Council Bylaws 2024 (Section 12.B)</strong>.
+        </span>
+</label>
+<!-- Action Button Group -->
+<div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-space-md pt-space-xs">
+<!-- Left: Quick Fee Indicator -->
+<div class="flex items-center gap-2 font-label-primary text-label-primary text-on-surface-variant">
+<span class="text-secondary">Concessional Fee:</span>
+<span class="text-on-surface font-bold text-headline-card">₹885.00</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-caption text-[11px] font-semibold">Incl. 18% GST</span>
+</div>
+<!-- Right: Primary Action Triggers -->
+<div class="flex items-center gap-space-sm flex-wrap justify-end">
+<!-- Secondary Red Outlined -->
+<button class="px-5 py-3 rounded-[20px] bg-surface-container hover:bg-error-container/40 text-error font-label-primary text-label-primary font-semibold transition-all active:scale-[0.98] flex items-center gap-1.5" id="btn-reject" type="button">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+<span>Reject Application</span>
+</button>
+<!-- Secondary Slate/Neutral -->
+<button class="px-5 py-3 rounded-[20px] bg-surface-container hover:bg-surface-container-high text-on-surface font-label-primary text-label-primary font-semibold transition-all active:scale-[0.98] flex items-center gap-1.5" id="btn-revision" type="button">
+<span class="material-symbols-outlined text-[18px]">rule_folder</span>
+<span>Request Revision</span>
+</button>
+<!-- Primary Royal Blue Solid Button -->
+<button class="px-7 py-3 rounded-[22px] bg-primary-container text-on-primary-container font-label-primary text-label-primary font-bold shadow-md hover:shadow-lg transition-all hover:scale-[1.02] active:scale-[0.985] flex items-center gap-2" id="btn-approve" type="button">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+<span>Approve Membership &amp; Enable Payment Gateway (₹885)</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+<!-- Interactive Logic for Approval Feedback -->
+<script>
+    (function() {
+      const approveBtn = document.getElementById('btn-approve');
+      const rejectBtn = document.getElementById('btn-reject');
+      const revisionBtn = document.getElementById('btn-revision');
+      const checkbox = document.getElementById('confirm-checkbox');
+
+      if (approveBtn) {
+        approveBtn.addEventListener('click', function() {
+          if (!checkbox.checked) {
+            alert('Please check the verification compliance box under Kerala Police Sports Council Bylaws before approving.');
+            return;
+          }
+          approveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> <span>Sealing Approval Token...</span>';
+          approveBtn.classList.add('opacity-80', 'pointer-events-none');
+          
+          setTimeout(() => {
+            approveBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">check_circle</span> <span>Approved &amp; Payment Gateway Notified</span>';
+            approveBtn.classList.remove('bg-primary-container', 'opacity-80');
+            approveBtn.classList.add('bg-secondary-fixed', 'text-on-secondary-fixed');
+            alert('Application #KCP-MEM-2024-8842 successfully approved! Sub-Inspector Anil Kumar has been sent the automated payment SMS link.');
+          }, 900);
+        });
+      }
+
+      if (rejectBtn) {
+        rejectBtn.addEventListener('click', function() {
+          const reason = prompt('Please specify the departmental ground for rejection:', 'Incomplete service authorization credentials.');
+          if (reason) {
+            alert('Application #KCP-MEM-2024-8842 flagged as REJECTED with note: ' + reason);
+          }
+        });
+      }
+
+      if (revisionBtn) {
+        revisionBtn.addEventListener('click', function() {
+          alert('Revision request ticket opened. The applicant will be notified to re-upload clear identity credentials.');
+        });
+      }
+    })();
+  </script>
+</div></main><footer class="w-full bg-surface-container-low shadow-[0_-1px_6px_rgba(0,0,0,0.02)]"><div class="w-full px-margin-desktop py-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md font-label-meta text-label-meta text-on-surface-variant"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-primary">shield</span><span class="text-on-surface font-semibold">Official Kannur City Police Sports Council</span><span class="text-outline-variant hidden sm:inline">•</span><span class="hidden sm:inline">Government of Kerala Intranet System</span></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container-high font-caption text-caption text-secondary"><span class="material-symbols-outlined text-[14px] text-primary">lock</span><span>GovVault Node: KNR-PD-04</span></div><span class="font-caption text-caption text-outline">System v4.12.8</span><span class="font-caption text-caption text-on-surface-variant font-medium">Kannur City Police © 2025</span></div></div></footer></body></html>

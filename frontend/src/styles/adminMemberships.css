@@ -1,0 +1,18 @@
+/* Page-specific styles extracted from Stitch admin dashboard & membership detail exports */
+
+main > :first-child {
+  margin-top: 0 !important;
+}
+
+main > :last-child {
+  margin-bottom: 0 !important;
+}
+
+.admin-memberships-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-memberships-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -12,7 +12,6 @@ import facilitiesRouter from './modules/facilities/facilities.routes';
 import membershipsRouter from './modules/memberships/memberships.routes';
 import bookingsRouter from './modules/bookings/bookings.routes';
 import paymentsRouter from './modules/payments/payments.routes';
-import gateRouter from './modules/gate/gate.routes';
 import adminRouter from './modules/admin/admin.routes';
 
 const app = express();
@@ -55,7 +54,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // 4. Strict Proposal Compliance Guard:
-//    Blocks any request payload or query containing mobile numbers, SMS/OTP, or Aadhaar/Govt ID numbers.
+//    Blocks any request payload or query containing mobile numbers, SMS/OTP, or Government ID numbers.
 app.use(enforceComplianceConstraints);
 
 // 5. Health Check Endpoint (On-Premise Linux Systemd / Nginx Probe)
@@ -71,12 +70,11 @@ app.get('/api/health', (_req, res) => {
 // 6. Step 1 API Routes: Authentication & Session Management
 app.use('/api/auth', authRouter);
 
-// 7. Step 2 & Step 3 API Routes: Facilities, Memberships, Bookings, Payments, Gate Verification & Officer Admin Controls
+// 7. Step 2 & Step 3 API Routes: Facilities, Memberships, Bookings, Payments & Officer Admin Controls
 app.use('/api/facilities', facilitiesRouter);
 app.use('/api/memberships', membershipsRouter);
 app.use('/api/bookings', bookingsRouter);
 app.use('/api/payments', paymentsRouter);
-app.use('/api/gate', gateRouter);
 app.use('/api/admin', adminRouter);
 
 // 8. Unified Frontend Static Bundle & SPA Fallback (when frontend/dist exists)

@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { clearSessionCookie, setSessionCookie } from '../../utils/jwt';
 import { AuthService } from './auth.service';
-import { LoginInput, RegisterInput } from './auth.schema';
+import { LoginInput, RegisterInput, UpdateProfileInput } from './auth.schema';
 
 export class AuthController {
   /**
    * POST /api/auth/register
-   * Public & Govt Personnel self-registration (username + password, no mobile/OTP/Aadhaar).
+   * Public & Govt Personnel self-registration (username + password, no mobile/OTP/Government ID).
    */
   static async register(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -75,6 +75,25 @@ export class AuthController {
 
       res.status(200).json({
         success: true,
+        data: { user },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * PATCH /api/auth/me & PATCH /api/auth/profile
+   * Updates the currently authenticated user's benign profile & onboarding details.
+   */
+  static async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const payload = req.body as UpdateProfileInput;
+      const user = await AuthService.updateProfile(req.user!.id, payload);
+
+      res.status(200).json({
+        success: true,
+        message: 'Profile onboarding details updated successfully.',
         data: { user },
       });
     } catch (error) {

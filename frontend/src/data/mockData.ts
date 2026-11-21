@@ -4,11 +4,11 @@
  *  Replace each export with a call to the matching backend endpoint
  *  (served under `/api`, proxied to http://localhost:5000 in dev).
  *
- *  NOTE: By design, no Aadhaar / government ID numbers, mobile phone
+ *  NOTE: By design, no government ID numbers, mobile phone
  *  numbers or SMS / OTP data are stored or displayed anywhere.
  * ─────────────────────────────────────────────────────────────────────
  */
-import type { GateOfficerSession, NavItem, PublicUserSession, StaffSession } from '@/types';
+import type { NavItem, PublicUserSession, StaffSession } from '@/types';
 
 /* ============================== SESSIONS ============================== */
 
@@ -25,26 +25,21 @@ export const currentStaff: StaffSession = {
   initials: 'RK',
 };
 
-export const currentGateOfficer: GateOfficerSession = {
-  name: 'HC Pradeep',
-  deskId: 'Duty Desk #KCP-4412',
-  initials: 'HP',
-};
-
 /* ============================= NAVIGATION ============================= */
 
 export const publicNav: NavItem[] = [
   { label: 'Home', to: '/', end: true },
   { label: 'Bookings', to: '/bookings' },
+  { label: 'My Bookings', to: '/my-bookings' },
   { label: 'Membership', to: '/membership' },
 ];
 
 export const adminNav: NavItem[] = [
   { label: 'Dashboard', to: '/admin/dashboard', icon: 'dashboard' },
-  { label: 'Memberships', to: '/admin/memberships', icon: 'badge' },
   { label: 'Facilities & Slots', to: '/admin/facilities', icon: 'stadium' },
+  { label: 'Bookings', to: '/admin/bookings', icon: 'calendar_month' },
+  { label: 'Members', to: '/admin/members', icon: 'group' },
   { label: 'Payments', to: '/admin/payments', icon: 'payments' },
-  { label: 'Gate Entries', to: '/admin/gate-entries', icon: 'door_sensor' },
   { label: 'Audit Log', to: '/admin/audit-log', icon: 'history' },
 ];
 
@@ -54,4 +49,4 @@ export * from './mock/membership';
 export * from './mock/bookings';
 export * from './mock/adminMemberships';
 export * from './mock/adminOps';
-export * from './mock/gate';
+export * from './mock/adminAudit';

@@ -1,4 +1,4 @@
-/* Page-specific styles extracted from Kannur City Police Membership Stitch exports */
+/* Page-specific styles, crisp inputs & smooth transitions for Membership Wizard */
 
 .pb-safe {
   padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
@@ -8,7 +8,158 @@
   padding-top: max(env(safe-area-inset-top, 0px), 12px);
 }
 
+/* Crisp bordered input primitive for membership forms */
+.membership-input {
+  height: 46px;
+  width: 100%;
+  border-radius: 12px;
+  font-size: 14.5px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #d5dce6;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+.membership-input::placeholder {
+  color: #94a3b8;
+}
+
+.membership-input:hover {
+  border-color: #b4c0d3;
+}
+
+.membership-input:focus {
+  border-color: #165df5;
+  box-shadow: 0 0 0 3.5px rgba(22, 93, 245, 0.14);
+}
+
+.membership-textarea {
+  width: 100%;
+  border-radius: 12px;
+  font-size: 14.5px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #d5dce6;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+.membership-textarea::placeholder {
+  color: #94a3b8;
+}
+
+.membership-textarea:hover {
+  border-color: #b4c0d3;
+}
+
+.membership-textarea:focus {
+  border-color: #165df5;
+  box-shadow: 0 0 0 3.5px rgba(22, 93, 245, 0.14);
+}
+
 .membership-input-error {
-  border: 1.5px solid #e5484d !important;
-  box-shadow: 0 0 0 1px #e5484d !important;
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3.5px rgba(220, 38, 38, 0.12) !important;
+}
+
+/* Masked headline reveal */
+.membership-text-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+@keyframes membershipTextUp {
+  0% {
+    opacity: 0;
+    transform: translateY(108%);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+    filter: blur(0px);
+  }
+}
+
+.membership-text-reveal {
+  display: inline-block;
+  opacity: 0;
+  animation: membershipTextUp 640ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Smooth step container transition */
+@keyframes membershipStepIn {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.992);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.membership-step-enter {
+  animation: membershipStepIn 460ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Staggered card rise */
+@keyframes membershipCardRise {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.membership-rise {
+  opacity: 0;
+  animation: membershipCardRise 560ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Crisp pop-in for selection checkmarks */
+@keyframes membershipPop {
+  0% {
+    transform: scale(0.65);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.membership-pop {
+  animation: membershipPop 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .membership-text-reveal,
+  .membership-step-enter,
+  .membership-rise,
+  .membership-pop {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
 }

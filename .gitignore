@@ -6,6 +6,8 @@ dist/
 dist-ssr/
 build/
 *.tsbuildinfo
+*.local
+vite.config.*.timestamp-*
 
 # Environment variables
 .env
@@ -32,7 +34,11 @@ coverage/
 nginx/certs/*.key
 nginx/certs/*.crt
 nginx/certs/*.pem
+nginx/certs/*.csr
+nginx/certs/*.p12
+nginx/certs/*.pfx
 *.sql.gz
+*.sql.gz.sha256
 backups/
 
 # IDE and OS files
@@ -41,9 +47,16 @@ backups/
 .idea/
 .DS_Store
 Thumbs.db
+Desktop.ini
 *.swp
 *.swo
 
 # Temporary files
 tmp/
 temp/
+
+# Generated verification documents and raw design archives
+docs/**/*.pdf
+docs/**/*.docx
+Designs/*.zip
+Designs/_extracted/

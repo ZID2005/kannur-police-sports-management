@@ -275,7 +275,6 @@ vi.mock('../src/config/database', () => {
           status: data.status ?? MembershipStatus.PENDING_APPROVAL,
           reviewed_by_officer_id: data.reviewed_by_officer_id ?? null,
           officer_remarks: data.officer_remarks ?? null,
-          qr_token_hash: data.qr_token_hash ?? null,
           created_at: new Date(),
         };
         mockMemberships.set(record.id, record);
@@ -322,7 +321,6 @@ vi.mock('../src/config/database', () => {
           court_partition: data.court_partition ?? CourtPartition.FULL,
           total_amount: data.total_amount,
           status: data.status ?? SlotBookingStatus.PENDING_PAYMENT,
-          qr_token_hash: data.qr_token_hash ?? null,
           created_at: new Date(),
         };
         mockSlotBookings.set(record.id, record);
@@ -785,7 +783,6 @@ describe('Step 2: Facilities, Synthetic Track Memberships, Hourly Slot Engine, P
           status,
           reviewed_by_officer_id: USER_IDS.ADMIN,
           officer_remarks: 'Pre-seeded member',
-          qr_token_hash: null,
           created_at: new Date(),
         });
       }
@@ -1048,7 +1045,6 @@ describe('Step 2: Facilities, Synthetic Track Memberships, Hourly Slot Engine, P
         court_partition: CourtPartition.FULL,
         total_amount: '2360.00',
         status: SlotBookingStatus.CONFIRMED,
-        qr_token_hash: null,
         created_at: new Date(),
       });
 

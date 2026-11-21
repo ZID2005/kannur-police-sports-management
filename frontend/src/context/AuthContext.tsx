@@ -13,6 +13,7 @@ import {
   authApi,
   type AuthUser,
   type BackendUserRole,
+  type MemberOnboardingFields,
 } from '@/api/client';
 
 export interface LoginPayload {
@@ -21,18 +22,24 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload {
-  username: string;
+  username?: string;
   password: string;
   full_name: string;
   email?: string | null;
   role?: 'PUBLIC' | 'GOVT_PERSONNEL';
 }
 
+export type UpdateProfilePayload = {
+  full_name?: string;
+  email?: string | null;
+} & MemberOnboardingFields;
+
 interface AuthContextValue {
   user: AuthUser | null;
   loading: boolean;
   login: (payload: LoginPayload) => Promise<AuthUser>;
   register: (payload: RegisterPayload) => Promise<AuthUser>;
+  updateProfile: (payload: UpdateProfilePayload) => Promise<AuthUser>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<AuthUser | null>;
 }
@@ -43,8 +50,6 @@ export function getRoleRedirectPath(role: BackendUserRole): string {
   switch (role) {
     case 'STAFF_ADMIN':
       return '/admin/dashboard';
-    case 'GATE_OFFICER':
-      return '/gate/scanner';
     case 'PUBLIC':
     case 'GOVT_PERSONNEL':
     default:
@@ -101,6 +106,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return data.user;
   }, []);
 
+  const updateProfile = useCallback(async (payload: UpdateProfilePayload): Promise<AuthUser> => {
+    const data = await authApi.updateProfile(payload);
+    setUser(data.user);
+    return data.user;
+  }, []);
+
   const logout = useCallback(async (): Promise<void> => {
     try {
       await authApi.logout();
@@ -115,10 +126,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       login,
       register,
+      updateProfile,
       logout,
       refreshUser,
     }),
-    [user, loading, login, register, logout, refreshUser]
+    [user, loading, login, register, updateProfile, logout, refreshUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,19 +1,31 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
+  ArrowLeft,
+  CalendarDays,
+  Check,
+  CheckCircle2,
+  Clock,
+  Copy,
+  CreditCard,
+  Info,
+  Loader2,
+  Printer,
+  ReceiptText,
+  ShieldCheck,
+  User,
+} from 'lucide-react';
+import {
   membershipsApi,
   paymentsApi,
   type ApiMembership,
+  type ApiPaymentPricingBreakdown,
   type ApiPaymentRecord,
   type ApiSettlePaymentResponse,
 } from '@/api/client';
-import { MaterialIcon } from '@/components/ui/MaterialIcon';
-import { DigitalMembershipCard } from '@/components/bookings/DigitalMembershipCard';
-import { PassRightSidebar } from '@/components/bookings/PassRightSidebar';
 import { useAuth } from '@/context/AuthContext';
-import { passDefaultData } from '@/data/mockData';
+import { useLanguage } from '@/context/LanguageContext';
 import { ACTIVATED_PASS_STORAGE_KEY } from '@/pages/public/membership/MembershipPage';
-import type { PassData } from '@/types/bookings';
 import '@/styles/bookings.css';
 
 function formatPassDate(dateStr?: string | null): string {
@@ -37,20 +49,27 @@ function formatInr(amount?: string | number | null): string {
   })}`;
 }
 
+/**
+ * Clean Track Membership Confirmation & Fee Receipt page (`/membership/pass`).
+ * Clean printable pass summary and official fee receipt with zero third-party PDF libraries.
+ */
 export default function MembershipPassPage() {
   const location = useLocation();
   const { user } = useAuth();
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const { t } = useLanguage();
+
   const [liveMembership, setLiveMembership] = useState<ApiMembership | null>(null);
   const [livePayment, setLivePayment] = useState<ApiPaymentRecord | null>(null);
-  const [qrTokenOverride, setQrTokenOverride] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [copiedCode, setCopiedCode] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const stateSettled = (location.state as ApiSettlePaymentResponse | null) ?? null;
     if (stateSettled?.membership) {
       setLiveMembership(stateSettled.membership);
       setLivePayment(stateSettled.payment);
-      setQrTokenOverride(stateSettled.qr_pass?.qr_token_hash ?? null);
+      setLoading(false);
       return;
     }
 
@@ -61,230 +80,373 @@ export default function MembershipPassPage() {
         if (parsed.membership) {
           setLiveMembership(parsed.membership);
           setLivePayment(parsed.payment);
-          setQrTokenOverride(parsed.qr_pass?.qr_token_hash ?? null);
+          setLoading(false);
         }
       }
     } catch {
-      // Ignore storage parse failure
+      // Ignore storage failure
     }
 
-    if (!user) return;
-    let active = true;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
+    let active = true;
     Promise.all([
       membershipsApi.getMy().catch(() => ({ memberships: [] as ApiMembership[] })),
       paymentsApi.getMy().catch(() => ({ payments: [] as ApiPaymentRecord[] })),
-    ]).then(([memRes, payRes]) => {
-      if (!active) return;
-      const activePass =
-        memRes.memberships.find((m) => m.status === 'ACTIVE') ??
-        memRes.memberships[0] ??
-        null;
-      if (activePass) {
-        setLiveMembership(activePass);
-        setQrTokenOverride(activePass.qr_token_hash ?? null);
-        const matchingPayment =
-          payRes.payments.find(
-            (p) => p.reference_type === 'MEMBERSHIP' && p.reference_id === activePass.id
-          ) ?? null;
-        if (matchingPayment) setLivePayment(matchingPayment);
-      }
-    });
+    ])
+      .then(([memRes, payRes]) => {
+        if (!active) return;
+        const activePass =
+          memRes.memberships.find((m) => m.status === 'ACTIVE') ??
+          memRes.memberships[0] ??
+          null;
+        if (activePass) {
+          setLiveMembership(activePass);
+          const matchingPayment =
+            payRes.payments.find(
+              (p) => p.reference_type === 'MEMBERSHIP' && p.reference_id === activePass.id,
+            ) ?? null;
+          if (matchingPayment) setLivePayment(matchingPayment);
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
     return () => {
       active = false;
     };
   }, [location.state, user]);
 
-  const resolvedPass = useMemo<PassData>(() => {
-    if (!liveMembership) return passDefaultData;
+  const breakdown = useMemo<ApiPaymentPricingBreakdown | null>(() => {
+    if (!liveMembership) return null;
+    if (livePayment?.pricing_breakdown) return livePayment.pricing_breakdown;
+    if (liveMembership.pricing_breakdown) return liveMembership.pricing_breakdown;
 
-    const memberName = user?.full_name ?? passDefaultData.memberName;
-    const isGovt = user?.role === 'GOVT_PERSONNEL';
-    const qrToken = qrTokenOverride || liveMembership.qr_token_hash || passDefaultData.qrSeed;
-    const receiptTotal = livePayment
-      ? formatInr(livePayment.total_amount)
-      : liveMembership.calculated_tariff
-        ? formatInr(liveMembership.calculated_tariff.total_amount)
-        : passDefaultData.receiptAmount;
-    const baseAmt = livePayment
-      ? formatInr(livePayment.base_amount)
-      : liveMembership.calculated_tariff
-        ? formatInr(liveMembership.calculated_tariff.base_amount)
-        : '₹0.00';
-    const gstAmt = livePayment
-      ? formatInr(livePayment.gst_amount)
-      : liveMembership.calculated_tariff
-        ? formatInr(liveMembership.calculated_tariff.gst_amount)
-        : '₹0.00';
-
-    const sessionLabel =
-      liveMembership.session_window === 'MORNING'
-        ? '05:00 AM - 10:00 AM'
-        : liveMembership.session_window === 'EVENING'
-          ? '03:00 PM - 09:00 PM'
-          : '05:00 AM - 09:00 PM';
+    const taxable = Number(
+      livePayment?.base_amount ?? liveMembership.calculated_tariff?.base_amount ?? 0,
+    );
+    const gst = Number(
+      livePayment?.gst_amount ?? liveMembership.calculated_tariff?.gst_amount ?? 0,
+    );
+    const total = Number(
+      livePayment?.total_amount ?? liveMembership.calculated_tariff?.total_amount ?? 0,
+    );
 
     return {
-      ...passDefaultData,
-      passReference: `Pass Ref: ${liveMembership.pass_code}`,
-      vaultRecordText: livePayment
-        ? `Receipt: ${livePayment.receipt_no}`
-        : 'Departmental Record Active',
-      statusTag: liveMembership.status,
-      memberName,
-      departmentalCode: isGovt ? 'GOVT-CONCESSION' : 'CITIZEN-PASS',
-      designation: isGovt
-        ? 'Government Personnel • 50% Subsidized Tariff'
-        : 'General Public • Synthetic Track Member',
-      memberId: liveMembership.pass_code,
-      liveStatusText: liveMembership.status === 'ACTIVE' ? 'LIVE' : liveMembership.status,
-      details: [
-        {
-          id: 'facility',
-          label: 'Facility Access',
-          value: liveMembership.facility?.name ?? 'Synthetic 400m Athletic Track',
-          subtext: 'Kannur Police Parade Grounds • Gate 2',
-        },
-        {
-          id: 'validity',
-          label: 'Validity Period',
-          value: `${formatPassDate(liveMembership.start_date)} – ${formatPassDate(
-            liveMembership.end_date
-          )}`,
-          subtext: `${liveMembership.duration_months} Month(s) Subscription`,
-          highlightSubtext: true,
-        },
-        {
-          id: 'session',
-          label: 'Session Window',
-          value: `${liveMembership.session_window} SESSION`,
-          subtext: sessionLabel,
-        },
-        {
-          id: 'gate-protocol',
-          label: 'Gate Clearance Rule',
-          value: '2-Stage (QR + Biometric)',
-          subtext: 'Mandatory Turnstile Dual Verification',
-        },
-      ],
-      barcodeCaption: liveMembership.pass_code,
-      qrSeed: qrToken,
-      qrDescription: `Signed HMAC Token: ${qrToken.slice(0, 18)}...`,
-      receiptAmount: receiptTotal,
-      challanTotal: receiptTotal,
-      challanRows: [
-        { label: 'Pass Code', value: liveMembership.pass_code, isMono: true },
-        {
-          label: 'Receipt No.',
-          value: livePayment?.receipt_no ?? 'Settled',
-          isMono: true,
-        },
-        {
-          label: 'Payment Mode',
-          value: livePayment?.payment_mode ?? 'ONLINE_GATEWAY',
-        },
-        { label: 'Base Fee', value: baseAmt },
-        { label: 'GST (18%)', value: gstAmt },
-      ],
+      base_fee: taxable.toFixed(2),
+      concession_discount: '0.00',
+      concession_percent: 0,
+      taxable_subtotal: taxable.toFixed(2),
+      gst_rate: 18,
+      gst_amount: gst.toFixed(2),
+      final_total_paid: total.toFixed(2),
     };
-  }, [liveMembership, livePayment, qrTokenOverride, user]);
+  }, [liveMembership, livePayment]);
 
-  const handleActionToast = (message: string) => {
-    setToastMessage(message);
+  const handleCopyRef = async () => {
+    if (!liveMembership) return;
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(liveMembership.pass_code).catch(() => {});
+    }
+    setCopiedCode(true);
+    setToastMessage(`Copied membership reference ${liveMembership.pass_code}`);
     window.setTimeout(() => {
+      setCopiedCode(false);
       setToastMessage(null);
-    }, 3000);
+    }, 2400);
   };
 
+  const sessionHours =
+    liveMembership?.session_window === 'MORNING'
+      ? '05:00 AM – 10:00 AM'
+      : liveMembership?.session_window === 'EVENING'
+        ? '03:00 PM – 09:00 PM'
+        : '05:00 AM – 09:00 PM';
+
+  const isGovt =
+    liveMembership?.user_category === 'GOVT_PERSONNEL' || user?.role === 'GOVT_PERSONNEL';
+  const concessionAmount = Number(breakdown?.concession_discount ?? 0);
+
   return (
-    <div className="bookings-page-container flex flex-col w-full bg-transparent font-body-default text-body-default text-on-surface relative">
-      {/* Sub-navigation Back to Home Breadcrumb Strip */}
-      <div className="w-full bg-surface-container-lowest/40 backdrop-blur-md">
-        <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-2 flex items-center">
+    <div className="bookings-page-container flex flex-col w-full text-[#0F172A] antialiased">
+      <div className="w-full max-w-[880px] mx-auto px-4 md:px-6 pt-5 md:pt-8 pb-16 flex flex-col gap-6">
+        {/* Back link (hidden on print) */}
+        <div className="print:hidden flex flex-wrap items-center justify-between gap-3">
           <Link
             to="/"
-            className="inline-flex items-center gap-1 font-label-meta text-label-meta text-tertiary hover:text-primary transition-colors group"
+            className="inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-[#64748B] hover:text-[#0F172A] transition-colors group"
           >
-            <MaterialIcon
-              name="chevron_left"
-              className="text-[16px] transition-transform group-hover:-translate-x-0.5"
-            />
-            <span>Back to home</span>
+            <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+            <span>{t('Back to home', 'ഹോമിലേക്ക് മടങ്ങുക')}</span>
+          </Link>
+
+          <Link
+            to="/my-bookings"
+            className="text-[13px] font-semibold text-[#165DF5] hover:text-[#0F50DC] transition-colors"
+          >
+            {t('View My Bookings →', 'എന്റെ ബുക്കിംഗുകൾ →')}
           </Link>
         </div>
-      </div>
 
-      <div className="w-full max-w-[1200px] mx-auto px-6 md:px-12 py-8 flex flex-col gap-8">
-        {/* GovVault Reference Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-surface-container-lowest/70 backdrop-blur-xl shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-full bg-secondary-container/40 flex items-center justify-center text-primary">
-              <MaterialIcon name="verified_user" className="text-[17px]" filled />
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="font-label-meta text-label-meta font-semibold text-on-surface">
-                {resolvedPass.passReference}
-              </span>
-              <span className="w-1 h-1 rounded-full bg-outline-variant" />
-              <span className="font-label-meta text-label-meta text-tertiary">
-                {resolvedPass.vaultRecordText}
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high/60">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="font-caption text-caption font-medium text-primary">
-              {resolvedPass.syncBadgeText}
+        {loading ? (
+          <div className="rounded-[24px] bg-white/85 border border-slate-200/85 p-12 flex flex-col items-center justify-center gap-3 text-[#64748B]">
+            <Loader2 className="w-6 h-6 animate-spin text-[#165DF5]" />
+            <span className="text-[14px] font-medium">
+              {t('Loading membership receipt...', 'അംഗത്വ രസീത് ലോഡ് ചെയ്യുന്നു...')}
             </span>
           </div>
-        </div>
-
-        {/* Payment & Activation Confirmation */}
-        <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-r from-surface-container-lowest/90 via-surface-container-lowest/75 to-surface-container-lowest/90 backdrop-blur-2xl p-6 md:p-8 shadow-[0_12px_32px_rgba(0,83,205,0.06)]">
-          <div className="absolute -right-8 -top-8 w-44 h-44 rounded-full bg-secondary-container/30 blur-2xl pointer-events-none" />
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
-            <div className="w-16 h-16 shrink-0 rounded-2xl bg-gradient-to-br from-primary-container to-primary flex items-center justify-center text-on-primary shadow-[0_8px_20px_rgba(0,83,205,0.28)]">
-              <MaterialIcon name="check_circle" className="text-[36px]" filled />
-            </div>
-            <div className="flex flex-col gap-1.5 max-w-3xl">
-              <div className="flex items-center gap-2">
-                <span className="font-label-meta text-label-meta font-bold uppercase tracking-wider text-primary">
-                  {resolvedPass.authTag}
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-caption text-caption font-semibold">
-                  {resolvedPass.statusTag}
-                </span>
-              </div>
-              <h1 className="font-title-portal text-title-portal-mobile md:text-title-portal text-on-surface tracking-tight">
-                {resolvedPass.confirmationTitle}
+        ) : !liveMembership ? (
+          <div className="rounded-[26px] bg-white/90 border border-slate-200/85 p-9 text-center max-w-lg mx-auto flex flex-col items-center gap-4">
+            <span className="w-12 h-12 rounded-2xl bg-[#165DF5]/10 text-[#165DF5] flex items-center justify-center">
+              <ReceiptText className="w-6 h-6" />
+            </span>
+            <div>
+              <h1 className="font-display text-[21px] font-bold text-[#0F172A]">
+                {t('No Active Track Membership', 'സജീവ ട്രാക്ക് അംഗത്വമില്ല')}
               </h1>
-              <p className="font-body-default text-body-default text-on-surface-variant">
-                {resolvedPass.confirmationDescription}
+              <p className="text-[13.5px] text-[#64748B] mt-1">
+                {t(
+                  'Enroll in a monthly Synthetic Track plan to receive your instant confirmation and GST fee receipt.',
+                  'സിന്തറ്റിക് ട്രാക്ക് അംഗത്വം എടുത്ത് ഉടൻ ഫീസ് രസീത് നേടുക.',
+                )}
               </p>
             </div>
+            <Link to="/membership" className="btn-primary !h-11 px-6 text-[14px] inline-flex items-center">
+              {t('Get Track Membership', 'ട്രാക്ക് അംഗത്വം നേടുക')}
+            </Link>
           </div>
-        </div>
+        ) : (
+          <article className="receipt-print-sheet w-full rounded-[26px] bg-white/95 backdrop-blur-2xl border border-slate-200/90 shadow-[0_20px_50px_-20px_rgba(15,23,42,0.14)] overflow-hidden">
+            <div className="h-1.5 w-full bg-gradient-to-r from-[#165DF5] via-[#3B82F6] to-emerald-500" />
 
-        {/* Main Content Dual-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <DigitalMembershipCard pass={resolvedPass} />
-          <PassRightSidebar pass={resolvedPass} onActionToast={handleActionToast} />
-        </div>
+            {/* Header */}
+            <div className="px-6 py-6 sm:px-8 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="flex items-start gap-3.5">
+                <span className="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-600 flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="w-6 h-6" strokeWidth={2.2} />
+                </span>
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.09em] text-[#165DF5]">
+                    {t('Kannur City Police • Sports Complex', 'കണ്ണൂർ സിറ്റി പോലീസ് • കായിക സമുച്ചയം')}
+                  </p>
+                  <h1 className="font-display text-[22px] sm:text-[25px] font-extrabold text-[#0F172A] tracking-[-0.025em] leading-tight mt-0.5">
+                    {t('Track Membership Confirmation & Receipt', 'ട്രാക്ക് അംഗത്വ സ്ഥിരീകരണവും ഫീസ് രസീതും')}
+                  </h1>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap sm:flex-col items-start sm:items-end gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11.5px] font-bold uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  {liveMembership.status}
+                </span>
+                <span
+                  className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
+                    isGovt
+                      ? 'bg-blue-50 border-blue-200 text-[#0F50DC]'
+                      : 'bg-slate-100 border-slate-200 text-[#334155]'
+                  }`}
+                >
+                  <ShieldCheck className="w-3 h-3" />
+                  {isGovt ? t('Govt / Police', 'സർക്കാർ / പോലീസ്') : t('General Public', 'പൊതുജനം')}
+                </span>
+              </div>
+            </div>
+
+            {/* Reference IDs */}
+            <div className="px-6 py-4 sm:px-8 bg-slate-50/90 border-b border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <span className="text-[10.5px] font-bold uppercase tracking-[0.07em] text-[#64748B]">
+                  {t('Membership Reference ID', 'അംഗത്വ റഫറൻസ് ഐഡി')}
+                </span>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="font-mono text-[15px] font-bold text-[#0F172A]">
+                    {liveMembership.pass_code}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyRef}
+                    className="print:hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[11px] font-semibold text-[#475569] hover:text-[#165DF5]"
+                  >
+                    {copiedCode ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedCode ? t('Copied', 'പകർത്തി') : t('Copy', 'പകർത്തുക')}</span>
+                  </button>
+                </div>
+              </div>
+              <div className="sm:text-right">
+                <span className="text-[10.5px] font-bold uppercase tracking-[0.07em] text-[#64748B]">
+                  {t('Receipt Number', 'രസീത് നമ്പർ')}
+                </span>
+                <p className="font-mono text-[14px] font-semibold text-[#334155] mt-0.5">
+                  {livePayment?.receipt_no ?? t('Recorded in ledger', 'ലെഡ്ജറിൽ രേഖപ്പെടുത്തി')}
+                </p>
+              </div>
+            </div>
+
+            {/* Details Grid */}
+            <div className="px-6 py-6 sm:px-8 grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-slate-200/80">
+              <div className="rounded-[16px] bg-slate-50/75 border border-slate-200/70 p-4 flex items-start gap-3">
+                <span className="w-9 h-9 rounded-xl bg-white border border-slate-200/80 text-[#165DF5] flex items-center justify-center shrink-0">
+                  <User className="w-4 h-4" />
+                </span>
+                <div>
+                  <span className="text-[10.5px] font-bold uppercase tracking-[0.07em] text-[#64748B]">
+                    {t('Member', 'അംഗം')}
+                  </span>
+                  <p className="text-[15px] font-bold text-[#0F172A] mt-0.5">
+                    {user?.full_name ?? liveMembership.user?.full_name ?? 'Registered Member'}
+                  </p>
+                  {user?.username && (
+                    <p className="text-[12px] font-mono text-[#64748B]">@{user.username}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-[16px] bg-slate-50/75 border border-slate-200/70 p-4 flex items-start gap-3">
+                <span className="w-9 h-9 rounded-xl bg-white border border-slate-200/80 text-[#165DF5] flex items-center justify-center shrink-0">
+                  <CalendarDays className="w-4 h-4" />
+                </span>
+                <div>
+                  <span className="text-[10.5px] font-bold uppercase tracking-[0.07em] text-[#64748B]">
+                    {t('Validity Period', 'കാലാവധി')}
+                  </span>
+                  <p className="text-[14.5px] font-bold text-[#0F172A] mt-0.5 tabular-nums">
+                    {formatPassDate(liveMembership.start_date)} – {formatPassDate(liveMembership.end_date)}
+                  </p>
+                  <p className="text-[12px] font-semibold text-[#165DF5]">
+                    {liveMembership.duration_months}{' '}
+                    {liveMembership.duration_months === 1 ? 'Month Plan' : 'Months Plan'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-[16px] bg-slate-50/75 border border-slate-200/70 p-4 flex items-start gap-3">
+                <span className="w-9 h-9 rounded-xl bg-white border border-slate-200/80 text-[#165DF5] flex items-center justify-center shrink-0">
+                  <Clock className="w-4 h-4" />
+                </span>
+                <div>
+                  <span className="text-[10.5px] font-bold uppercase tracking-[0.07em] text-[#64748B]">
+                    {t('Facility & Session Window', 'വേദിയും സമയവും')}
+                  </span>
+                  <p className="text-[14.5px] font-bold text-[#0F172A] mt-0.5">
+                    {liveMembership.facility?.name ?? 'Synthetic 400m Athletic Track'}
+                  </p>
+                  <p className="text-[12px] text-[#475569] tabular-nums">
+                    {liveMembership.session_window} • {sessionHours}
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-[16px] bg-slate-50/75 border border-slate-200/70 p-4 flex items-start gap-3">
+                <span className="w-9 h-9 rounded-xl bg-white border border-slate-200/80 text-[#165DF5] flex items-center justify-center shrink-0">
+                  <CreditCard className="w-4 h-4" />
+                </span>
+                <div>
+                  <span className="text-[10.5px] font-bold uppercase tracking-[0.07em] text-[#64748B]">
+                    {t('Payment Mode', 'പേയ്‌മെന്റ് രീതി')}
+                  </span>
+                  <p className="text-[14.5px] font-bold text-[#0F172A] mt-0.5">
+                    {livePayment?.payment_mode === 'OFFICE_RECEIPT'
+                      ? t('Office Counter Receipt', 'ഓഫീസ് കൗണ്ടർ രസീത്')
+                      : t('Online Payment Settled', 'ഓൺലൈൻ പേയ്‌മെന്റ് പൂർത്തിയായി')}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Structured Pricing Breakdown */}
+            {breakdown && (
+              <div className="px-6 py-6 sm:px-8">
+                <h2 className="text-[12px] font-bold uppercase tracking-[0.08em] text-[#64748B] mb-3.5">
+                  {t('Official Fee Receipt Breakdown', 'ഔദ്യോഗിക ഫീസ് വിഭജനം')}
+                </h2>
+                <div className="rounded-[18px] bg-slate-50/80 border border-slate-200/80 p-5 flex flex-col gap-2.5 text-[14px]">
+                  <div className="flex items-center justify-between text-[#475569]">
+                    <span>{t('Base Fee', 'അടിസ്ഥാന ഫീസ്')}</span>
+                    <span className="font-semibold text-[#0F172A] tabular-nums">
+                      {formatInr(breakdown.base_fee)}
+                    </span>
+                  </div>
+
+                  {(concessionAmount > 0 || isGovt) && (
+                    <div className="flex items-center justify-between text-emerald-700">
+                      <span className="font-medium">
+                        {t('Govt / Police Concession', 'സർക്കാർ / പോലീസ് ഇളവ്')}
+                        {breakdown.concession_percent > 0 ? ` (${breakdown.concession_percent}%)` : ''}
+                      </span>
+                      <span className="font-semibold tabular-nums">
+                        −{formatInr(breakdown.concession_discount)}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between text-[#475569]">
+                    <span>{t('Taxable Subtotal', 'നികുതി ബാധകമായ തുക')}</span>
+                    <span className="font-semibold text-[#0F172A] tabular-nums">
+                      {formatInr(breakdown.taxable_subtotal)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[#475569]">
+                    <span>GST ({breakdown.gst_rate}%)</span>
+                    <span className="font-semibold text-[#0F172A] tabular-nums">
+                      {formatInr(breakdown.gst_amount)}
+                    </span>
+                  </div>
+
+                  <div className="mt-1.5 pt-3.5 border-t border-dashed border-slate-300 flex items-center justify-between">
+                    <span className="font-bold text-[#0F172A]">
+                      {t('Total Paid', 'ആകെ അടച്ച തുക')}
+                    </span>
+                    <span className="font-display text-[25px] font-extrabold text-[#165DF5] tabular-nums">
+                      {formatInr(breakdown.final_total_paid)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="print:hidden mt-5 flex flex-wrap items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="btn-primary !h-11 px-5 text-[13.5px] inline-flex items-center gap-2"
+                  >
+                    <Printer className="w-4 h-4" />
+                    <span>{t('Print Receipt', 'രസീത് പ്രിന്റ് ചെയ്യുക')}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCopyRef}
+                    className="btn-glass !h-11 px-4 text-[13.5px] inline-flex items-center gap-2"
+                  >
+                    <Copy className="w-4 h-4 text-[#475569]" />
+                    <span>{t('Copy Reference ID', 'റഫറൻസ് പകർത്തുക')}</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="px-6 py-4 sm:px-8 bg-slate-50/90 border-t border-slate-200/80 flex items-start gap-2.5 text-[12.5px] text-[#475569]">
+              <Info className="w-4 h-4 text-[#165DF5] shrink-0 mt-0.5" />
+              <p className="leading-relaxed">
+                {t(
+                  'Please wear appropriate running shoes on the synthetic track surface and quote your Membership Reference ID if requested by ground staff.',
+                  'സിന്തറ്റിക് ട്രാക്കിൽ അനുയോജ്യമായ റണ്ണിംഗ് ഷൂസ് ധരിക്കുക. ആവശ്യമെങ്കിൽ അംഗത്വ റഫറൻസ് ഐഡി കാണിക്കുക.',
+                )}
+              </p>
+            </div>
+          </article>
+        )}
       </div>
 
-      {/* Interactive Toast Feedback */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bookings-toast-enter">
-          <div className="flex items-center gap-2.5 px-5 py-3.5 rounded-2xl bg-inverse-surface text-inverse-on-surface shadow-xl">
-            <MaterialIcon
-              name="check_circle"
-              className="text-emerald-400 text-[20px]"
-              filled
-            />
-            <span className="font-label-primary text-label-primary">
-              {toastMessage}
-            </span>
+        <div className="print:hidden fixed bottom-6 right-6 z-50 bookings-toast-enter">
+          <div className="flex items-center gap-2.5 px-4 py-3 rounded-[14px] bg-[#0F172A] text-white border border-white/10 shadow-xl">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span className="text-[13px] font-medium">{toastMessage}</span>
           </div>
         </div>
       )}

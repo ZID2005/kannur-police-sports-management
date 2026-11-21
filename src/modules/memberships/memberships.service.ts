@@ -14,6 +14,7 @@ import {
   AdminMembershipFilterQuery,
   ApplyMembershipInput,
   ReviewMembershipInput,
+  UpdateMembershipPeriodInput,
 } from './memberships.schema';
 
 const SYNTHETIC_TRACK_DEFAULT_CAP = 300;
@@ -133,7 +134,11 @@ export class MembershipsService {
       );
     }
 
-    if (user.role === UserRole.GOVT_PERSONNEL && !input.govt_service_proof_url) {
+    if (
+      !input.instant_checkout &&
+      user.role === UserRole.GOVT_PERSONNEL &&
+      !input.govt_service_proof_url
+    ) {
       throw new AppError(
         'Government personnel applicants must provide a valid govt_service_proof_url document link for concession verification.',
         400,
@@ -150,6 +155,15 @@ export class MembershipsService {
         'Synthetic Track facility record not found.',
         404,
         'FACILITY_NOT_FOUND'
+      );
+    }
+
+    const opStatus = (facility as any).operational_status ?? 'ACTIVE';
+    if (opStatus !== 'ACTIVE') {
+      throw new AppError(
+        `Facility '${facility.name}' is currently ${opStatus === 'MAINTENANCE' ? 'under maintenance' : 'closed'} and unavailable for new memberships.`,
+        409,
+        'FACILITY_UNAVAILABLE'
       );
     }
 
@@ -199,17 +213,72 @@ export class MembershipsService {
     const userCategory =
       user.role === UserRole.GOVT_PERSONNEL ? UserCategory.GOVT_PERSONNEL : UserCategory.PUBLIC;
 
-    const tariff = await prisma.tariff.findUnique({
-      where: {
-        uq_tariff_facility_category_type: {
-          facility_id: facility.id,
-          user_category: userCategory,
-          booking_type: BookingType.MONTHLY_PASS,
+    const [tariff, publicTariff] = await Promise.all([
+      prisma.tariff.findUnique({
+        where: {
+          uq_tariff_facility_category_type: {
+            facility_id: facility.id,
+            user_category: userCategory,
+            booking_type: BookingType.MONTHLY_PASS,
+          },
         },
-      },
-    });
+      }),
+      userCategory === UserCategory.GOVT_PERSONNEL
+        ? prisma.tariff.findUnique({
+            where: {
+              uq_tariff_facility_category_type: {
+                facility_id: facility.id,
+                user_category: UserCategory.PUBLIC,
+                booking_type: BookingType.MONTHLY_PASS,
+              },
+            },
+          })
+        : Promise.resolve(null),
+    ]);
 
     const passCode = await generateUniquePassCode(user.role);
+    const initialStatus = input.instant_checkout
+      ? MembershipStatus.APPROVED_UNPAID
+      : MembershipStatus.PENDING_APPROVAL;
+
+    // Persist any submitted benign onboarding fields onto the member's persistent User profile
+    const userOnboardingPatch: Record<string, unknown> = {};
+    if (input.gender !== undefined) userOnboardingPatch.gender = input.gender;
+    if (input.date_of_birth !== undefined) userOnboardingPatch.date_of_birth = input.date_of_birth;
+    if (input.parent_name !== undefined) userOnboardingPatch.parent_name = input.parent_name;
+    if (input.present_address !== undefined) {
+      userOnboardingPatch.present_address = input.present_address;
+    }
+    if (input.city_locality !== undefined) userOnboardingPatch.city_locality = input.city_locality;
+    if (input.pin_code !== undefined) userOnboardingPatch.pin_code = input.pin_code;
+    if (input.permanent_address !== undefined) {
+      userOnboardingPatch.permanent_address = input.permanent_address;
+    }
+    if (input.designation !== undefined) userOnboardingPatch.designation = input.designation;
+    if (input.office_address !== undefined) {
+      userOnboardingPatch.office_address = input.office_address;
+    }
+    if (input.track_purpose !== undefined) userOnboardingPatch.track_purpose = input.track_purpose;
+    if (input.is_registered_sportsperson !== undefined) {
+      userOnboardingPatch.is_registered_sportsperson = input.is_registered_sportsperson;
+      if (input.is_registered_sportsperson === false) {
+        userOnboardingPatch.sport_discipline = null;
+        userOnboardingPatch.association_details = null;
+      }
+    }
+    if (input.sport_discipline !== undefined && input.is_registered_sportsperson !== false) {
+      userOnboardingPatch.sport_discipline = input.sport_discipline;
+    }
+    if (input.association_details !== undefined && input.is_registered_sportsperson !== false) {
+      userOnboardingPatch.association_details = input.association_details;
+    }
+
+    if (Object.keys(userOnboardingPatch).length > 0) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: userOnboardingPatch,
+      });
+    }
 
     const createdMembership = await prisma.membership.create({
       data: {
@@ -219,10 +288,39 @@ export class MembershipsService {
         duration_months: input.duration_months,
         session_window: input.session_window,
         govt_service_proof_url: input.govt_service_proof_url ?? null,
-        status: MembershipStatus.PENDING_APPROVAL,
+        track_purpose: input.track_purpose ?? null,
+        is_registered_sportsperson: input.is_registered_sportsperson ?? false,
+        sport_discipline:
+          input.is_registered_sportsperson === false ? null : (input.sport_discipline ?? null),
+        association_details:
+          input.is_registered_sportsperson === false ? null : (input.association_details ?? null),
+        declaration_accepted: input.declaration_accepted ?? false,
+        status: initialStatus,
       },
       include: {
         facility: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+            full_name: true,
+            email: true,
+            role: true,
+            gender: true,
+            date_of_birth: true,
+            parent_name: true,
+            present_address: true,
+            city_locality: true,
+            pin_code: true,
+            permanent_address: true,
+            designation: true,
+            office_address: true,
+            track_purpose: true,
+            is_registered_sportsperson: true,
+            sport_discipline: true,
+            association_details: true,
+          },
+        },
       },
     });
 
@@ -232,11 +330,37 @@ export class MembershipsService {
       createdMembership.duration_months
     );
 
+    const standardMonthlyBase = Number(publicTariff?.base_price ?? 500);
+    const taxableSubtotal = Number(feeCalculation.base_amount);
+    const standardBaseFee =
+      userCategory === UserCategory.GOVT_PERSONNEL &&
+      standardMonthlyBase * createdMembership.duration_months > taxableSubtotal
+        ? Math.round(standardMonthlyBase * createdMembership.duration_months * 100) / 100
+        : taxableSubtotal;
+    const concessionDiscount = Math.max(
+      0,
+      Math.round((standardBaseFee - taxableSubtotal) * 100) / 100
+    );
+    const concessionPercent =
+      standardBaseFee > 0 && concessionDiscount > 0
+        ? Math.round((concessionDiscount / standardBaseFee) * 1000) / 10
+        : 0;
+
     return {
       membership: {
         ...createdMembership,
-        payment_locked: true,
+        payment_locked: !input.instant_checkout,
+        payment_unlocked: input.instant_checkout,
         calculated_tariff: feeCalculation,
+        pricing_breakdown: {
+          base_fee: standardBaseFee.toFixed(2),
+          concession_discount: concessionDiscount.toFixed(2),
+          concession_percent: concessionPercent,
+          taxable_subtotal: taxableSubtotal.toFixed(2),
+          gst_rate: Number(feeCalculation.gst_percent),
+          gst_amount: feeCalculation.gst_amount,
+          final_total_paid: feeCalculation.total_amount,
+        },
         status_timeline: buildStatusTimeline(createdMembership),
       },
     };
@@ -267,15 +391,28 @@ export class MembershipsService {
 
     const enriched = await Promise.all(
       memberships.map(async (m) => {
-        const tariff = await prisma.tariff.findUnique({
-          where: {
-            uq_tariff_facility_category_type: {
-              facility_id: m.facility_id,
-              user_category: userCategory,
-              booking_type: BookingType.MONTHLY_PASS,
+        const [tariff, publicTariff] = await Promise.all([
+          prisma.tariff.findUnique({
+            where: {
+              uq_tariff_facility_category_type: {
+                facility_id: m.facility_id,
+                user_category: userCategory,
+                booking_type: BookingType.MONTHLY_PASS,
+              },
             },
-          },
-        });
+          }),
+          userCategory === UserCategory.GOVT_PERSONNEL
+            ? prisma.tariff.findUnique({
+                where: {
+                  uq_tariff_facility_category_type: {
+                    facility_id: m.facility_id,
+                    user_category: UserCategory.PUBLIC,
+                    booking_type: BookingType.MONTHLY_PASS,
+                  },
+                },
+              })
+            : Promise.resolve(null),
+        ]);
 
         const fee = calculateMembershipFee(
           tariff?.base_price ?? (userCategory === UserCategory.GOVT_PERSONNEL ? '250.00' : '500.00'),
@@ -283,17 +420,142 @@ export class MembershipsService {
           m.duration_months
         );
 
+        const standardMonthlyBase = Number(publicTariff?.base_price ?? 500);
+        const taxableSubtotal = Number(fee.base_amount);
+        const standardBaseFee =
+          userCategory === UserCategory.GOVT_PERSONNEL &&
+          standardMonthlyBase * m.duration_months > taxableSubtotal
+            ? Math.round(standardMonthlyBase * m.duration_months * 100) / 100
+            : taxableSubtotal;
+        const concessionDiscount = Math.max(
+          0,
+          Math.round((standardBaseFee - taxableSubtotal) * 100) / 100
+        );
+        const concessionPercent =
+          standardBaseFee > 0 && concessionDiscount > 0
+            ? Math.round((concessionDiscount / standardBaseFee) * 1000) / 10
+            : 0;
+
         return {
           ...m,
+          user_category: userCategory,
           payment_locked: m.status !== MembershipStatus.APPROVED_UNPAID,
           payment_unlocked: m.status === MembershipStatus.APPROVED_UNPAID,
           calculated_tariff: fee,
+          pricing_breakdown: {
+            base_fee: standardBaseFee.toFixed(2),
+            concession_discount: concessionDiscount.toFixed(2),
+            concession_percent: concessionPercent,
+            taxable_subtotal: taxableSubtotal.toFixed(2),
+            gst_rate: Number(fee.gst_percent),
+            gst_amount: fee.gst_amount,
+            final_total_paid: fee.total_amount,
+          },
           status_timeline: buildStatusTimeline(m),
         };
       })
     );
 
     return { memberships: enriched };
+  }
+
+  /**
+   * PATCH /api/memberships/:id/period
+   * Allows the applicant to update duration_months and/or session_window
+   * while the membership is PENDING_APPROVAL or APPROVED_UNPAID (before payment settlement).
+   */
+  static async updateMembershipPeriod(
+    membershipId: string,
+    user: AuthenticatedUser,
+    input: UpdateMembershipPeriodInput
+  ) {
+    const membership = await prisma.membership.findUnique({
+      where: { id: membershipId },
+      include: {
+        facility: true,
+        reviewed_by_officer: {
+          select: {
+            id: true,
+            username: true,
+            full_name: true,
+          },
+        },
+      },
+    });
+
+    if (!membership) {
+      throw new AppError(
+        `Membership application '${membershipId}' not found.`,
+        404,
+        'MEMBERSHIP_NOT_FOUND'
+      );
+    }
+
+    if (membership.user_id !== user.id) {
+      throw new AppError(
+        'You are not authorized to modify another user’s membership application.',
+        403,
+        'FORBIDDEN_MEMBERSHIP_ACCESS'
+      );
+    }
+
+    if (
+      membership.status !== MembershipStatus.PENDING_APPROVAL &&
+      membership.status !== MembershipStatus.APPROVED_UNPAID
+    ) {
+      throw new AppError(
+        `Membership period cannot be changed once status is '${membership.status}'.`,
+        400,
+        'MEMBERSHIP_PERIOD_LOCKED'
+      );
+    }
+
+    const updatedMembership = await prisma.membership.update({
+      where: { id: membership.id },
+      data: {
+        ...(input.duration_months !== undefined ? { duration_months: input.duration_months } : {}),
+        ...(input.session_window !== undefined ? { session_window: input.session_window } : {}),
+      },
+      include: {
+        facility: true,
+        reviewed_by_officer: {
+          select: {
+            id: true,
+            username: true,
+            full_name: true,
+          },
+        },
+      },
+    });
+
+    const userCategory =
+      user.role === UserRole.GOVT_PERSONNEL ? UserCategory.GOVT_PERSONNEL : UserCategory.PUBLIC;
+
+    const tariff = await prisma.tariff.findUnique({
+      where: {
+        uq_tariff_facility_category_type: {
+          facility_id: updatedMembership.facility_id,
+          user_category: userCategory,
+          booking_type: BookingType.MONTHLY_PASS,
+        },
+      },
+    });
+
+    const feeCalculation = calculateMembershipFee(
+      tariff?.base_price ?? (userCategory === UserCategory.GOVT_PERSONNEL ? '250.00' : '500.00'),
+      tariff?.gst_percent ?? '18.00',
+      updatedMembership.duration_months
+    );
+
+    return {
+      membership: {
+        ...updatedMembership,
+        payment_locked: updatedMembership.status !== MembershipStatus.APPROVED_UNPAID,
+        payment_unlocked: updatedMembership.status === MembershipStatus.APPROVED_UNPAID,
+        calculated_tariff: feeCalculation,
+        status_timeline: buildStatusTimeline(updatedMembership),
+      },
+    };
   }
 
   /**
@@ -316,6 +578,19 @@ export class MembershipsService {
             role: true,
             account_status: true,
             profile_photo_url: true,
+            gender: true,
+            date_of_birth: true,
+            parent_name: true,
+            present_address: true,
+            city_locality: true,
+            pin_code: true,
+            permanent_address: true,
+            designation: true,
+            office_address: true,
+            track_purpose: true,
+            is_registered_sportsperson: true,
+            sport_discipline: true,
+            association_details: true,
           },
         },
         facility: true,
@@ -391,6 +666,19 @@ export class MembershipsService {
             role: true,
             account_status: true,
             profile_photo_url: true,
+            gender: true,
+            date_of_birth: true,
+            parent_name: true,
+            present_address: true,
+            city_locality: true,
+            pin_code: true,
+            permanent_address: true,
+            designation: true,
+            office_address: true,
+            track_purpose: true,
+            is_registered_sportsperson: true,
+            sport_discipline: true,
+            association_details: true,
           },
         },
         facility: true,

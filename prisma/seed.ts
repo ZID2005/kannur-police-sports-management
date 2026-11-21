@@ -2,6 +2,7 @@ import {
   AccountStatus,
   BookingType,
   FacilityCode,
+  Gender,
   PrismaClient,
   UserCategory,
   UserRole,
@@ -221,10 +222,9 @@ export async function runSeed(client: PrismaClient = prisma) {
   }
 
   // --------------------------------------------------------------------------
-  // 3. SEED INITIAL ACCOUNTS (NO PHONE/MOBILE OR AADHAAR FIELDS)
+  // 3. SEED INITIAL ACCOUNTS (NO PHONE/MOBILE OR GOVERNMENT ID FIELDS)
   // --------------------------------------------------------------------------
   const adminPasswordHash = await hashPassword('KcpAdmin@2026!');
-  const gateOfficerPasswordHash = await hashPassword('KcpGate@2026!');
   const publicUserPasswordHash = await hashPassword('PriyaSports@2026!');
 
   // 3.1 STAFF_ADMIN: insp_rajeev
@@ -236,6 +236,9 @@ export async function runSeed(client: PrismaClient = prisma) {
       role: UserRole.STAFF_ADMIN,
       account_status: AccountStatus.ACTIVE,
       ban_reason: null,
+      gender: Gender.MALE,
+      designation: 'Inspector of Police (Sports Administration)',
+      office_address: 'District Police Office, South Bazaar, Kannur 670002',
     },
     create: {
       username: 'insp_rajeev',
@@ -244,32 +247,14 @@ export async function runSeed(client: PrismaClient = prisma) {
       email: 'insp.rajeev@kannurpolice.kerala.gov.in',
       role: UserRole.STAFF_ADMIN,
       account_status: AccountStatus.ACTIVE,
+      gender: Gender.MALE,
+      designation: 'Inspector of Police (Sports Administration)',
+      office_address: 'District Police Office, South Bazaar, Kannur 670002',
     },
   });
   console.log(`[User Seeded] STAFF_ADMIN -> username: '${inspRajeev.username}'`);
 
-  // 3.2 GATE_OFFICER: hc_pradeep
-  const hcPradeep = await client.user.upsert({
-    where: { username: 'hc_pradeep' },
-    update: {
-      full_name: 'HC Pradeep V. (Gate Verification Officer)',
-      email: 'hc.pradeep@kannurpolice.kerala.gov.in',
-      role: UserRole.GATE_OFFICER,
-      account_status: AccountStatus.ACTIVE,
-      ban_reason: null,
-    },
-    create: {
-      username: 'hc_pradeep',
-      password_hash: gateOfficerPasswordHash,
-      full_name: 'HC Pradeep V. (Gate Verification Officer)',
-      email: 'hc.pradeep@kannurpolice.kerala.gov.in',
-      role: UserRole.GATE_OFFICER,
-      account_status: AccountStatus.ACTIVE,
-    },
-  });
-  console.log(`[User Seeded] GATE_OFFICER -> username: '${hcPradeep.username}'`);
-
-  // 3.3 PUBLIC: priya_mohan
+  // 3.2 PUBLIC: priya_mohan
   const priyaMohan = await client.user.upsert({
     where: { username: 'priya_mohan' },
     update: {
@@ -278,6 +263,17 @@ export async function runSeed(client: PrismaClient = prisma) {
       role: UserRole.PUBLIC,
       account_status: AccountStatus.ACTIVE,
       ban_reason: null,
+      gender: Gender.FEMALE,
+      date_of_birth: '1995-04-14',
+      parent_name: 'Mohanan Nair',
+      present_address: 'Haritha Nagar, House No. 24, Near Pallikunnu Junction',
+      city_locality: 'Pallikunnu, Kannur',
+      pin_code: '670004',
+      permanent_address: 'Haritha Nagar, House No. 24, Pallikunnu, Kannur 670004',
+      track_purpose: 'Daily fitness conditioning and 10K marathon preparation',
+      is_registered_sportsperson: true,
+      sport_discipline: 'Athletics',
+      association_details: 'Kannur District Athletics Association',
     },
     create: {
       username: 'priya_mohan',
@@ -286,6 +282,17 @@ export async function runSeed(client: PrismaClient = prisma) {
       email: 'priya.mohan@example.org',
       role: UserRole.PUBLIC,
       account_status: AccountStatus.ACTIVE,
+      gender: Gender.FEMALE,
+      date_of_birth: '1995-04-14',
+      parent_name: 'Mohanan Nair',
+      present_address: 'Haritha Nagar, House No. 24, Near Pallikunnu Junction',
+      city_locality: 'Pallikunnu, Kannur',
+      pin_code: '670004',
+      permanent_address: 'Haritha Nagar, House No. 24, Pallikunnu, Kannur 670004',
+      track_purpose: 'Daily fitness conditioning and 10K marathon preparation',
+      is_registered_sportsperson: true,
+      sport_discipline: 'Athletics',
+      association_details: 'Kannur District Athletics Association',
     },
   });
   console.log(`[User Seeded] PUBLIC -> username: '${priyaMohan.username}'`);
@@ -303,7 +310,7 @@ export async function runSeed(client: PrismaClient = prisma) {
       details: {
         facilitiesSeeded: facilitiesData.map((f) => f.code),
         tariffsSeededCount: tariffsData.length,
-        accountsSeeded: ['insp_rajeev', 'hc_pradeep', 'priya_mohan'],
+        accountsSeeded: ['insp_rajeev', 'priya_mohan'],
       },
       ip_address: '127.0.0.1',
     },

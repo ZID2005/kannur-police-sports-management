@@ -21,7 +21,7 @@ export class PaymentsController {
 
       res.status(201).json({
         success: true,
-        message: 'Payment settled and QR pass activated successfully.',
+        message: 'Payment settled and booking confirmation receipt generated successfully.',
         data: result,
       });
     } catch (error) {
@@ -69,7 +69,7 @@ export class PaymentsController {
 
       res.status(201).json({
         success: true,
-        message: 'Office receipt recorded and QR pass activated successfully.',
+        message: 'Office receipt recorded and settlement confirmed successfully.',
         data: result,
       });
     } catch (error) {

@@ -1,43 +1,64 @@
 import { MaterialIcon } from '@/components/ui/MaterialIcon';
-import type { AuditStatCardData } from '@/types/gate';
+import type { AuditStatCardData } from '@/types/adminAudit';
 
 interface AuditStatCardProps {
   card: AuditStatCardData;
+  delayMs?: number;
 }
 
-export function AuditStatCard({ card }: AuditStatCardProps) {
+function getModernIconTone(id: string): string {
+  switch (id) {
+    case 'total-events':
+      return 'bg-[#EFF5FF] text-[#165DF5] border border-[#DCE8FE]';
+    case 'facility-ops':
+      return 'bg-sky-50 text-sky-700 border border-sky-200/80';
+    case 'slot-controls':
+      return 'bg-amber-50 text-amber-700 border border-amber-200/80';
+    default:
+      return 'bg-indigo-50 text-indigo-600 border border-indigo-200/80';
+  }
+}
+
+export function AuditStatCard({ card, delayMs = 0 }: AuditStatCardProps) {
+  const iconTone = getModernIconTone(card.id);
+
   return (
-    <div className="bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-5 shadow-sm flex flex-col justify-between transition-all hover:shadow-md">
-      <div className="flex items-center justify-between gap-2 mb-3">
-        <span className="font-caption text-caption font-semibold uppercase tracking-wider text-outline text-[11px]">
+    <div
+      style={{ animationDelay: `${delayMs}ms` }}
+      className="admin-animate-enter admin-kpi-card h-full rounded-[22px] p-5 flex flex-col justify-between gap-4"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <span className="text-[11px] font-bold uppercase tracking-[0.07em] text-slate-400 leading-snug pt-0.5">
           {card.label}
         </span>
         <div
-          className={`w-8 h-8 rounded-full ${card.iconBgClass} flex items-center justify-center shrink-0`}
+          className={`admin-kpi-icon w-10 h-10 rounded-xl ${iconTone} flex items-center justify-center shrink-0`}
         >
-          <MaterialIcon name={card.icon} className={`text-[18px] ${card.iconTextClass} font-medium`} />
+          <MaterialIcon name={card.icon} className="text-[20px]" />
         </div>
       </div>
-      <div className="flex flex-col gap-1">
-        <span className="font-headline-card text-[34px] leading-none font-bold text-on-surface">
+
+      <div className="flex flex-col gap-2.5">
+        <span className="font-display text-[30px] leading-none font-extrabold text-[#0F172A] tracking-[-0.03em] tabular-nums">
           {card.value}
         </span>
-        <div className="flex items-center gap-1.5 mt-2 text-on-surface-variant font-label-meta text-label-meta truncate">
+
+        <div className="pt-2.5 border-t border-slate-100 flex items-center gap-1.5 flex-wrap text-[12px] text-slate-500">
           {card.trendText && (
             <>
-              <span className="inline-flex items-center text-emerald-700 font-label-meta text-label-meta font-medium">
-                {card.trendIcon && (
-                  <MaterialIcon name={card.trendIcon} className="text-[16px] mr-0.5" />
-                )}
+              <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold">
+                {card.trendIcon && <MaterialIcon name={card.trendIcon} className="text-[14px]" />}
                 {card.trendText}
               </span>
-              <span className="text-outline text-caption">•</span>
+              <span className="text-slate-300">·</span>
             </>
           )}
           {card.metaItems.map((item, idx) => (
-            <span key={item.text} className="inline-flex items-center gap-1">
-              {idx > 0 && <span className="text-outline mx-0.5">•</span>}
-              <span className={item.className ?? ''}>{item.text}</span>
+            <span key={`${card.id}-${idx}`} className="inline-flex items-center gap-1.5">
+              {idx > 0 && <span className="text-slate-300">·</span>}
+              <span className={item.className ? 'font-semibold text-[#165DF5]' : 'font-medium'}>
+                {item.text}
+              </span>
             </span>
           ))}
         </div>

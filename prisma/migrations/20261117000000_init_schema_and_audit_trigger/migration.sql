@@ -5,7 +5,7 @@
 --
 -- STRICT CONSTRAINTS ENFORCED:
 -- 1. ZERO mobile phone / SMS / OTP columns in any table.
--- 2. ZERO Aadhaar or Government ID number columns in any table.
+-- 2. ZERO Government ID number columns in any table.
 -- 3. `audit_logs` is strictly append-only via PostgreSQL triggers blocking
 --    UPDATE, DELETE, and TRUNCATE operations.
 -- ============================================================================
@@ -19,14 +19,19 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TYPE "user_role" AS ENUM (
   'PUBLIC',
   'GOVT_PERSONNEL',
-  'STAFF_ADMIN',
-  'GATE_OFFICER'
+  'STAFF_ADMIN'
 );
 
 CREATE TYPE "account_status" AS ENUM (
   'ACTIVE',
   'SUSPENDED',
   'BANNED'
+);
+
+CREATE TYPE "gender" AS ENUM (
+  'MALE',
+  'FEMALE',
+  'TRANSGENDER'
 );
 
 CREATE TYPE "facility_code" AS ENUM (
@@ -92,29 +97,36 @@ CREATE TYPE "payment_status" AS ENUM (
   'REFUNDED'
 );
 
-CREATE TYPE "verification_type" AS ENUM (
-  'QR_ONLY',
-  'QR_AND_BIOMETRIC',
-  'MANUAL_OVERRIDE'
-);
-
 -- ----------------------------------------------------------------------------
 -- 2. TABLES
 -- ----------------------------------------------------------------------------
 
--- 2.1 users (NO phone/mobile/OTP fields, NO Aadhaar/Govt ID number fields)
+-- 2.1 users (NO phone/mobile/OTP fields, NO Government ID number fields)
 CREATE TABLE "users" (
-  "id"                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  "username"          VARCHAR(64) NOT NULL UNIQUE,
-  "password_hash"     VARCHAR(255) NOT NULL,
-  "full_name"         VARCHAR(150) NOT NULL,
-  "email"             VARCHAR(150) UNIQUE,
-  "role"              "user_role" NOT NULL DEFAULT 'PUBLIC',
-  "account_status"    "account_status" NOT NULL DEFAULT 'ACTIVE',
-  "ban_reason"        TEXT,
-  "profile_photo_url" TEXT,
-  "created_at"        TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updated_at"        TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP
+  "id"                         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  "username"                   VARCHAR(64) NOT NULL UNIQUE,
+  "password_hash"              VARCHAR(255) NOT NULL,
+  "full_name"                  VARCHAR(150) NOT NULL,
+  "email"                      VARCHAR(150) UNIQUE,
+  "role"                       "user_role" NOT NULL DEFAULT 'PUBLIC',
+  "account_status"             "account_status" NOT NULL DEFAULT 'ACTIVE',
+  "ban_reason"                 TEXT,
+  "profile_photo_url"          TEXT,
+  "gender"                     "gender",
+  "date_of_birth"              VARCHAR(32),
+  "parent_name"                VARCHAR(150),
+  "present_address"            TEXT,
+  "city_locality"              VARCHAR(120),
+  "pin_code"                   VARCHAR(12),
+  "permanent_address"          TEXT,
+  "designation"                VARCHAR(150),
+  "office_address"             TEXT,
+  "track_purpose"              VARCHAR(255),
+  "is_registered_sportsperson" BOOLEAN NOT NULL DEFAULT FALSE,
+  "sport_discipline"           VARCHAR(120),
+  "association_details"        VARCHAR(200),
+  "created_at"                 TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at"                 TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX "idx_users_username" ON "users" ("username");
@@ -155,22 +167,26 @@ CREATE TABLE "tariffs" (
 
 CREATE INDEX "idx_tariffs_facility_active" ON "tariffs" ("facility_id", "is_active");
 
--- 2.4 memberships (Only govt_service_proof_url stored; ZERO Aadhaar/ID numbers)
+-- 2.4 memberships (Only benign onboarding details & optional service proof URL; ZERO Government ID numbers)
 CREATE TABLE "memberships" (
-  "id"                     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  "pass_code"              VARCHAR(32) NOT NULL UNIQUE,
-  "user_id"                UUID NOT NULL REFERENCES "users"("id") ON DELETE RESTRICT,
-  "facility_id"            UUID NOT NULL REFERENCES "facilities"("id") ON DELETE RESTRICT,
-  "duration_months"        INTEGER NOT NULL,
-  "start_date"             DATE,
-  "end_date"               DATE,
-  "session_window"         "session_window" NOT NULL,
-  "govt_service_proof_url" TEXT,
-  "status"                 "membership_status" NOT NULL DEFAULT 'PENDING_APPROVAL',
-  "reviewed_by_officer_id" UUID REFERENCES "users"("id") ON DELETE SET NULL,
-  "officer_remarks"        TEXT,
-  "qr_token_hash"          VARCHAR(128) UNIQUE,
-  "created_at"             TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "id"                         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  "pass_code"                  VARCHAR(32) NOT NULL UNIQUE,
+  "user_id"                    UUID NOT NULL REFERENCES "users"("id") ON DELETE RESTRICT,
+  "facility_id"                UUID NOT NULL REFERENCES "facilities"("id") ON DELETE RESTRICT,
+  "duration_months"            INTEGER NOT NULL,
+  "start_date"                 DATE,
+  "end_date"                   DATE,
+  "session_window"             "session_window" NOT NULL,
+  "govt_service_proof_url"     TEXT,
+  "track_purpose"              VARCHAR(255),
+  "is_registered_sportsperson" BOOLEAN NOT NULL DEFAULT FALSE,
+  "sport_discipline"           VARCHAR(120),
+  "association_details"        VARCHAR(200),
+  "declaration_accepted"       BOOLEAN NOT NULL DEFAULT FALSE,
+  "status"                     "membership_status" NOT NULL DEFAULT 'PENDING_APPROVAL',
+  "reviewed_by_officer_id"     UUID REFERENCES "users"("id") ON DELETE SET NULL,
+  "officer_remarks"            TEXT,
+  "created_at"                 TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT "chk_memberships_duration_months" CHECK ("duration_months" BETWEEN 1 AND 6),
   CONSTRAINT "chk_memberships_dates" CHECK (
     ("start_date" IS NULL AND "end_date" IS NULL) OR
@@ -193,7 +209,6 @@ CREATE TABLE "slot_bookings" (
   "court_partition" "court_partition" NOT NULL DEFAULT 'FULL',
   "total_amount"    DECIMAL(10, 2) NOT NULL,
   "status"          "slot_booking_status" NOT NULL DEFAULT 'PENDING_PAYMENT',
-  "qr_token_hash"   VARCHAR(128) UNIQUE,
   "created_at"      TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT "chk_slot_bookings_time_range" CHECK ("end_time" > "start_time"),
   CONSTRAINT "chk_slot_bookings_total_amount" CHECK ("total_amount" >= 0)
@@ -241,26 +256,7 @@ CREATE TABLE "payments" (
 CREATE INDEX "idx_payments_reference" ON "payments" ("reference_type", "reference_id");
 CREATE INDEX "idx_payments_user_status" ON "payments" ("user_id", "status");
 
--- 2.8 gate_logs
-CREATE TABLE "gate_logs" (
-  "id"                         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  "facility_id"                UUID NOT NULL REFERENCES "facilities"("id") ON DELETE RESTRICT,
-  "gate_name"                  VARCHAR(100) NOT NULL,
-  "user_id"                    UUID REFERENCES "users"("id") ON DELETE SET NULL,
-  "pass_or_booking_code"       VARCHAR(64) NOT NULL,
-  "verification_type"          "verification_type" NOT NULL,
-  "stage1_qr_passed"           BOOLEAN NOT NULL,
-  "stage2_biometric_passed"    BOOLEAN NOT NULL,
-  "access_granted"             BOOLEAN NOT NULL,
-  "failure_or_override_reason" TEXT,
-  "verified_by_officer_id"     UUID NOT NULL REFERENCES "users"("id") ON DELETE RESTRICT,
-  "scanned_at"                 TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX "idx_gate_logs_facility_scanned" ON "gate_logs" ("facility_id", "scanned_at");
-CREATE INDEX "idx_gate_logs_code" ON "gate_logs" ("pass_or_booking_code");
-
--- 2.9 audit_logs (STRICTLY APPEND-ONLY IMMUTABLE LEDGER)
+-- 2.8 audit_logs (STRICTLY APPEND-ONLY IMMUTABLE LEDGER)
 CREATE TABLE "audit_logs" (
   "id"                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   "officer_id"         UUID NOT NULL REFERENCES "users"("id") ON DELETE RESTRICT,

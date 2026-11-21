@@ -1,683 +1,444 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   ApiError,
   adminApi,
-  facilitiesApi,
-  type ApiAdminSlot,
-  type ApiFacility,
-  type BackendCourtPartition,
-  type BackendFacilityCode,
+  type ApiAdminFacilitiesResponse,
+  type ApiAdminFacility,
+  type ApiManagedSlot,
+  type CreateFacilityPayload,
+  type CreateSlotPayload,
+  type FacilityOperationalStatus,
+  type UpdateFacilityPayload,
+  type UpdateSlotPayload,
 } from '@/api/client';
 import '@/styles/adminOps.css';
-import type {
-  CourtScopeFilterId,
-  FacilityAdminId,
-  FacilityAdminItem,
-  FacilityDateOption,
-  FacilityRuleParameter,
-  FacilitySlotAction,
-  FacilityTimeSlot,
-  OverrideReasonId,
-} from '@/types/adminOps';
-import {
-  facilityAdminList,
-  facilityCourtScopeOptions,
-  facilityOverrideReasons,
-} from '@/data/mockData';
 import { useAuth } from '@/context/AuthContext';
-import { FacilitySwitcherBar } from '@/components/admin/facilities/FacilitySwitcherBar';
-import { FacilityRulesCard } from '@/components/admin/facilities/FacilityRulesCard';
-import { FacilityDateFilterBar } from '@/components/admin/facilities/FacilityDateFilterBar';
-import { FacilitySlotRow } from '@/components/admin/facilities/FacilitySlotRow';
-import { FacilityOverridePanel } from '@/components/admin/facilities/FacilityOverridePanel';
-import {
-  FacilityEditRulesModal,
-  FacilityManualBookingModal,
-} from '@/components/admin/facilities/FacilityModals';
+import { currentStaff } from '@/data/mockData';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { MaterialIcon } from '@/components/ui/MaterialIcon';
+import { FacilityDirectoryCard } from '@/components/admin/facilities/FacilityDirectoryCard';
+import { SlotScheduleTable } from '@/components/admin/facilities/SlotScheduleTable';
+import { FacilityFormDrawer } from '@/components/admin/facilities/FacilityFormDrawer';
+import { SlotFormDrawer } from '@/components/admin/facilities/SlotFormDrawer';
 
 interface ToastState {
+  tone: 'success' | 'error';
   title: string;
   subtitle: string;
 }
 
-type LiveFacilityTimeSlot = FacilityTimeSlot & {
-  startTime?: string;
-  endTime?: string;
-  blockId?: string;
-  halfABlockId?: string;
-  halfBBlockId?: string;
-};
+type ActiveDrawerState =
+  | null
+  | { type: 'add-facility' }
+  | { type: 'edit-facility'; facility: ApiAdminFacility }
+  | { type: 'add-slot' }
+  | { type: 'edit-slot'; slot: ApiManagedSlot };
 
-const FACILITY_ID_TO_CODE: Record<FacilityAdminId, BackendFacilityCode> = {
-  track: 'SYNTHETIC_TRACK',
-  football: 'FOOTBALL_GROUND',
-  turf: 'POLICE_TURF',
-  badminton: 'BADMINTON_COURT',
-};
-
-function formatDateIso(dt: Date): string {
+function getTodayIso(): string {
+  const dt = new Date();
   const y = dt.getFullYear();
   const m = String(dt.getMonth() + 1).padStart(2, '0');
   const d = String(dt.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
 }
 
-function buildAdminDateOptions(): Array<FacilityDateOption & { isoDate: string }> {
-  const base = new Date();
-  return [-1, 0, 1, 2, 3].map((offset) => {
-    const dt = new Date(base);
-    dt.setDate(base.getDate() + offset);
-    const isoDate = formatDateIso(dt);
-    const labelPrefix =
-      offset === -1 ? 'Yesterday' : offset === 0 ? 'Today' : offset === 1 ? 'Tomorrow' : dt.toLocaleDateString('en-US', { weekday: 'short' });
-    const shortDay = dt.toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-    });
-    return {
-      id: isoDate,
-      isoDate,
-      label: `${labelPrefix}, ${shortDay}`,
-      dayName: dt.toLocaleDateString('en-US', { weekday: 'long' }),
-    };
-  });
-}
-
-function formatTime12h(hhmm: string): string {
-  const [hStr, mStr] = hhmm.split(':');
-  const h = Number.parseInt(hStr ?? '0', 10);
-  const suffix = h >= 12 ? 'PM' : 'AM';
-  const hour12 = h % 12 || 12;
-  return `${String(hour12).padStart(2, '0')}:${mStr ?? '00'} ${suffix}`;
-}
-
-function mapAdminSlotToUi(
-  slot: ApiAdminSlot,
-  facilityId: FacilityAdminId,
-  isPartitionable: boolean,
-  officerLabel: string
-): LiveFacilityTimeSlot {
-  const slotId = `${facilityId}-${slot.start_time}`;
-  const timeRange = `${formatTime12h(slot.start_time)} – ${formatTime12h(slot.end_time)}`;
-  const fullPart = slot.partitions?.FULL;
-  const halfA = slot.partitions?.HALF_A;
-  const halfB = slot.partitions?.HALF_B;
-
-  const isSplitView =
-    isPartitionable &&
-    halfA &&
-    halfB &&
-    (halfA.status !== fullPart?.status || halfB.status !== fullPart?.status || halfA.status !== halfB.status);
-
-  if (isSplitView && halfA && halfB) {
-    const mapHalf = (
-      part: typeof halfA,
-      halfId: 'half-a' | 'half-b',
-      label: string
-    ) => {
-      const status: 'booked' | 'available' | 'blocked' =
-        part.status === 'AUTHORITY_BLOCKED'
-          ? 'blocked'
-          : part.status === 'BOOKED'
-            ? 'booked'
-            : 'available';
-      return {
-        id: halfId,
-        label,
-        status,
-        detailsText:
-          status === 'blocked'
-            ? `Authority Blocked: ${part.internal_reason ?? 'Duty Hold'}`
-            : status === 'booked'
-              ? `${part.user_full_name ?? 'Member'} (${part.booking_code ?? 'BOOKED'})`
-              : 'Available for Public or Police Squad',
-        rightLabel: status === 'blocked' ? "Public: 'Already Booked'" : undefined,
-        actionLabel: status === 'blocked' ? 'Unblock' : status === 'available' ? 'Quick Block' : undefined,
-      };
-    };
-
-    return {
-      id: slotId,
-      facilityId,
-      startTime: slot.start_time,
-      endTime: slot.end_time,
-      blockId: fullPart?.block_id ?? halfA.block_id ?? halfB.block_id,
-      halfABlockId: halfA.block_id,
-      halfBBlockId: halfB.block_id,
-      timeRange,
-      timeSubtitle: 'Split 5s Allocation',
-      timeSubtitleTone: 'primary',
-      status: 'split',
-      statusBadgeLabel: 'Split Court',
-      statusBadgeIcon: 'call_split',
-      courtScope: 'split',
-      splitSubtitle: 'Half Court A & Half Court B',
-      splitStatusBadge: 'Partial Occupancy',
-      splitHalves: [
-        mapHalf(halfA, 'half-a', 'Half Court A (North)'),
-        mapHalf(halfB, 'half-b', 'Half Court B (South)'),
-      ],
-      actions: [
-        { id: 'quick-block', label: 'Block Full Court', icon: 'lock_clock', variant: 'amber' },
-      ],
-      overrideConfig: {
-        reasonId: 'drill',
-        noteTitle: slot.internal_reason || 'Departmental Priority Block',
-        noteDescription: 'Authority slot hold for Kannur City Police operations.',
-        auditRecordId: fullPart?.block_id ?? 'NEW-BLOCK',
-        officerLabel,
-        courtLabel: 'Police Turf (Full / Half)',
-        maskTitle: "Public Portal Mask: 'Already Booked'",
-        maskDescription: 'Citizens see this slot as Already Booked.',
-      },
-    };
-  }
-
-  if (slot.status === 'AUTHORITY_BLOCKED') {
-    const blockId = fullPart?.block_id ?? halfA?.block_id ?? halfB?.block_id;
-    return {
-      id: slotId,
-      facilityId,
-      startTime: slot.start_time,
-      endTime: slot.end_time,
-      blockId,
-      timeRange,
-      timeSubtitle: 'Authority Hold',
-      timeSubtitleTone: 'tertiary',
-      status: 'blocked',
-      statusBadgeLabel: 'Authority Blocked',
-      statusBadgeIcon: 'lock',
-      courtScope: 'full',
-      bannerTone: 'amber',
-      bannerIcon: 'gavel',
-      bannerTitle: slot.internal_reason || 'Authority Blocked',
-      bannerSubtitle: `Officer: ${fullPart?.created_by_officer?.full_name ?? officerLabel}`,
-      bannerRightTag: "Public shows: 'Already Booked'",
-      bannerRightTagTone: 'amber',
-      actions: [
-        { id: 'details', label: 'Details', icon: 'info', variant: 'neutral' },
-        { id: 'release', label: 'Release', variant: 'muted' },
-      ],
-      overrideConfig: {
-        reasonId: 'drill',
-        noteTitle: slot.internal_reason || 'Authority Blocked',
-        noteDescription: 'Active administrative authority block.',
-        auditRecordId: blockId ?? 'BLOCKED',
-        officerLabel,
-        courtLabel: 'Full Facility',
-        maskTitle: "Public Portal Mask: 'Already Booked'",
-        maskDescription: 'Masked as Already Booked on citizen portal.',
-      },
-    };
-  }
-
-  if (slot.status === 'BOOKED') {
-    return {
-      id: slotId,
-      facilityId,
-      startTime: slot.start_time,
-      endTime: slot.end_time,
-      timeRange,
-      timeSubtitle: 'Confirmed Reservation',
-      timeSubtitleTone: 'secondary',
-      status: 'booked',
-      statusBadgeLabel: 'Booked',
-      statusBadgeIcon: 'verified',
-      courtScope: 'full',
-      bannerTone: 'secondary',
-      bannerIcon: 'groups',
-      bannerTitle: slot.user_full_name || 'Citizen / Officer Booking',
-      bannerSubtitle: `Booking Ref: ${slot.booking_code ?? 'CONFIRMED'}`,
-      bannerRightTag: fullPart?.booking_status ?? 'CONFIRMED',
-      bannerRightTagTone: 'primary-text',
-      actions: [
-        { id: 'quick-block', label: 'Override Block', icon: 'gavel', variant: 'amber' },
-        { id: 'challan', label: 'Payments', icon: 'receipt_long', variant: 'subtle' },
-      ],
-      overrideConfig: {
-        reasonId: 'security',
-        noteTitle: 'Emergency Authority Override',
-        noteDescription: `Overrides booking ${slot.booking_code ?? ''}`,
-        auditRecordId: slot.booking_code ?? 'OVERRIDE',
-        officerLabel,
-        courtLabel: 'Full Facility',
-        maskTitle: "Public Portal Mask: 'Already Booked'",
-        maskDescription: 'Confirmed bookings will be cancelled if force override is confirmed.',
-      },
-    };
-  }
-
-  return {
-    id: slotId,
-    facilityId,
-    startTime: slot.start_time,
-    endTime: slot.end_time,
-    timeRange,
-    timeSubtitle: 'Free for Reservation',
-    timeSubtitleTone: 'emerald',
-    status: 'available',
-    statusBadgeLabel: 'Available',
-    courtScope: 'full',
-    bannerTone: 'neutral',
-    bannerIcon: 'check_circle',
-    bannerTitle: 'Public Slot Available',
-    bannerSubtitle: 'Open for citizen & government personnel online booking',
-    bannerRightTag: 'Live on Public Portal',
-    bannerRightTagTone: 'emerald-tag',
-    actions: [
-      { id: 'quick-block', label: 'Quick Block Slot', icon: 'lock_clock', variant: 'amber' },
-    ],
-    overrideConfig: {
-      reasonId: 'drill',
-      noteTitle: 'Departmental Duty / Drill',
-      noteDescription: 'Reserved for Kannur City Police scheduled training.',
-      auditRecordId: 'NEW-BLOCK',
-      officerLabel,
-      courtLabel: 'Full Facility',
-      maskTitle: "Public Portal Mask: 'Already Booked'",
-      maskDescription: 'Masked as Already Booked on citizen portal.',
-    },
-  };
-}
-
 export default function AdminFacilitiesPage() {
-  const navigate = useNavigate();
   const { user } = useAuth();
-  const dateOptions = useMemo(() => buildAdminDateOptions(), []);
 
-  const [facilities, setFacilities] = useState<FacilityAdminItem[]>(facilityAdminList);
-  const [liveFacilitiesMap, setLiveFacilitiesMap] = useState<
-    Record<string, ApiFacility>
-  >({});
-  const [selectedFacilityId, setSelectedFacilityId] = useState<FacilityAdminId>('turf');
-  const [selectedDateIndex, setSelectedDateIndex] = useState<number>(1);
-  const [selectedScope, setSelectedScope] = useState<CourtScopeFilterId>('all');
-  const [slots, setSlots] = useState<LiveFacilityTimeSlot[]>([]);
-  const [activeOverrideSlotId, setActiveOverrideSlotId] = useState<string | null>(null);
-  const [maintenanceClosedFacilities, setMaintenanceClosedFacilities] = useState<
-    Record<FacilityAdminId, boolean>
-  >({
-    track: false,
-    football: false,
-    turf: false,
-    badminton: false,
-  });
-
-  const [isEditRulesOpen, setIsEditRulesOpen] = useState<boolean>(false);
-  const [manualBookingSlot, setManualBookingSlot] = useState<FacilityTimeSlot | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>(() => getTodayIso());
+  const [directoryData, setDirectoryData] = useState<ApiAdminFacilitiesResponse | null>(null);
+  const [selectedFacilityId, setSelectedFacilityId] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null);
+  const [busySlotId, setBusySlotId] = useState<string | null>(null);
+  const [activeDrawer, setActiveDrawer] = useState<ActiveDrawerState>(null);
   const [toast, setToast] = useState<ToastState | null>(null);
 
-  const showToast = useCallback((title: string, subtitle: string) => {
-    setToast({ title, subtitle });
-    window.setTimeout(() => {
-      setToast((prev) => (prev?.title === title ? null : prev));
-    }, 3800);
-  }, []);
+  const showToast = useCallback(
+    (title: string, subtitle: string, tone: 'success' | 'error' = 'success') => {
+      setToast({ tone, title, subtitle });
+      window.setTimeout(() => {
+        setToast((prev) => (prev?.title === title ? null : prev));
+      }, 4000);
+    },
+    []
+  );
 
-  useEffect(() => {
-    facilitiesApi
-      .list()
-      .then((res) => {
-        const byCode: Record<string, ApiFacility> = {};
-        res.facilities.forEach((f) => {
-          byCode[f.code] = f;
+  const loadFacilities = useCallback(
+    async (dateStr: string, preferredFacilityId?: string, manualRefresh = false) => {
+      if (manualRefresh) setRefreshing(true);
+      try {
+        const res = await adminApi.listFacilities({ date: dateStr });
+        setDirectoryData(res);
+        setSelectedFacilityId((prev) => {
+          const candidate = preferredFacilityId || prev;
+          if (candidate && res.facilities.some((f) => f.id === candidate)) {
+            return candidate;
+          }
+          const turf = res.facilities.find((f) => f.code === 'POLICE_TURF');
+          return turf?.id ?? res.facilities[0]?.id ?? '';
         });
-        setLiveFacilitiesMap(byCode);
-      })
-      .catch(() => {});
-  }, []);
-
-  const activeFacilityCode = FACILITY_ID_TO_CODE[selectedFacilityId];
-  const activeDateOption = dateOptions[selectedDateIndex] ?? dateOptions[1];
-
-  const fetchSlots = useCallback(async () => {
-    try {
-      const res = await adminApi.getFacilitySlots(
-        activeFacilityCode,
-        activeDateOption.isoDate
-      );
-      const officerLabel = user ? `${user.full_name} (@${user.username})` : 'Duty Officer';
-      const mapped = res.slots.map((s) =>
-        mapAdminSlotToUi(s, selectedFacilityId, res.facility.is_partitionable, officerLabel)
-      );
-      setSlots(mapped);
-    } catch (error) {
-      showToast(
-        'Slot Sync Error',
-        error instanceof ApiError ? error.message : 'Unable to load facility slots.'
-      );
-    }
-  }, [activeFacilityCode, activeDateOption.isoDate, selectedFacilityId, user, showToast]);
+      } catch (error) {
+        showToast(
+          'Unable to Load Facilities',
+          error instanceof ApiError ? error.message : 'Failed to connect to sports server.',
+          'error'
+        );
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    [showToast]
+  );
 
   useEffect(() => {
-    fetchSlots();
-  }, [fetchSlots]);
+    loadFacilities(selectedDate);
+  }, [loadFacilities, selectedDate]);
 
-  const activeFacility = useMemo(
-    () => facilities.find((item) => item.id === selectedFacilityId) ?? facilities[0],
+  const facilities = directoryData?.facilities ?? [];
+  const summary = directoryData?.summary;
+
+  const selectedFacility = useMemo(
+    () => facilities.find((f) => f.id === selectedFacilityId) ?? facilities[0] ?? null,
     [facilities, selectedFacilityId]
   );
 
-  const visibleSlots = useMemo(() => {
-    if (selectedScope === 'all') return slots;
-    if (selectedScope === 'full') {
-      return slots.filter((slot) => slot.courtScope === 'full');
-    }
-    return slots.filter((slot) => slot.courtScope === 'split');
-  }, [slots, selectedScope]);
-
-  const bookedOrBlockedCount = useMemo(
-    () =>
-      slots.filter(
-        (slot) => slot.status === 'booked' || slot.status === 'blocked' || slot.status === 'split'
-      ).length,
-    [slots]
-  );
-
-  const handleSelectFacility = (id: FacilityAdminId) => {
-    setSelectedFacilityId(id);
-    setSelectedScope('all');
-    setActiveOverrideSlotId(null);
-  };
-
-  const handleConfirmBlock = async (
-    slotId: string,
-    reasonId: OverrideReasonId,
-    noteTitle: string,
-    noteDescription: string
+  const handleChangeFacilityStatus = async (
+    facilityId: string,
+    nextStatus: FacilityOperationalStatus
   ) => {
-    const targetSlot = slots.find((s) => s.id === slotId);
-    if (!targetSlot?.startTime) return;
-    const reasonObj = facilityOverrideReasons.find((r) => r.id === reasonId);
-    const internalReason = `${reasonObj?.label ?? 'Authority Block'}: ${noteTitle}${
-      noteDescription ? ` — ${noteDescription}` : ''
-    }`;
-
+    setUpdatingStatusId(facilityId);
     try {
-      await adminApi.createSlotBlock({
-        facility_code: activeFacilityCode,
-        block_date: activeDateOption.isoDate,
-        start_time: targetSlot.startTime,
-        end_time: targetSlot.endTime,
-        court_partition: 'FULL',
-        internal_reason: internalReason,
-        force_override: targetSlot.status === 'booked',
+      const res = await adminApi.updateFacilityStatus(facilityId, {
+        operational_status: nextStatus,
       });
-      setActiveOverrideSlotId(null);
+      await loadFacilities(selectedDate, selectedFacilityId || facilityId);
+      const statusText =
+        nextStatus === 'ACTIVE'
+          ? 'Active'
+          : nextStatus === 'MAINTENANCE'
+            ? 'Maintenance'
+            : 'Closed';
       showToast(
-        'Authority Block Confirmed',
-        `${targetSlot.timeRange} locked on ${activeDateOption.isoDate}. Citizen portal mask active.`
+        'Facility Status Updated',
+        `${res.facility.name} is now marked ${statusText}. Dashboard KPIs synced.`
       );
-      await fetchSlots();
     } catch (error) {
       showToast(
-        'Authority Block Failed',
-        error instanceof ApiError ? error.message : 'Could not create authority block.'
+        'Status Update Failed',
+        error instanceof ApiError ? error.message : 'Could not update facility status.',
+        'error'
       );
+    } finally {
+      setUpdatingStatusId(null);
     }
   };
 
-  const handleReleaseSlot = async (slotId: string) => {
-    const targetSlot = slots.find((s) => s.id === slotId);
-    if (!targetSlot?.blockId) {
-      showToast('No Active Block', 'No authority block ID found for this slot.');
-      return;
-    }
-
-    try {
-      await adminApi.deleteSlotBlock(targetSlot.blockId);
-      if (activeOverrideSlotId === slotId) {
-        setActiveOverrideSlotId(null);
-      }
-      showToast(
-        'Slot Released to Public Portal',
-        `${targetSlot.timeRange} is now live and open for online reservation.`
-      );
-      await fetchSlots();
-    } catch (error) {
-      showToast(
-        'Release Failed',
-        error instanceof ApiError ? error.message : 'Unable to release authority block.'
-      );
-    }
-  };
-
-  const handleSlotAction = (slot: FacilityTimeSlot, actionId: FacilitySlotAction['id']) => {
-    switch (actionId) {
-      case 'quick-block':
-      case 'details':
-      case 'manage':
-      case 'actions':
-        setActiveOverrideSlotId(slot.id);
-        break;
-      case 'release':
-        handleReleaseSlot(slot.id);
-        break;
-      case 'manual-booking':
-      case 'assign':
-        setManualBookingSlot(slot);
-        break;
-      case 'challan':
-        navigate('/admin/payments');
-        break;
-      case 'gate-pass':
-        navigate('/admin/gate-entries');
-        break;
-      case 'maintenance-log':
-        navigate('/admin/audit-log');
-        break;
-      case 'roster':
-      case 'summary':
-        showToast(
-          `${actionId === 'roster' ? 'Squad Roster' : 'Slot Summary'} — ${slot.timeRange}`,
-          `${slot.bannerTitle ?? ''} (${slot.bannerRightTag ?? 'Verified'})`
-        );
-        break;
-    }
-  };
-
-  const handleToggleSplitHalfBlock = async (slotId: string, halfId: 'half-a' | 'half-b') => {
-    const targetSlot = slots.find((s) => s.id === slotId);
-    if (!targetSlot?.startTime) return;
-
-    const partition: BackendCourtPartition = halfId === 'half-a' ? 'HALF_A' : 'HALF_B';
-    const existingHalfBlockId =
-      halfId === 'half-a' ? targetSlot.halfABlockId : targetSlot.halfBBlockId;
-
-    try {
-      if (existingHalfBlockId) {
-        await adminApi.deleteSlotBlock(existingHalfBlockId);
-        showToast(
-          'Split Court Released',
-          `${partition} unblocked for ${targetSlot.timeRange}.`
-        );
-      } else {
-        await adminApi.createSlotBlock({
-          facility_code: activeFacilityCode,
-          block_date: activeDateOption.isoDate,
-          start_time: targetSlot.startTime,
-          end_time: targetSlot.endTime,
-          court_partition: partition,
-          internal_reason: `Duty Officer Hold (${partition})`,
-        });
-        showToast(
-          'Split Court Blocked',
-          `${partition} blocked for ${targetSlot.timeRange}.`
-        );
-      }
-      await fetchSlots();
-    } catch (error) {
-      showToast(
-        'Split Court Error',
-        error instanceof ApiError ? error.message : 'Unable to update split court status.'
-      );
-    }
-  };
-
-  const handleSaveRules = (updatedParameters: FacilityRuleParameter[]) => {
-    setFacilities((prev) =>
-      prev.map((item) =>
-        item.id === selectedFacilityId ? { ...item, parameters: updatedParameters } : item
-      )
-    );
-    setIsEditRulesOpen(false);
-    showToast(
-      'Facility Rules Updated',
-      `Operational parameters for ${activeFacility.name} saved.`
-    );
-  };
-
-  const handleToggleMaintenanceClosure = () => {
-    const nextState = !maintenanceClosedFacilities[selectedFacilityId];
-    setMaintenanceClosedFacilities((prev) => ({
-      ...prev,
-      [selectedFacilityId]: nextState,
-    }));
-    setFacilities((prev) =>
-      prev.map((item) =>
-        item.id === selectedFacilityId
-          ? {
-              ...item,
-              operationalStatus: nextState ? 'Maintenance Closure' : 'Operational & Online',
-            }
-          : item
-      )
-    );
-    showToast(
-      nextState ? 'Facility Maintenance Closure Active' : 'Facility Re-opened Online',
-      nextState
-        ? `${activeFacility.name} marked for maintenance inspection.`
-        : `${activeFacility.name} is now live.`
-    );
-  };
-
-  const handleConfirmManualBooking = (
-    _slotId: string,
-    organiserTitle: string,
-    _subtitleMeta: string
+  const handleSaveFacility = async (
+    payload: CreateFacilityPayload | UpdateFacilityPayload
   ) => {
-    setManualBookingSlot(null);
-    showToast('Manual Desk Note', `Recorded desk note for ${organiserTitle}.`);
+    if (activeDrawer?.type === 'add-facility') {
+      const res = await adminApi.createFacility(payload as CreateFacilityPayload);
+      setActiveDrawer(null);
+      await loadFacilities(selectedDate, res.facility.id);
+      showToast(
+        'Facility Added',
+        `${res.facility.name} created with ${res.facility.slots.length} daily time slots.`
+      );
+    } else if (activeDrawer?.type === 'edit-facility') {
+      const res = await adminApi.updateFacility(
+        activeDrawer.facility.id,
+        payload as UpdateFacilityPayload
+      );
+      setActiveDrawer(null);
+      await loadFacilities(selectedDate, res.facility.id);
+      showToast(
+        'Facility Updated',
+        `Saved updated parameters and fee structure for ${res.facility.name}.`
+      );
+    }
   };
 
-  const liveFacMeta = liveFacilitiesMap[activeFacilityCode];
+  const handleSaveSlot = async (payload: CreateSlotPayload | UpdateSlotPayload) => {
+    if (!selectedFacility) return;
+
+    if (activeDrawer?.type === 'add-slot') {
+      const res = await adminApi.createFacilitySlot(
+        selectedFacility.id,
+        payload as CreateSlotPayload
+      );
+      setActiveDrawer(null);
+      await loadFacilities(selectedDate, selectedFacility.id);
+      showToast(
+        'Time Slot Added',
+        `Added ${res.slot.start_time} – ${res.slot.end_time} (Capacity: ${res.slot.max_capacity}) to ${selectedFacility.name}.`
+      );
+    } else if (activeDrawer?.type === 'edit-slot') {
+      const res = await adminApi.updateFacilitySlot(
+        selectedFacility.id,
+        activeDrawer.slot.id,
+        payload as UpdateSlotPayload
+      );
+      setActiveDrawer(null);
+      await loadFacilities(selectedDate, selectedFacility.id);
+      showToast(
+        'Time Slot Updated',
+        `Updated ${res.slot.start_time} – ${res.slot.end_time} (Capacity: ${res.slot.max_capacity}).`
+      );
+    }
+  };
+
+  const handleBlockSlot = async (
+    slot: ApiManagedSlot,
+    payload: {
+      block_status: 'BLOCKED_MAINTENANCE' | 'RESERVED_DEPARTMENT';
+      reason: string;
+      force_override?: boolean;
+    }
+  ) => {
+    if (!selectedFacility) return;
+    setBusySlotId(slot.id);
+    try {
+      await adminApi.toggleFacilitySlotBlock(selectedFacility.id, slot.id, {
+        blocked: true,
+        date: selectedDate,
+        block_status: payload.block_status,
+        reason: payload.reason || undefined,
+        force_override: payload.force_override,
+      });
+      await loadFacilities(selectedDate, selectedFacility.id);
+      showToast(
+        payload.block_status === 'BLOCKED_MAINTENANCE'
+          ? 'Slot Blocked for Maintenance'
+          : 'Slot Reserved for Department',
+        `${slot.start_time} – ${slot.end_time} on ${selectedDate} updated.`
+      );
+    } catch (error) {
+      showToast(
+        'Block Action Failed',
+        error instanceof ApiError ? error.message : 'Unable to block time slot.',
+        'error'
+      );
+    } finally {
+      setBusySlotId(null);
+    }
+  };
+
+  const handleUnblockSlot = async (slot: ApiManagedSlot) => {
+    if (!selectedFacility) return;
+    setBusySlotId(slot.id);
+    try {
+      await adminApi.toggleFacilitySlotBlock(selectedFacility.id, slot.id, {
+        blocked: false,
+        date: selectedDate,
+      });
+      await loadFacilities(selectedDate, selectedFacility.id);
+      showToast(
+        'Slot Reopened',
+        `${slot.start_time} – ${slot.end_time} on ${selectedDate} is now open for bookings.`
+      );
+    } catch (error) {
+      showToast(
+        'Unblock Failed',
+        error instanceof ApiError ? error.message : 'Unable to unblock time slot.',
+        'error'
+      );
+    } finally {
+      setBusySlotId(null);
+    }
+  };
+
+  const handleDeleteSlot = async (slot: ApiManagedSlot) => {
+    if (!selectedFacility) return;
+    setBusySlotId(slot.id);
+    try {
+      await adminApi.deleteFacilitySlot(selectedFacility.id, slot.id, selectedDate);
+      await loadFacilities(selectedDate, selectedFacility.id);
+      showToast(
+        'Time Slot Deleted',
+        `Removed ${slot.start_time} – ${slot.end_time} from ${selectedFacility.name}.`
+      );
+    } catch (error) {
+      showToast(
+        'Cannot Delete Slot',
+        error instanceof ApiError ? error.message : 'Unable to delete time slot.',
+        'error'
+      );
+    } finally {
+      setBusySlotId(null);
+    }
+  };
 
   return (
     <div className="admin-ops-page flex flex-col w-full">
-      <div className="relative w-full max-w-7xl mx-auto px-margin-desktop py-space-lg flex flex-col gap-space-lg">
-        {/* Ambient Backdrop Light Glows (Contained) */}
-        <div className="pointer-events-none absolute -top-12 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-60" />
-        <div className="pointer-events-none absolute top-48 right-12 w-80 h-80 bg-secondary-container/40 rounded-full blur-3xl opacity-50" />
-
-        {/* Facility Switcher: Segmented Pill Controller */}
-        <FacilitySwitcherBar
-          facilities={facilities.map((f) => {
-            const live = liveFacilitiesMap[FACILITY_ID_TO_CODE[f.id]];
-            return live ? { ...f, name: live.name } : f;
-          })}
-          selectedFacilityId={selectedFacilityId}
-          onSelectFacility={handleSelectFacility}
-          bookedCount={bookedOrBlockedCount}
-          totalCount={slots.length || activeFacility.totalSlotsCount}
+      <div className="relative w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-7 lg:py-9 flex flex-col gap-7">
+        {/* Ambient Subtle Executive Glows */}
+        <div className="admin-ambient-orb pointer-events-none absolute -top-24 left-1/4 w-[520px] h-[300px] bg-[#165DF5]/[0.07] rounded-full blur-[120px] -z-10" />
+        <div
+          className="admin-ambient-orb pointer-events-none absolute top-56 right-12 w-96 h-72 bg-sky-400/[0.08] rounded-full blur-[110px] -z-10"
+          style={{ animationDelay: '-9s' }}
         />
 
-        {/* Section 2: Configuration & Operational Parameters Card */}
-        <FacilityRulesCard
-          facility={
-            liveFacMeta
-              ? {
-                  ...activeFacility,
-                  name: liveFacMeta.name,
-                  subtitle: `${liveFacMeta.operating_start} – ${liveFacMeta.operating_end} • Daily Cap: ${liveFacMeta.daily_user_hour_cap} hrs/day`,
-                }
-              : activeFacility
+        {/* Executive Page Header */}
+        <AdminPageHeader
+          shiftBadge={
+            summary
+              ? `${summary.active_facilities} of ${summary.total_facilities} Venues Active · ${summary.active_courts} Active Courts`
+              : 'Facilities & Slot Operations'
           }
-          isMaintenanceClosureActive={maintenanceClosedFacilities[selectedFacilityId]}
-          onOpenEditRules={() => setIsEditRulesOpen(true)}
-          onToggleMaintenanceClosure={handleToggleMaintenanceClosure}
+          officerLabel={user ? `${user.full_name} (@${user.username})` : currentStaff.name}
+          title="Facilities & Slot Manager"
+          groundsBadge="Kannur Armed Reserve Police Grounds"
+          subtitle="Configure sports venues, toggle operational availability, manage Public vs. Govt/Police tariffs, and schedule daily time slots."
+          actions={
+            <>
+              <button
+                type="button"
+                disabled={refreshing}
+                onClick={() => loadFacilities(selectedDate, selectedFacilityId, true)}
+                className="admin-btn-secondary px-4 inline-flex items-center gap-2 disabled:opacity-60"
+              >
+                <MaterialIcon
+                  name="refresh"
+                  className={`text-[18px] text-slate-500 ${refreshing ? 'animate-spin' : ''}`}
+                />
+                <span>Refresh</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveDrawer({ type: 'add-facility' })}
+                className="admin-btn-primary px-5 inline-flex items-center gap-2"
+              >
+                <MaterialIcon name="add_circle" className="text-[19px]" />
+                <span>Add Facility</span>
+              </button>
+            </>
+          }
         />
 
-        {/* Section 3: Interactive Daily Slot Grid & Date Controls */}
-        <div className="relative z-10 flex flex-col gap-space-md">
-          {/* Date Bar & Filter Controls */}
-          <FacilityDateFilterBar
-            dateOptions={dateOptions}
-            selectedDateIndex={selectedDateIndex}
-            onSelectDateIndex={(idx) => {
-              setSelectedDateIndex(idx);
-              setActiveOverrideSlotId(null);
-            }}
-            courtScopeOptions={facilityCourtScopeOptions}
-            selectedScope={selectedScope}
-            onSelectScope={setSelectedScope}
-          />
-
-          {/* Time Slots Grid Container */}
-          <div className="flex flex-col gap-3">
-            {visibleSlots.map((slot) => {
-              if (slot.id === activeOverrideSlotId) {
-                return (
-                  <FacilityOverridePanel
-                    key={slot.id}
-                    slot={slot}
-                    reasonOptions={facilityOverrideReasons}
-                    onConfirmBlock={handleConfirmBlock}
-                    onReleaseSlot={handleReleaseSlot}
-                    onCancel={() => setActiveOverrideSlotId(null)}
-                  />
-                );
-              }
-
-              return (
-                <FacilitySlotRow
-                  key={slot.id}
-                  slot={slot}
-                  onSlotAction={handleSlotAction}
-                  onToggleSplitHalfBlock={handleToggleSplitHalfBlock}
-                />
-              );
-            })}
+        {/* Section 1: Sports Facility Directory */}
+        <section aria-labelledby="facility-directory-heading" className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h2
+                id="facility-directory-heading"
+                className="font-display text-[17px] font-bold text-[#0F172A] tracking-[-0.02em]"
+              >
+                Sports Venue Directory
+              </h2>
+              {summary && (
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-white border border-slate-200/90 text-slate-600 text-[11.5px] font-semibold tabular-nums shadow-2xs">
+                    {summary.total_facilities} Venues
+                  </span>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#EFF5FF] border border-[#DCE8FE] text-[#165DF5] text-[11.5px] font-semibold tabular-nums">
+                    {summary.slot_utilization_rate}% Daily Utilization
+                  </span>
+                </div>
+              )}
+            </div>
+            <span className="text-[12.5px] text-slate-500 font-medium">
+              Select a venue card to manage its daily slot timeline
+            </span>
           </div>
-        </div>
 
-        {/* Clean Spacing Anchor */}
-        <div className="w-full h-8" />
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+              {[0, 1, 2, 3].map((idx) => (
+                <div
+                  key={idx}
+                  className="h-[214px] rounded-[22px] bg-white/80 border border-slate-200/80 animate-pulse p-5"
+                />
+              ))}
+            </div>
+          ) : facilities.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-stretch">
+              {facilities.map((facility, idx) => (
+                <FacilityDirectoryCard
+                  key={facility.id}
+                  facility={facility}
+                  isSelected={selectedFacility?.id === facility.id}
+                  isUpdatingStatus={updatingStatusId === facility.id}
+                  delayMs={idx * 65}
+                  onSelect={(id) => setSelectedFacilityId(id)}
+                  onEdit={(fac) => setActiveDrawer({ type: 'edit-facility', facility: fac })}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="admin-surface-card rounded-[24px] p-12 text-center">
+              <p className="text-[14px] text-slate-500 font-medium">
+                No sports facilities configured yet. Use &ldquo;Add Facility&rdquo; to create your
+                first venue.
+              </p>
+            </div>
+          )}
+        </section>
+
+        {/* Section 2: Daily Slot Operations Workspace */}
+        {selectedFacility && (
+          <SlotScheduleTable
+            facility={selectedFacility}
+            selectedDate={selectedDate}
+            isUpdatingStatus={updatingStatusId === selectedFacility.id}
+            onChangeDate={(nextDate) => setSelectedDate(nextDate)}
+            onChangeFacilityStatus={handleChangeFacilityStatus}
+            onEditFacility={(fac) => setActiveDrawer({ type: 'edit-facility', facility: fac })}
+            onRestoreFacilityActive={(id) => handleChangeFacilityStatus(id, 'ACTIVE')}
+            onOpenAddSlot={() => setActiveDrawer({ type: 'add-slot' })}
+            onOpenEditSlot={(slot) => setActiveDrawer({ type: 'edit-slot', slot })}
+            onBlockSlot={handleBlockSlot}
+            onUnblockSlot={handleUnblockSlot}
+            onDeleteSlot={handleDeleteSlot}
+            busySlotId={busySlotId}
+          />
+        )}
       </div>
 
-      {/* Modals */}
-      {isEditRulesOpen && (
-        <FacilityEditRulesModal
-          facility={activeFacility}
-          onClose={() => setIsEditRulesOpen(false)}
-          onSaveRules={handleSaveRules}
+      {/* Single-Level Slide-Over Drawers */}
+      {(activeDrawer?.type === 'add-facility' || activeDrawer?.type === 'edit-facility') && (
+        <FacilityFormDrawer
+          mode={activeDrawer.type === 'add-facility' ? 'create' : 'edit'}
+          facility={activeDrawer.type === 'edit-facility' ? activeDrawer.facility : null}
+          onClose={() => setActiveDrawer(null)}
+          onSubmit={handleSaveFacility}
         />
       )}
 
-      {manualBookingSlot && (
-        <FacilityManualBookingModal
-          slot={manualBookingSlot}
-          facilityName={activeFacility.name}
-          onClose={() => setManualBookingSlot(null)}
-          onConfirmBooking={handleConfirmManualBooking}
-        />
-      )}
+      {selectedFacility &&
+        (activeDrawer?.type === 'add-slot' || activeDrawer?.type === 'edit-slot') && (
+          <SlotFormDrawer
+            mode={activeDrawer.type === 'add-slot' ? 'create' : 'edit'}
+            facility={selectedFacility}
+            selectedDate={selectedDate}
+            slot={activeDrawer.type === 'edit-slot' ? activeDrawer.slot : null}
+            onClose={() => setActiveDrawer(null)}
+            onSubmit={handleSaveSlot}
+          />
+        )}
 
-      {/* Notification Toast */}
+      {/* Executive Toast Notification */}
       <div
-        className={`fixed bottom-8 right-8 z-50 transform transition-all duration-300 pointer-events-none flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-inverse-surface text-inverse-on-surface shadow-2xl ${
-          toast ? 'translate-y-0 opacity-100' : 'translate-y-24 opacity-0'
-        }`}
+        role="status"
+        className={`fixed bottom-6 right-6 z-50 transform transition-all duration-300 pointer-events-none flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl border max-w-md ${
+          toast?.tone === 'error'
+            ? 'bg-rose-600 border-rose-500 text-white'
+            : 'bg-[#0F172A] border-slate-700/80 text-white'
+        } ${toast ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}
       >
-        <MaterialIcon name="verified" className="text-emerald-400 text-[22px]" />
+        <MaterialIcon
+          name={toast?.tone === 'error' ? 'error' : 'verified'}
+          className={`text-[21px] shrink-0 ${
+            toast?.tone === 'error' ? 'text-white' : 'text-emerald-400'
+          }`}
+        />
         <div className="flex flex-col">
-          <span className="font-label-primary text-label-primary font-medium text-white">
-            {toast?.title ?? 'Slot Updated'}
+          <span className="font-display text-[13.5px] font-bold text-white leading-snug">
+            {toast?.title ?? ''}
           </span>
-          <span className="font-caption text-caption text-surface-variant">
-            {toast?.subtitle ?? ''}
-          </span>
+          <span className="text-[12px] text-slate-300 leading-snug">{toast?.subtitle ?? ''}</span>
         </div>
       </div>
     </div>

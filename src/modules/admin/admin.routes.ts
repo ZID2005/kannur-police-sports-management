@@ -18,33 +18,35 @@ import {
   reviewMembershipSchema,
 } from '../memberships/memberships.schema';
 import { PaymentsController } from '../payments/payments.controller';
-import {
-  adminPaymentFilterSchema,
-  officeReceiptSchema,
-} from '../payments/payments.schema';
+import { officeReceiptSchema } from '../payments/payments.schema';
 import { AdminController } from './admin.controller';
 import {
   adminAuditLogsQuerySchema,
-  adminGateLogsQuerySchema,
+  adminBookingsQuerySchema,
+  adminFacilitiesQuerySchema,
+  adminFacilityScheduleQuerySchema,
+  adminMembersQuerySchema,
+  adminPaymentsQuerySchema,
   blockIdParamSchema,
   createAuthorityBlockSchema,
+  createFacilitySchema,
+  createFacilitySlotSchema,
+  deleteSlotQuerySchema,
+  facilityIdParamSchema,
+  facilityParamSchema,
+  facilitySlotParamsSchema,
   financialReportQuerySchema,
+  toggleSlotBlockSchema,
+  updateFacilitySchema,
+  updateFacilitySlotSchema,
+  updateFacilityStatusSchema,
   updateUserStatusSchema,
   userIdParamSchema,
 } from './admin.schema';
 
 const adminRouter = Router();
 
-// 0. Gate Telemetry Logs (`STAFF_ADMIN` or `GATE_OFFICER`)
-adminRouter.get(
-  '/gate-logs',
-  authenticate,
-  requireRole(UserRole.STAFF_ADMIN, UserRole.GATE_OFFICER),
-  validateQuery(adminGateLogsQuerySchema),
-  AdminController.listGateLogs
-);
-
-// All remaining /api/admin/* endpoints strictly require STAFF_ADMIN authentication
+// All /api/admin/* endpoints strictly require STAFF_ADMIN authentication
 adminRouter.use(authenticate, requireRole(UserRole.STAFF_ADMIN));
 
 // 1. Synthetic Track Membership Dossier Queue & Officer Review
@@ -67,12 +69,74 @@ adminRouter.post(
   MembershipsController.reviewMembership
 );
 
-// 2. Unmasked Facility Slots View (shows BOOKED vs AUTHORITY_BLOCKED + internal_reason)
+// 2. Facilities & Slot Schedule Manager (`STAFF_ADMIN` only)
+adminRouter.get(
+  '/facilities',
+  validateQuery(adminFacilitiesQuerySchema),
+  AdminController.listFacilities
+);
+
+adminRouter.post(
+  '/facilities',
+  validateBody(createFacilitySchema),
+  AdminController.createFacility
+);
+
+adminRouter.patch(
+  '/facilities/:id',
+  validateParams(facilityIdParamSchema),
+  validateBody(updateFacilitySchema),
+  AdminController.updateFacility
+);
+
+adminRouter.patch(
+  '/facilities/:id/status',
+  validateParams(facilityIdParamSchema),
+  validateBody(updateFacilityStatusSchema),
+  AdminController.updateFacilityStatus
+);
+
+adminRouter.get(
+  '/facilities/:facilityId/schedule',
+  validateParams(facilityParamSchema),
+  validateQuery(adminFacilityScheduleQuerySchema),
+  AdminController.getFacilitySchedule
+);
+
+// Unmasked Facility Slots View (shows BOOKED vs AUTHORITY_BLOCKED + internal_reason)
 adminRouter.get(
   '/facilities/:code/slots',
   validateParams(facilityCodeParamSchema),
   validateQuery(facilitySlotsQuerySchema),
   FacilitiesController.getAdminSlots
+);
+
+adminRouter.post(
+  '/facilities/:facilityId/slots',
+  validateParams(facilityParamSchema),
+  validateBody(createFacilitySlotSchema),
+  AdminController.createFacilitySlot
+);
+
+adminRouter.patch(
+  '/facilities/:facilityId/slots/:slotId',
+  validateParams(facilitySlotParamsSchema),
+  validateBody(updateFacilitySlotSchema),
+  AdminController.updateFacilitySlot
+);
+
+adminRouter.patch(
+  '/facilities/:facilityId/slots/:slotId/block',
+  validateParams(facilitySlotParamsSchema),
+  validateBody(toggleSlotBlockSchema),
+  AdminController.toggleFacilitySlotBlock
+);
+
+adminRouter.delete(
+  '/facilities/:facilityId/slots/:slotId',
+  validateParams(facilitySlotParamsSchema),
+  validateQuery(deleteSlotQuerySchema),
+  AdminController.deleteFacilitySlot
 );
 
 // 3. Authority Slot Blocking & Deactivation
@@ -96,11 +160,11 @@ adminRouter.patch(
   AdminController.updateUserStatus
 );
 
-// 5. Step 3: Admin Payment Ledger & Offline Office Receipts (`STAFF_ADMIN` only)
+// 5. Admin Payments & Financial Ledger + Offline Office Receipts (`STAFF_ADMIN` only)
 adminRouter.get(
   '/payments',
-  validateQuery(adminPaymentFilterSchema),
-  PaymentsController.listAdminPayments
+  validateQuery(adminPaymentsQuerySchema),
+  AdminController.listPayments
 );
 
 adminRouter.post(
@@ -109,7 +173,7 @@ adminRouter.post(
   PaymentsController.recordOfficeReceipt
 );
 
-// 6. Step 3: Immutable Audit Logs Ledger & Financial Revenue Reporting (`STAFF_ADMIN` only)
+// 6. Immutable Audit Logs Ledger (strictly read-only GET — no edit/delete routes) & Financial Reporting
 adminRouter.get(
   '/audit-logs',
   validateQuery(adminAuditLogsQuerySchema),
@@ -120,6 +184,21 @@ adminRouter.get(
   '/reports/financial',
   validateQuery(financialReportQuerySchema),
   AdminController.getFinancialReport
+);
+
+// 7. Admin Dashboard Overview, Bookings Schedule & Member Directory (`STAFF_ADMIN` only)
+adminRouter.get('/dashboard-overview', AdminController.getDashboardOverview);
+
+adminRouter.get(
+  '/bookings',
+  validateQuery(adminBookingsQuerySchema),
+  AdminController.listBookings
+);
+
+adminRouter.get(
+  '/members',
+  validateQuery(adminMembersQuerySchema),
+  AdminController.listMembers
 );
 
 export default adminRouter;

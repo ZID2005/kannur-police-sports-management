@@ -1,190 +1,182 @@
 import { Link } from 'react-router-dom';
-import { MaterialIcon } from '@/components/ui/MaterialIcon';
-import { membershipCategories, membershipSteps } from '@/data/mockData';
-import type { MembershipApplicantCategoryId, MembershipWizardStep } from '@/types/membership';
+import { ArrowLeft, Check, ReceiptText, ShieldCheck } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
+import { membershipOnboardingSteps } from '@/data/mockData';
+import type { MembershipOnboardingStep } from '@/types/membership';
 
 interface MembershipStepperSidebarProps {
-  currentStep: 1 | 2 | 3 | 4;
-  selectedCategory: MembershipApplicantCategoryId | null;
-  onSelectStep?: (step: MembershipWizardStep) => void;
+  currentStep: MembershipOnboardingStep;
+  maxReachedStep: MembershipOnboardingStep;
+  monthlyCap: number;
+  isGovt: boolean;
+  onSelectStep: (step: MembershipOnboardingStep) => void;
 }
 
 export function MembershipStepperSidebar({
   currentStep,
-  selectedCategory,
+  maxReachedStep,
+  monthlyCap,
+  isGovt,
   onSelectStep,
 }: MembershipStepperSidebarProps) {
-  const categoryMeta = membershipCategories.find((c) => c.id === selectedCategory);
-
-  const getStepSublabel = (stepNum: 1 | 2 | 3 | 4, isCompleted: boolean, isActive: boolean): string | null => {
-    if (currentStep === 1 || currentStep === 2) {
-      return null;
-    }
-    if (currentStep === 3) {
-      if (stepNum === 1) return categoryMeta?.stepSubtitle ?? 'Kerala Police Personnel';
-      if (stepNum === 2) return categoryMeta?.detailsSubtitle ?? 'PEN & Station Verified';
-      if (stepNum === 3) return 'In progress';
-      if (stepNum === 4) return 'Final authorization';
-    }
-    if (currentStep === 4) {
-      if (isCompleted) return 'Completed';
-      if (isActive) return 'In progress';
-    }
-    return null;
-  };
+  const { lang, t } = useLanguage();
 
   return (
-    <aside className="w-full lg:col-span-4 lg:w-full flex-shrink-0">
-      {/* Mobile Progress Header (from mobile_membership_step_1 & step_2 exports) */}
-      <div className="lg:hidden mb-6">
-        <div className="flex items-center justify-between w-full mb-3.5">
+    <aside className="w-full lg:col-span-4 flex-shrink-0">
+      {/* Mobile Progress Header */}
+      <div className="lg:hidden mb-5 rounded-[22px] bg-white/90 backdrop-blur-xl border border-slate-200/85 p-4 shadow-sm">
+        <div className="flex items-center justify-between w-full mb-3">
           <Link
             to="/"
-            className="inline-flex items-center gap-1 text-[14px] font-medium text-[#4B5563] hover:text-[#1F6FFF] transition-colors group"
+            className="inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-[#64748B] hover:text-[#165DF5] transition-colors"
           >
-            <MaterialIcon
-              name="chevron_left"
-              className="text-[18px] text-[#4B5563] group-hover:text-[#1F6FFF] transition-transform group-hover:-translate-x-0.5"
-            />
-            <span>Back to home</span>
+            <ArrowLeft className="w-4 h-4" />
+            <span>{t('Back to home', 'ഹോമിലേക്ക്')}</span>
           </Link>
-          <span className="text-[13px] font-medium text-[#6B7280]">Step {currentStep} of 4</span>
+          <span className="text-[12.5px] font-bold text-[#165DF5]">
+            {t(`Step ${currentStep} of 3`, `ഘട്ടം ${currentStep} / 3`)}
+          </span>
         </div>
-        <div className="grid grid-cols-4 gap-2 w-full">
-          {[1, 2, 3, 4].map((segment) => (
-            <button
-              key={segment}
-              type="button"
-              aria-label={`Go to step ${segment}`}
-              onClick={() => onSelectStep?.(segment as MembershipWizardStep)}
-              className={`h-1.5 rounded-full transition-colors ${
-                segment <= currentStep ? 'bg-[#1F6FFF]' : 'bg-[#D1D5DB]'
-              }`}
-            />
-          ))}
+
+        <div className="grid grid-cols-3 gap-2 w-full">
+          {membershipOnboardingSteps.map((item) => {
+            const canClick = item.step <= maxReachedStep;
+            const isActiveOrDone = item.step <= currentStep;
+            return (
+              <button
+                key={item.step}
+                type="button"
+                disabled={!canClick}
+                onClick={() => canClick && onSelectStep(item.step)}
+                aria-label={`Step ${item.step}: ${item.label}`}
+                className="flex flex-col gap-1.5 text-left disabled:cursor-default"
+              >
+                <span
+                  className={`h-1.5 rounded-full transition-colors ${
+                    isActiveOrDone ? 'bg-[#165DF5]' : 'bg-slate-200'
+                  }`}
+                />
+                <span
+                  className={`text-[11px] font-semibold truncate ${
+                    item.step === currentStep
+                      ? 'text-[#0F172A]'
+                      : isActiveOrDone
+                        ? 'text-[#475569]'
+                        : 'text-[#94A3B8]'
+                  }`}
+                >
+                  {item.step}. {lang === 'ML' ? item.labelMl : item.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Desktop Liquid Glass Stepper Card */}
-      <div className="hidden lg:flex w-full rounded-[36px] p-8 bg-surface-container-lowest/60 backdrop-blur-[40px] shadow-[0_20px_40px_rgba(31,111,255,0.08),inset_0_1px_0_0_rgba(255,255,255,0.9)] flex-col relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 h-px bg-surface-container-lowest/80 pointer-events-none" />
-
-        <div className="flex flex-col mb-10">
-          <h2 className="font-headline-card text-[22px] leading-[30px] font-bold text-on-surface tracking-tight">
-            Apply for membership
+      {/* Desktop Light-Surface Glass Stepper Card */}
+      <div className="hidden lg:flex w-full rounded-[28px] p-7 bg-white/90 backdrop-blur-2xl border border-slate-200/85 shadow-[0_18px_46px_-20px_rgba(15,23,42,0.12)] flex-col sticky top-24">
+        <div className="flex flex-col mb-7">
+          <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#165DF5]">
+            {t('Synthetic 400m Track', 'സിന്തറ്റിക് 400m ട്രാക്ക്')}
+          </span>
+          <h2 className="font-display text-[21px] font-extrabold text-[#0F172A] tracking-[-0.02em] mt-1">
+            {t('Membership Onboarding', 'അംഗത്വ രജിസ്ട്രേഷൻ')}
           </h2>
-          <p className="font-label-primary text-label-primary text-tertiary mt-1">
-            Synthetic Track · Step {currentStep} of 4
+          <p className="text-[13px] text-[#64748B] mt-1">
+            {t(`Step ${currentStep} of 3 • ${monthlyCap}-Member Cap`, `ഘട്ടം ${currentStep} / 3 • ${monthlyCap} അംഗ പരിധി`)}
           </p>
         </div>
 
-        <div className="relative flex flex-col gap-7">
-          {/* Continuous Connecting Vertical Line */}
-          <div
-            className={`absolute left-5 top-5 bottom-5 w-[2px] -z-0 ${
-              currentStep === 4 ? 'bg-primary' : 'bg-[#E1E5EE]'
-            }`}
-          />
+        <div className="relative flex flex-col gap-6">
+          {/* Vertical Connecting Line */}
+          <div className="absolute left-[19px] top-5 bottom-5 w-[2px] bg-slate-200/90" />
 
-          {membershipSteps.map((item) => {
+          {membershipOnboardingSteps.map((item) => {
             const isCompleted = item.step < currentStep;
             const isActive = item.step === currentStep;
-            const sublabel = getStepSublabel(item.step, isCompleted, isActive);
+            const canClick = item.step <= maxReachedStep;
 
             return (
               <button
                 key={item.step}
                 type="button"
-                onClick={() => onSelectStep?.(item.step)}
-                className={`relative z-10 flex items-center gap-4 text-left group focus:outline-none ${
-                  !isCompleted && !isActive && currentStep === 3 ? 'opacity-70' : ''
+                disabled={!canClick}
+                onClick={() => canClick && onSelectStep(item.step)}
+                className={`relative z-10 flex items-start gap-3.5 text-left group focus:outline-none ${
+                  canClick ? 'cursor-pointer' : 'cursor-default opacity-65'
                 }`}
               >
                 {isCompleted ? (
-                  <div className="w-10 h-10 rounded-full bg-[#1F6FFF] flex items-center justify-center shadow-[0_4px_12px_rgba(31,111,255,0.28)] shrink-0 transition-transform group-hover:scale-105">
-                    <svg
-                      className="w-5 h-5 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2.4"
-                      viewBox="0 0 20 20"
-                    >
-                      <polyline points="4 10.5 8 14.5 16 6.5" />
-                    </svg>
+                  <div className="w-10 h-10 rounded-full bg-[#165DF5] text-white flex items-center justify-center shadow-[0_6px_16px_-4px_rgba(22,93,245,0.45)] shrink-0 transition-transform group-hover:scale-105">
+                    <Check className="w-5 h-5" strokeWidth={2.6} />
                   </div>
                 ) : isActive ? (
-                  <div className="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-[0_0_0_2px_#1F6FFF,0_0_18px_rgba(31,111,255,0.35)] shrink-0">
-                    <span className="w-3.5 h-3.5 rounded-full bg-[#1F6FFF]" />
+                  <div className="w-10 h-10 rounded-full bg-white border-2 border-[#165DF5] flex items-center justify-center shadow-[0_0_0_4px_rgba(22,93,245,0.12)] shrink-0">
+                    <span className="w-3 h-3 rounded-full bg-[#165DF5]" />
                   </div>
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-surface-container-lowest/80 shadow-[0_0_0_1.5px_#C2C6D8] flex items-center justify-center shrink-0">
-                    {currentStep >= 2 && (
-                      <span className="font-label-meta text-label-meta text-secondary font-medium">
-                        {item.step}
-                      </span>
-                    )}
+                  <div className="w-10 h-10 rounded-full bg-slate-50 border border-slate-300 text-[#64748B] flex items-center justify-center shrink-0 text-[13px] font-bold">
+                    {item.step}
                   </div>
                 )}
 
-                <div className="flex flex-col min-w-0">
+                <div className="flex flex-col pt-0.5 min-w-0">
                   <span
-                    className={
+                    className={`text-[14.5px] leading-snug ${
                       isActive
-                        ? 'font-body-medium text-body-medium text-on-surface font-semibold leading-tight'
+                        ? 'font-bold text-[#0F172A]'
                         : isCompleted
-                          ? 'font-body-medium text-body-medium text-on-surface leading-tight'
-                          : 'font-body-default text-body-default text-tertiary leading-tight'
-                    }
+                          ? 'font-semibold text-[#1E293B]'
+                          : 'font-medium text-[#64748B]'
+                    }`}
                   >
-                    {item.label}
+                    {lang === 'ML' ? item.labelMl : item.label}
                   </span>
-                  {sublabel && (
-                    <span
-                      className={`font-caption text-caption mt-0.5 ${
-                        isActive ? 'text-primary font-medium' : 'text-tertiary'
-                      }`}
-                    >
-                      {sublabel}
-                    </span>
-                  )}
+                  <span
+                    className={`text-[12px] mt-0.5 leading-snug ${
+                      isActive ? 'text-[#165DF5] font-medium' : 'text-[#64748B]'
+                    }`}
+                  >
+                    {isCompleted
+                      ? t('Completed', 'പൂർത്തിയായി')
+                      : lang === 'ML'
+                        ? item.subtitleMl
+                        : item.subtitle}
+                  </span>
                 </div>
               </button>
             );
           })}
         </div>
 
-        {/* Security Badge info plate shown on Step 3 & Step 4 */}
-        {currentStep === 3 && (
-          <div className="mt-10 rounded-2xl bg-surface-container-lowest/70 backdrop-blur-xl p-4 flex items-start gap-3 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9)]">
-            <div className="w-8 h-8 rounded-xl bg-primary-fixed flex items-center justify-center shrink-0 text-primary">
-              <MaterialIcon name="verified_user" className="text-[18px]" />
-            </div>
+        {/* Instant Activation Guarantee Plate */}
+        <div className="mt-8 rounded-[18px] bg-slate-50/95 border border-slate-200/80 p-4 flex flex-col gap-3">
+          <div className="flex items-start gap-2.5">
+            <span className="w-8 h-8 rounded-xl bg-[#165DF5]/10 text-[#165DF5] flex items-center justify-center shrink-0">
+              <ReceiptText className="w-4 h-4" />
+            </span>
             <div className="flex flex-col">
-              <span className="font-label-primary text-label-primary font-semibold text-on-surface">
-                Official KCP portal
+              <span className="text-[12.5px] font-bold text-[#0F172A]">
+                {t('Instant Self-Service Activation', 'ഉടൻ സജീവമാകുന്ന അംഗത്വം')}
               </span>
-              <p className="font-caption text-caption text-tertiary mt-0.5 leading-relaxed">
-                Identity verification operates under Kerala Police Cyber Safety Directives 2024.
+              <p className="text-[11.5px] text-[#64748B] mt-0.5 leading-relaxed">
+                {t(
+                  'Complete onboarding and settle your GST fee online for immediate active status with a printable official receipt.',
+                  'വിവരങ്ങൾ നൽകി GST ഫീസ് അടയ്ക്കുന്നതോടെ ഉടൻ അംഗത്വം സജീവമാകുകയും പ്രിന്റ് ചെയ്യാവുന്ന രസീത് ലഭിക്കുകയും ചെയ്യും.',
+                )}
               </p>
             </div>
           </div>
-        )}
 
-        {currentStep === 4 && (
-          <div className="mt-10 pt-6 bg-surface-container-lowest/40 rounded-2xl p-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] flex items-start gap-3">
-            <MaterialIcon name="verified_user" className="text-primary text-[20px] flex-shrink-0 mt-0.5" />
-            <div className="flex flex-col">
-              <span className="font-label-meta text-label-meta text-on-surface font-semibold">
-                Departmental verification
-              </span>
-              <span className="font-caption text-caption text-tertiary mt-0.5 leading-relaxed">
-                Identity linked with Kerala Police Personnel Identification system.
-              </span>
-            </div>
+          <div className="pt-2.5 border-t border-slate-200/80 flex items-center gap-2 text-[11.5px] font-semibold text-[#334155]">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#165DF5] shrink-0" />
+            <span>
+              {isGovt
+                ? t('Govt / Police 50% Concession Active', 'സർക്കാർ / പോലീസ് 50% ഇളവ് സജീവം')
+                : t('Standard Public Track Tariff', 'സാധാരണ പൊതുജന നിരക്ക്')}
+            </span>
           </div>
-        )}
+        </div>
       </div>
     </aside>
   );

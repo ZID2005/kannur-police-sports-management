@@ -19,46 +19,52 @@ export function AdminPageHeader({
   actions,
 }: AdminPageHeaderProps) {
   return (
-    <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-space-lg">
-      <div className="flex flex-col gap-space-xs">
-        {(shiftBadge || officerLabel) && (
-          <div className="flex items-center gap-space-sm flex-wrap">
+    <header className="admin-animate-enter flex flex-col xl:flex-row xl:items-end justify-between gap-5 pb-6 border-b border-slate-200/80">
+      <div className="flex flex-col gap-2.5 min-w-0">
+        {(shiftBadge || groundsBadge || officerLabel) && (
+          <div className="flex items-center gap-2 flex-wrap">
             {shiftBadge && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-meta text-label-meta font-semibold shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-[#0F50DC] text-[12px] font-semibold tracking-[-0.005em]">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#165DF5] opacity-60" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#165DF5]" />
+                </span>
                 {shiftBadge}
               </span>
             )}
+
+            {groundsBadge && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200/85 text-[#475569] text-[12px] font-medium shadow-2xs">
+                <MaterialIcon name="location_on" className="text-[14px] text-[#64748B]" />
+                {groundsBadge}
+              </span>
+            )}
+
             {officerLabel && (
-              <span className="inline-flex items-center gap-1 text-on-surface-variant font-label-meta text-label-meta">
-                <MaterialIcon name="badge" className="text-[16px] text-primary" filled />
-                {officerLabel}
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100/80 text-[#475569] text-[12px] font-medium">
+                <MaterialIcon name="badge" className="text-[14px] text-[#165DF5]" filled />
+                <span className="truncate max-w-[280px]">{officerLabel}</span>
               </span>
             )}
           </div>
         )}
-        <div className="flex items-baseline gap-space-md mt-1 flex-wrap">
-          <h1 className="font-title-portal text-title-portal-mobile md:text-title-portal text-on-surface tracking-tight">
-            {title}
-          </h1>
-          {groundsBadge && (
-            <span className="hidden md:inline-block px-2.5 py-0.5 rounded bg-surface-container font-label-meta text-label-meta text-secondary font-medium">
-              {groundsBadge}
-            </span>
-          )}
-        </div>
+
+        <h1 className="font-display text-[28px] sm:text-[34px] font-extrabold text-[#0F172A] tracking-[-0.03em] leading-[1.12]">
+          {title}
+        </h1>
+
         {subtitle && (
-          <p className="font-body-default text-body-default text-on-surface-variant max-w-3xl">
+          <p className="text-[14.5px] text-[#64748B] leading-relaxed max-w-2xl">
             {subtitle}
           </p>
         )}
       </div>
 
       {actions && (
-        <div className="flex flex-wrap items-center gap-space-sm self-stretch xl:self-auto">
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
           {actions}
         </div>
       )}
-    </div>
+    </header>
   );
 }

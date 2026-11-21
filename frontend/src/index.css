@@ -9,13 +9,16 @@
 
 @layer base {
   * {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', sans-serif;
     box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
   }
   html,
   body {
     margin: 0;
     padding: 0;
+    font-family: 'Inter', 'Noto Sans Malayalam', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
   }
   body {
     background-color: #f7f9fc;
@@ -23,6 +26,13 @@
     overflow-x: hidden;
     overscroll-behavior: none;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: 'Plus Jakarta Sans', 'Noto Sans Malayalam', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
   }
   ::selection {
     background: #dbeafe;
@@ -101,13 +111,6 @@
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.5);
   }
-  /* Gate scanner header */
-  .glass-nav {
-    background: rgba(255, 255, 255, 0.78);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-  }
 
   /* Form primitives */
   .glass-input {
@@ -138,34 +141,50 @@
   }
 
   .btn-primary {
-    height: 56px;
-    border-radius: 22px;
-    background: #1f6fff;
+    height: 48px;
+    border-radius: 12px;
+    background: #165df5;
     color: #ffffff;
-    font-size: 17px;
+    font-size: 14.5px;
     font-weight: 600;
-    box-shadow: 0 8px 24px rgba(31, 111, 255, 0.28), inset 0 1px 1px rgba(255, 255, 255, 0.25);
-    transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+    letter-spacing: -0.01em;
+    border: 1px solid rgba(11, 56, 168, 0.28);
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.12),
+      0 6px 16px -4px rgba(22, 93, 245, 0.34),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    transition:
+      background-color 160ms ease,
+      transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 160ms ease,
+      border-color 160ms ease;
   }
   .btn-primary:hover {
+    background: #0f50dc;
     transform: translateY(-1px);
-    box-shadow: 0 12px 28px rgba(31, 111, 255, 0.35);
+    box-shadow:
+      0 2px 4px rgba(15, 23, 42, 0.14),
+      0 10px 22px -6px rgba(22, 93, 245, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
   }
   .btn-primary:active {
-    transform: scale(0.985);
+    transform: translateY(0) scale(0.99);
+    background: #0d47c4;
   }
   .btn-glass {
-    height: 56px;
-    border-radius: 22px;
-    background: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    color: #111418;
-    font-size: 17px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(203, 213, 225, 0.85);
+    color: #0f172a;
+    font-size: 14.5px;
     font-weight: 600;
-    transition: background 150ms ease;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    transition: background-color 150ms ease, border-color 150ms ease;
   }
   .btn-glass:hover {
-    background: rgba(255, 255, 255, 0.8);
+    background: #ffffff;
+    border-color: rgba(148, 163, 184, 0.85);
   }
 
   .no-scrollbar::-webkit-scrollbar {

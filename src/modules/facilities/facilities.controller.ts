@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { FacilityCode } from '@prisma/client';
 import { FacilitiesService } from './facilities.service';
 
 export class FacilitiesController {
   /**
    * GET /api/facilities
-   * Lists all 4 facilities with operating hours, daily user hour caps,
-   * partition rules, and active tariffs for the user's category.
+   * Lists all facilities (core + admin-created) with operating hours, operational status,
+   * daily user hour caps, partition rules, and active tariffs for the user's category.
    */
   static async listFacilities(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -23,11 +22,11 @@ export class FacilitiesController {
 
   /**
    * GET /api/facilities/:code/slots?date=YYYY-MM-DD
-   * Public slot availability endpoint with strict confidential slot masking.
+   * Member/public slot availability endpoint synchronized with live admin facility & slot controls.
    */
   static async getPublicSlots(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const code = req.params.code as FacilityCode;
+      const code = req.params.code;
       const date = req.query.date as string;
 
       const result = await FacilitiesService.getPublicFacilitySlots(code, date);
@@ -48,7 +47,7 @@ export class FacilitiesController {
    */
   static async getAdminSlots(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const code = req.params.code as FacilityCode;
+      const code = req.params.code;
       const date = req.query.date as string;
 
       const result = await FacilitiesService.getAdminFacilitySlots(code, date);

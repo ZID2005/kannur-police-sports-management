@@ -1,9 +1,13 @@
 import { Router } from 'express';
 import { UserRole } from '@prisma/client';
 import { authenticate, requireRole } from '../../middleware/auth.middleware';
-import { validateBody } from '../../middleware/validate.middleware';
+import { validateBody, validateParams } from '../../middleware/validate.middleware';
 import { MembershipsController } from './memberships.controller';
-import { applyMembershipSchema } from './memberships.schema';
+import {
+  applyMembershipSchema,
+  membershipIdParamSchema,
+  updateMembershipPeriodSchema,
+} from './memberships.schema';
 
 const membershipsRouter = Router();
 
@@ -16,5 +20,14 @@ membershipsRouter.post(
 );
 
 membershipsRouter.get('/my', authenticate, MembershipsController.getMyMemberships);
+
+membershipsRouter.patch(
+  '/:id/period',
+  authenticate,
+  requireRole(UserRole.PUBLIC, UserRole.GOVT_PERSONNEL),
+  validateParams(membershipIdParamSchema),
+  validateBody(updateMembershipPeriodSchema),
+  MembershipsController.updatePeriod
+);
 
 export default membershipsRouter;

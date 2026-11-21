@@ -5,7 +5,7 @@
 
 export type Language = 'EN' | 'ML';
 
-export type UserRole = 'PUBLIC_USER' | 'STAFF' | 'OFFICER_ADMIN' | 'GATE_SCANNER';
+export type UserRole = 'PUBLIC_USER' | 'STAFF' | 'OFFICER_ADMIN';
 
 export interface PublicUserSession {
   username: string;
@@ -18,12 +18,6 @@ export interface StaffSession {
   name: string;
   designation: string;
   pin: string;
-  initials: string;
-}
-
-export interface GateOfficerSession {
-  name: string;
-  deskId: string;
   initials: string;
 }
 

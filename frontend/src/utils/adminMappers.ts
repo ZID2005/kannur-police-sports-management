@@ -1,8 +1,9 @@
 import type {
   ApiAuditLog,
-  ApiGateLog,
   ApiMembership,
   ApiPaymentRecord,
+  BackendAuditEntityType,
+  BackendPaymentStatus,
 } from '@/api/client';
 import {
   adminApplicantPortraitUrl,
@@ -11,10 +12,9 @@ import {
 import type {
   AdminMembershipApplication,
   AdminMembershipStatus,
-  AdminTurnstileEvent,
 } from '@/types/adminMemberships';
 import type { PaymentTransactionRow } from '@/types/adminOps';
-import type { AuditLogEntry, GateEntryRecord } from '@/types/gate';
+import type { AuditLogEntry, AuditMetadataBadge } from '@/types/adminAudit';
 
 function getInitials(name?: string | null): string {
   const parts = (name ?? 'KC').trim().split(/\s+/).filter(Boolean);
@@ -157,7 +157,7 @@ export function mapApiMembershipToApplication(
       m.status === 'PENDING_APPROVAL' ? 'Review Dossier' : undefined,
     photoUrl: m.user?.profile_photo_url || adminApplicantPortraitUrl,
     photoAlt: `${fullName} profile photo`,
-    biometricMatchLabel: 'Gate 2 Dual-Factor Ready',
+    profileVerificationLabel: 'Verified Portal Profile',
     concessionBannerText: isGovt
       ? 'Government Personnel Concession — '
       : 'Public Citizen Tariff — ',
@@ -190,8 +190,8 @@ export function mapApiMembershipToApplication(
     documentCardHolder: fullName.toUpperCase(),
     documentCardRole: isGovt ? 'Government Personnel' : 'Public Member',
     documentCardMeta: `PASS: ${m.pass_code} • ${m.duration_months} MO`,
-    documentHash: m.qr_token_hash ? `HMAC: ${m.qr_token_hash.slice(0, 18)}...` : 'Pending Activation',
-    documentVaultBadge: m.status === 'ACTIVE' ? 'QR Activated' : 'In Review Queue',
+    documentHash: m.status === 'ACTIVE' ? `PASS: ${m.pass_code}` : 'Pending Activation',
+    documentVaultBadge: m.status === 'ACTIVE' ? 'Active Pass' : 'In Review Queue',
     clearanceChecks: [
       {
         id: 'cap',
@@ -233,212 +233,327 @@ export function mapApiMembershipToApplication(
   };
 }
 
-export function mapApiGateLogToTurnstileEvent(log: ApiGateLog): AdminTurnstileEvent {
-  const personName = log.user?.full_name || log.pass_or_booking_code;
-  const timeLabel = new Date(log.scanned_at).toLocaleTimeString('en-IN', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-  const facCode = log.facility?.code ?? 'SYNTHETIC_TRACK';
-  const methodLabel =
-    log.verification_type === 'MANUAL_OVERRIDE'
-      ? 'Manual Override'
-      : log.verification_type === 'QR_AND_BIOMETRIC'
-        ? 'QR + Biometric'
-        : 'QR Only';
-
-  return {
-    id: log.id,
-    personName,
-    timeLabel,
-    locationMeta: `${log.gate_name} • ${log.pass_or_booking_code}`,
-    granted: log.access_granted,
-    statusBadge:
-      log.verification_type === 'MANUAL_OVERRIDE'
-        ? 'Override'
-        : log.access_granted
-          ? 'Granted'
-          : 'Denied',
-    methodLabel,
-    icon:
-      log.verification_type === 'MANUAL_OVERRIDE'
-        ? 'admin_panel_settings'
-        : log.access_granted
-          ? 'qr_code_scanner'
-          : 'gpp_maybe',
-    gateCategory: facCode === 'SYNTHETIC_TRACK' ? 'GATE_2' : 'TURF',
-    alertActionLabel: log.access_granted ? undefined : 'Inspect Log',
-  };
+function formatInr(amount: number): string {
+  const safe = Number.isFinite(amount) ? amount : 0;
+  return `₹${safe.toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 }
 
-export function mapApiGateLogToRecord(log: ApiGateLog): GateEntryRecord {
-  const dt = new Date(log.scanned_at);
-  const memberName = log.user?.full_name || log.pass_or_booking_code;
-  const facName = log.facility?.name ?? 'Kannur Sports Facility';
-  const facCode = log.facility?.code ?? 'SYNTHETIC_TRACK';
-  const isOverride = log.verification_type === 'MANUAL_OVERRIDE';
-
-  const status: GateEntryRecord['status'] = isOverride
-    ? 'Override'
-    : log.access_granted
-      ? 'Granted'
-      : 'Rejected';
-
-  const filterType: GateEntryRecord['filterType'] = isOverride
-    ? 'override'
-    : log.access_granted
-      ? 'verified'
-      : 'failed';
-
-  const verificationStage = isOverride
-    ? 'Manual Override (§6.28)'
-    : log.verification_type === 'QR_AND_BIOMETRIC'
-      ? log.access_granted
-        ? 'QR + Biometric Passed'
-        : log.stage1_qr_passed
-          ? 'Biometric Failed'
-          : 'QR Failed'
-      : log.access_granted
-        ? 'QR Scan Passed'
-        : 'QR Failed';
-
-  return {
-    id: log.id,
-    time: dt.toTimeString().slice(0, 8),
-    date: dt.toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    }),
-    initials: getInitials(memberName),
-    avatarClass: isOverride
-      ? 'bg-secondary-container/50 text-on-secondary-container'
-      : log.access_granted
-        ? 'bg-primary/10 text-primary'
-        : 'bg-error-container text-on-error-container',
-    memberName,
-    memberSub: `${log.user?.role ?? 'PASS'} • Ref: ${log.pass_or_booking_code}`,
-    passId: log.pass_or_booking_code,
-    category: log.user?.role === 'GOVT_PERSONNEL' ? 'Govt / Dept' : 'General Public',
-    categoryClass: 'bg-surface-container-high text-on-surface',
-    facility: `${facName} — ${log.gate_name}`,
-    facilityFilterKey: facCode,
-    facilityIcon: facCode === 'SYNTHETIC_TRACK' ? 'directions_run' : 'sports_soccer',
-    facilityIconClass: 'text-primary',
-    verificationStage,
-    verificationIcon: isOverride
-      ? 'verified_user'
-      : log.access_granted
-        ? 'check_circle'
-        : 'error',
-    verificationBadgeClass: isOverride
-      ? 'bg-indigo-50 text-indigo-700'
-      : log.access_granted
-        ? 'bg-emerald-50 text-emerald-700'
-        : 'bg-error-container text-on-error-container',
-    remarks:
-      log.failure_or_override_reason ||
-      (log.access_granted
-        ? `Access granted at ${log.gate_name} (${log.verification_type})`
-        : 'Gate entry denied'),
-    status,
-    filterType,
-    rowHighlightClass: isOverride ? 'bg-secondary-container/10' : undefined,
-    authorizingOfficer: log.verified_by_officer?.full_name,
-    signatureHash: log.id.slice(0, 12),
-  };
+function getPaymentStatusLabel(status: BackendPaymentStatus): string {
+  switch (status) {
+    case 'SETTLED':
+      return 'Completed';
+    case 'PENDING_RECONCILIATION':
+      return 'Pending';
+    case 'FAILED':
+      return 'Failed';
+    case 'REFUNDED':
+      return 'Refunded';
+  }
 }
 
 export function mapApiPaymentToRow(p: ApiPaymentRecord): PaymentTransactionRow {
   const memberName = p.user?.full_name ?? p.user?.username ?? 'Portal Member';
-  const isGovt = p.user?.role === 'GOVT_PERSONNEL';
-  const facCode = p.facility_code ?? 'SYNTHETIC_TRACK';
-  const facGroupMap: Record<string, PaymentTransactionRow['facilityFilterGroup']> = {
-    SYNTHETIC_TRACK: 'Synthetic Track',
-    FOOTBALL_GROUND: 'Football Ground',
-    POLICE_TURF: 'Police Turf',
-    BADMINTON_COURT: 'Indoor Badminton',
-  };
-  const facilityGroup = facGroupMap[facCode] ?? 'Synthetic Track';
+  const memberUsername = p.user?.username ?? 'member';
+  const userCategory: 'PUBLIC' | 'GOVT_PERSONNEL' =
+    p.user_category ??
+    (p.user?.role === 'GOVT_PERSONNEL' ? 'GOVT_PERSONNEL' : 'PUBLIC');
+  const isGovt = userCategory === 'GOVT_PERSONNEL';
 
-  const isOffice = p.payment_mode === 'OFFICE_RECEIPT';
-  const isRefund = p.status === 'REFUNDED';
+  const breakdown = p.pricing_breakdown;
+  const taxableSubtotal = Number(breakdown?.taxable_subtotal ?? p.base_amount ?? 0);
+  const baseFee = Number(breakdown?.base_fee ?? taxableSubtotal);
+  const concessionDiscount = Number(breakdown?.concession_discount ?? 0);
+  const concessionPercent = Number(breakdown?.concession_percent ?? 0);
+  const gstRate = Number(breakdown?.gst_rate ?? 18);
+  const gstAmount = Number(breakdown?.gst_amount ?? p.gst_amount ?? 0);
+  const finalTotalPaid = Number(breakdown?.final_total_paid ?? p.total_amount ?? 0);
+
+  const createdDt = new Date(p.created_at);
+  const dateLabel = Number.isNaN(createdDt.getTime())
+    ? p.created_at
+    : createdDt.toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      });
+  const timeLabel = Number.isNaN(createdDt.getTime())
+    ? ''
+    : createdDt.toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+
+  const refDetails = (p.reference_details ?? {}) as Record<string, unknown>;
+  let facilityPurpose =
+    p.reference_type === 'MEMBERSHIP' ? 'Monthly Pass' : 'Hourly Slot Booking';
+  if (p.reference_type === 'MEMBERSHIP' && refDetails.duration_months) {
+    facilityPurpose = `Monthly Pass (${String(refDetails.duration_months)} Mo)`;
+  } else if (p.reference_type === 'SLOT_BOOKING' && refDetails.court_partition) {
+    const part = String(refDetails.court_partition);
+    const partLabel =
+      part === 'HALF_A' ? 'Half Court A' : part === 'HALF_B' ? 'Half Court B' : 'Full Court';
+    facilityPurpose = `Hourly Slot • ${partLabel}`;
+  }
 
   return {
     id: p.id,
     receiptId: p.receipt_no,
-    timestamp: new Date(p.created_at).toLocaleString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-    }),
-    isRefund,
+    bookingOrPassRef: p.pass_or_booking_code ?? p.reference_id,
+    isoTimestamp: createdDt.toISOString(),
+    dateLabel,
+    timeLabel,
     memberInitials: getInitials(memberName),
     avatarTone: isGovt ? 'primary' : 'secondary',
     memberName,
-    memberMeta: `${p.pass_or_booking_code ?? p.reference_id} • @${p.user?.username ?? 'user'}`,
-    categoryLabel: isGovt ? 'Govt (Concession)' : 'Public Standard',
-    categoryTone: isGovt ? 'primary-fixed' : 'neutral',
-    facilityName: p.facility_name ?? facilityGroup,
-    facilityFilterGroup: facilityGroup,
-    facilityPurpose:
-      p.reference_type === 'MEMBERSHIP' ? 'Monthly Track Pass' : 'Hourly Slot Booking',
-    paymentModeLabel: isOffice ? 'Office Receipt / Challan' : 'Online Gateway',
-    paymentModeIcon: isOffice ? 'receipt' : 'qr_code_2',
-    paymentModeIconTone: isOffice ? 'primary' : 'emerald',
-    amountFormatted: `₹${Number(p.total_amount).toLocaleString('en-IN', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`,
-    status: isRefund ? 'refunded' : isOffice ? 'treasury' : 'settled',
-    statusLabel: isRefund ? 'Refunded' : isOffice ? 'Office Receipt' : 'Settled',
-    tabCategory: isRefund ? 'refunds' : isOffice ? 'office' : 'online',
-    downloadTitle: `Receipt ${p.receipt_no}`,
+    memberUsername,
+    userCategory,
+    categoryLabel: isGovt ? 'Govt / Police' : 'Public',
+    facilityCode: p.facility_code ?? 'SPORTS_FACILITY',
+    facilityName: p.facility_name ?? p.facility_code ?? 'Sports Facility',
+    facilityPurpose,
+    paymentMode: p.payment_mode,
+    paymentModeLabel: p.payment_mode === 'OFFICE_RECEIPT' ? 'Office Receipt' : 'Online Gateway',
+    baseFee,
+    concessionDiscount,
+    concessionPercent,
+    taxableSubtotal,
+    gstRate,
+    gstAmount,
+    finalTotalPaid,
+    baseFeeFormatted: formatInr(baseFee),
+    concessionDiscountFormatted: formatInr(concessionDiscount),
+    taxableSubtotalFormatted: formatInr(taxableSubtotal),
+    gstAmountFormatted: formatInr(gstAmount),
+    totalPaidFormatted: formatInr(finalTotalPaid),
+    status: p.status,
+    statusLabel: getPaymentStatusLabel(p.status),
+    recordedByOfficerName:
+      p.recorded_by_officer?.full_name ?? p.recorded_by_officer?.username ?? null,
   };
+}
+
+const AUDIT_ACTION_META: Record<
+  string,
+  {
+    label: string;
+    badgeClass: string;
+    dotClass: string;
+  }
+> = {
+  FACILITY_CREATED: {
+    label: 'Facility Created',
+    badgeClass: 'bg-emerald-50 text-emerald-800 border border-emerald-200/80',
+    dotClass: 'bg-emerald-600',
+  },
+  FACILITY_UPDATED: {
+    label: 'Facility Updated',
+    badgeClass: 'bg-primary-fixed text-on-primary-fixed border border-primary/20',
+    dotClass: 'bg-primary',
+  },
+  FACILITY_STATUS_UPDATED: {
+    label: 'Facility Status Toggled',
+    badgeClass: 'bg-amber-50 text-amber-900 border border-amber-200/80',
+    dotClass: 'bg-amber-600',
+  },
+  FACILITY_SLOT_CREATED: {
+    label: 'Slot Created',
+    badgeClass: 'bg-emerald-50 text-emerald-800 border border-emerald-200/80',
+    dotClass: 'bg-emerald-600',
+  },
+  FACILITY_SLOT_UPDATED: {
+    label: 'Slot Edited',
+    badgeClass: 'bg-primary-fixed text-on-primary-fixed border border-primary/20',
+    dotClass: 'bg-primary',
+  },
+  FACILITY_SLOT_BLOCKED: {
+    label: 'Slot Blocked',
+    badgeClass: 'bg-amber-50 text-amber-900 border border-amber-200/80',
+    dotClass: 'bg-amber-600',
+  },
+  FACILITY_SLOT_UNBLOCKED: {
+    label: 'Slot Unblocked',
+    badgeClass: 'bg-emerald-50 text-emerald-800 border border-emerald-200/80',
+    dotClass: 'bg-emerald-600',
+  },
+  FACILITY_SLOT_DELETED: {
+    label: 'Slot Deleted',
+    badgeClass: 'bg-error-container/60 text-on-error-container border border-error/25',
+    dotClass: 'bg-error',
+  },
+  AUTHORITY_SLOT_BLOCK: {
+    label: 'Authority Slot Block',
+    badgeClass: 'bg-amber-50 text-amber-900 border border-amber-200/80',
+    dotClass: 'bg-amber-600',
+  },
+  AUTHORITY_SLOT_UNBLOCK: {
+    label: 'Authority Block Cleared',
+    badgeClass: 'bg-emerald-50 text-emerald-800 border border-emerald-200/80',
+    dotClass: 'bg-emerald-600',
+  },
+  OFFICE_RECEIPT_PAYMENT: {
+    label: 'Office Receipt Recorded',
+    badgeClass: 'bg-emerald-50 text-emerald-800 border border-emerald-200/80',
+    dotClass: 'bg-emerald-600',
+  },
+  USER_STATUS_MODERATION: {
+    label: 'Account Status Updated',
+    badgeClass: 'bg-error-container/60 text-on-error-container border border-error/25',
+    dotClass: 'bg-error',
+  },
+  OFFICER_AUTH: {
+    label: 'Officer Sign-In',
+    badgeClass: 'bg-secondary-fixed text-on-secondary-fixed border border-secondary/20',
+    dotClass: 'bg-secondary',
+  },
+  BOOKING_CANCELLATION: {
+    label: 'Booking Cancelled',
+    badgeClass: 'bg-surface-container text-secondary border border-outline-variant/40',
+    dotClass: 'bg-secondary',
+  },
+  SYSTEM_SEED: {
+    label: 'System Initialized',
+    badgeClass: 'bg-surface-container text-secondary border border-outline-variant/40',
+    dotClass: 'bg-secondary',
+  },
+};
+
+function getEntityDisplay(entity: BackendAuditEntityType): {
+  label: string;
+  badgeClass: string;
+} {
+  switch (entity) {
+    case 'FACILITY':
+      return { label: 'FACILITY', badgeClass: 'bg-primary-fixed/80 text-primary' };
+    case 'SLOT':
+      return { label: 'SLOT', badgeClass: 'bg-amber-50 text-amber-800' };
+    case 'PAYMENT':
+      return { label: 'PAYMENT', badgeClass: 'bg-emerald-50 text-emerald-800' };
+    case 'USER':
+      return { label: 'ACCOUNT', badgeClass: 'bg-secondary-fixed text-secondary' };
+    default:
+      return { label: 'SYSTEM', badgeClass: 'bg-surface-container text-on-surface-variant' };
+  }
 }
 
 export function mapApiAuditLogToEntry(log: ApiAuditLog): AuditLogEntry {
   const dt = new Date(log.created_at);
-  const officerName = log.officer?.full_name ?? log.officer?.username ?? 'System Officer';
+  const details = (log.details ?? {}) as Record<string, unknown>;
+  const officerName =
+    log.officer?.full_name ?? log.officer?.username ?? log.officer_username ?? 'System Officer';
+  const officerUsername =
+    log.officer?.username ?? log.officer_username ?? String(details.officer_username ?? 'officer');
+  const officerRole =
+    log.officer?.role ?? log.officer_role ?? String(details.officer_role ?? 'STAFF_ADMIN');
   const cat = log.action_category.toUpperCase();
 
-  let filterCategory: AuditLogEntry['filterCategory'] = 'slots';
-  if (cat.includes('BAN') || cat.includes('USER_STATUS')) filterCategory = 'bans';
-  else if (cat.includes('PAYMENT') || cat.includes('OFFICE_RECEIPT')) filterCategory = 'payments';
-  else if (cat.includes('GATE')) filterCategory = 'gate';
+  const entityType: BackendAuditEntityType =
+    log.target_entity ??
+    (cat.startsWith('FACILITY_SLOT_') || cat.startsWith('AUTHORITY_SLOT_') || cat.includes('BOOKING')
+      ? 'SLOT'
+      : cat.startsWith('FACILITY_')
+        ? 'FACILITY'
+        : cat.includes('PAYMENT') || cat.includes('RECEIPT')
+          ? 'PAYMENT'
+          : cat.includes('USER_STATUS') || cat === 'OFFICER_AUTH'
+            ? 'USER'
+            : 'SYSTEM');
+
+  const actionMeta = AUDIT_ACTION_META[cat] ?? {
+    label: cat.replace(/_/g, ' '),
+    badgeClass: 'bg-surface-container text-secondary border border-outline-variant/40',
+    dotClass: 'bg-secondary',
+  };
+
+  const entityMeta = getEntityDisplay(entityType);
+
+  const metaBadges: AuditMetadataBadge[] = [];
+  const blockType = details.block_type ?? details.block_status;
+  if (blockType === 'BLOCKED_MAINTENANCE') {
+    metaBadges.push({ label: 'Maintenance Block', tone: 'amber' });
+  } else if (blockType === 'RESERVED_DEPARTMENT') {
+    metaBadges.push({ label: 'Department Reserved', tone: 'primary' });
+  }
+
+  if (details.previous_status && details.new_status) {
+    metaBadges.push({
+      label: `${String(details.previous_status)} → ${String(details.new_status)}`,
+      tone: details.new_status === 'ACTIVE' ? 'emerald' : 'amber',
+    });
+  }
+
+  if (details.start_time && details.end_time) {
+    metaBadges.push({
+      label: `${String(details.start_time)}–${String(details.end_time)}${
+        details.date ? ` (${String(details.date)})` : ''
+      }`,
+      tone: 'neutral',
+    });
+  }
+
+  if (details.total_amount) {
+    metaBadges.push({
+      label: `₹${Number(details.total_amount).toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`,
+      tone: 'emerald',
+    });
+  }
+
+  if (details.public_rate !== undefined && details.govt_rate !== undefined) {
+    metaBadges.push({
+      label: `Public ₹${String(details.public_rate)} / Govt ₹${String(details.govt_rate)}`,
+      tone: 'primary',
+    });
+  }
+
+  const conciseReason =
+    log.reason ||
+    (typeof details.reason === 'string' && details.reason) ||
+    (typeof details.internal_reason === 'string' && details.internal_reason) ||
+    (typeof details.ban_reason === 'string' && details.ban_reason) ||
+    (typeof details.remarks === 'string' && details.remarks) ||
+    log.action_description;
+
+  const targetLabel =
+    log.target_entity_label ||
+    String(details.facility_name ?? details.facility_code ?? log.target_ref_id ?? 'System Record');
 
   return {
     id: log.id,
+    isoTimestamp: log.timestamp ?? dt.toISOString(),
     date: dt.toLocaleDateString('en-IN', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
     }),
-    timeIst: dt.toTimeString().slice(0, 8),
+    timeIst: dt.toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    }),
     officerInitials: getInitials(officerName),
-    officerAvatarClass: 'bg-primary/10 text-primary',
+    officerAvatarClass: 'bg-primary-fixed text-primary',
     officerName,
-    officerMeta: `@${log.officer?.username ?? 'officer'} • ${log.ip_address}`,
-    categoryLabel: log.action_category,
-    categoryBadgeClass:
-      filterCategory === 'bans'
-        ? 'bg-error-container text-on-error-container'
-        : filterCategory === 'payments'
-          ? 'bg-emerald-50 text-emerald-700'
-          : 'bg-primary-fixed text-on-primary-fixed',
-    categoryDotClass:
-      filterCategory === 'bans'
-        ? 'bg-error'
-        : filterCategory === 'payments'
-          ? 'bg-emerald-600'
-          : 'bg-primary',
-    filterCategory,
-    entityType: log.action_category,
+    officerUsername,
+    officerRole,
+    ipAddress: log.ip_address,
+    actionCategory: cat,
+    categoryLabel: actionMeta.label,
+    categoryBadgeClass: actionMeta.badgeClass,
+    categoryDotClass: actionMeta.dotClass,
+    entityType,
+    entityLabel: entityMeta.label,
+    entityBadgeClass: entityMeta.badgeClass,
     actionTitle: log.action_description,
-    actionSubtitle: `Category: ${log.action_category}`,
     targetRefId: log.target_ref_id || log.id.slice(0, 12),
-    targetSubtitle: `IP: ${log.ip_address}`,
-    reason: log.details ? JSON.stringify(log.details) : log.action_description,
+    targetLabel,
+    reason: conciseReason,
+    metaBadges,
   };
 }

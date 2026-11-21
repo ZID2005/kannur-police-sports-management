@@ -1,22 +1,22 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { AlertCircle, ArrowRight, Loader2, User } from 'lucide-react';
 import { ApiError } from '@/api/client';
 import { AuthCardShell } from '@/components/home/AuthCardShell';
 import { PasswordInput } from '@/components/home/PasswordInput';
 import { getRoleRedirectPath, useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { authMockCredentials, authPageContent } from '@/data/mockData';
 import '@/styles/home.css';
 
 /**
  * Public Sign In screen (`/login`).
- * Converted from:
- * - `kannur_city_police_sign_in_error` (desktop; default = error hidden, shown on failed check)
- * - `kannur_city_police_mobile_sign_in` (mobile responsive layout)
  */
 export default function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
+  const { t } = useLanguage();
   const initialErrorMode = searchParams.get('state') === 'error';
 
   const [username, setUsername] = useState(
@@ -81,28 +81,62 @@ export default function LoginPage() {
       noticeMessage={notice?.message}
       onCloseNotice={() => setNotice(null)}
     >
-      <form id="signin-section" className="mt-6 flex flex-col space-y-4" onSubmit={handleSubmit} noValidate>
-        {/* Field: Username */}
+      <form
+        id="signin-section"
+        className="mt-6 flex flex-col gap-4"
+        onSubmit={handleSubmit}
+        noValidate
+      >
+          {/* Field: Name or Username */}
         <div className="flex flex-col">
-          <input
-            id="signin-username"
-            type="text"
-            autoComplete="username"
-            placeholder={authPageContent.usernamePlaceholder}
-            value={username}
-            onChange={(e) => {
-              setUsername(e.target.value);
-              if (hasError) setHasError(false);
-            }}
-            className="glass-input px-5 w-full"
-          />
+          <label
+            htmlFor="signin-username"
+            className="text-[13px] font-semibold text-[#1E293B] tracking-[-0.005em] mb-1.5"
+          >
+            {t('Name or Username', 'പേര് അല്ലെങ്കിൽ ഉപയോക്തൃനാമം')}
+          </label>
+          <div className="relative flex items-center">
+            <User
+              className={`w-[16px] h-[16px] absolute left-3.5 pointer-events-none transition-colors ${
+                hasError ? 'text-[#DC2626]' : 'text-[#94A3B8]'
+              }`}
+              strokeWidth={1.9}
+            />
+            <input
+              id="signin-username"
+              type="text"
+              autoComplete="username"
+              placeholder={t('Enter your full name or username', 'നിങ്ങളുടെ പേരോ ഉപയോക്തൃനാമമോ നൽകുക')}
+              value={username}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                if (hasError) setHasError(false);
+              }}
+              className={`auth-input pl-10 pr-4 w-full ${hasError ? 'input-error' : ''}`}
+            />
+          </div>
         </div>
 
-        {/* Field: Password with eye icon */}
+        {/* Field: Password + inline Forgot password action */}
         <PasswordInput
           id="signin-password"
+          label={t('Password', 'പാസ്‌വേഡ്')}
+          labelAction={
+            <button
+              type="button"
+              onClick={() =>
+                setNotice({
+                  title: t(authPageContent.forgotPasswordLabel, 'പാസ്‌വേഡ് മറന്നോ?'),
+                  message: authPageContent.forgotPasswordNotice,
+                })
+              }
+              className="text-[12.5px] font-semibold text-[#165DF5] hover:text-[#0F50DC] hover:underline focus:outline-none rounded"
+            >
+              {t(authPageContent.forgotPasswordLabel, 'പാസ്‌വേഡ് മറന്നോ?')}
+            </button>
+          }
           autoComplete="current-password"
-          placeholder={authPageContent.passwordPlaceholder}
+          placeholder={t('Enter your password', 'പാസ്‌വേഡ് നൽകുക')}
           value={password}
           hasError={hasError}
           onChange={(val) => {
@@ -111,42 +145,36 @@ export default function LoginPage() {
           }}
         />
 
-        {/* Error message container for Sign in */}
+        {/* Inline Error Alert */}
         {hasError && (
           <div
             id="signin-error-text"
             role="alert"
-            className="text-[13px] text-[#E5484D] font-medium pt-0.5"
+            className="flex items-start gap-2 rounded-[12px] bg-red-50 border border-red-200/80 px-3.5 py-2.5 text-[13px] text-[#B91C1C] font-medium"
           >
-            {errorMessage}
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#DC2626]" />
+            <span>{errorMessage}</span>
           </div>
         )}
 
-        {/* Blue text link: Forgot password? aligned right */}
-        <div className="flex justify-end pt-1">
-          <button
-            type="button"
-            onClick={() =>
-              setNotice({
-                title: authPageContent.forgotPasswordLabel,
-                message: authPageContent.forgotPasswordNotice,
-              })
-            }
-            className="text-[14px] font-medium text-[#1F6FFF] hover:underline focus:outline-none focus:ring-1 focus:ring-[#1F6FFF] rounded"
-          >
-            {authPageContent.forgotPasswordLabel}
-          </button>
-        </div>
-
-        {/* Full-width solid blue button "Sign in" */}
+        {/* Sharp Modern Primary Submit Button */}
         <button
           id="btn-submit-signin"
           type="submit"
           disabled={isSubmitting}
-          className={`btn-primary w-full mt-2 flex items-center justify-center ${isSubmitting ? 'opacity-70 cursor-wait' : ''
-            }`}
+          className="btn-primary w-full mt-2 inline-flex items-center justify-center gap-2 group"
         >
-          {isSubmitting ? 'Signing in...' : authPageContent.signInCtaLabel}
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>{t('Signing in...', 'സൈൻ ഇൻ ചെയ്യുന്നു...')}</span>
+            </>
+          ) : (
+            <>
+              <span>{t(authPageContent.signInCtaLabel, 'സൈൻ ഇൻ ചെയ്യുക')}</span>
+              <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+            </>
+          )}
         </button>
       </form>
     </AuthCardShell>

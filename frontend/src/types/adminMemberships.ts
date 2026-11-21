@@ -78,7 +78,7 @@ export interface AdminMembershipApplication {
   secondaryActionLabel?: string;
   photoUrl: string;
   photoAlt: string;
-  biometricMatchLabel: string;
+  profileVerificationLabel: string;
   concessionBannerText: string;
   concessionHighlightText: string;
   dobAgeLabel: string;
@@ -121,26 +121,6 @@ export interface AdminShiftMeta {
   portalTitle: string;
   groundsBadge: string;
   subtitle: string;
-}
-
-export type AdminTurnstileGateFilter = 'ALL' | 'GATE_2' | 'TURF';
-
-export interface AdminTurnstileGateOption {
-  id: AdminTurnstileGateFilter;
-  label: string;
-}
-
-export interface AdminTurnstileEvent {
-  id: string;
-  personName: string;
-  timeLabel: string;
-  locationMeta: string;
-  granted: boolean;
-  statusBadge: string;
-  methodLabel: string;
-  icon: string;
-  gateCategory: 'GATE_2' | 'TURF';
-  alertActionLabel?: string;
 }
 
 export interface AdminFacilityZoneMetric {

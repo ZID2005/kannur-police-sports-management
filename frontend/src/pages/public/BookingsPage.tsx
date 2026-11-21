@@ -7,44 +7,69 @@ import {
   paymentsApi,
   type ApiFacility,
   type ApiPublicSlotsResponse,
+  type ApiSlotBooking,
   type BackendCourtPartition,
-  type BackendFacilityCode,
+  type FacilityOperationalStatus,
+  type PublicSlotOperationalStatus,
 } from '@/api/client';
-import { MaterialIcon } from '@/components/ui/MaterialIcon';
+import { CheckCircle2, ShieldCheck } from 'lucide-react';
 import { VenueSelectorCards } from '@/components/bookings/VenueSelectorCards';
 import { SlotSelectionWorkspace } from '@/components/bookings/SlotSelectionWorkspace';
 import { BookingSummaryCard } from '@/components/bookings/BookingSummaryCard';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import {
   bookingPortalMeta,
-  bookingRegistrant,
-  bookingTimeSlots,
-  bookingVenues,
+  fallbackBookingVenues,
+  guestBookingRegistrant,
 } from '@/data/mockData';
 import type {
   BookingCourtOption,
   BookingDateOption,
   BookingPortalMeta,
+  BookingReceiptData,
   BookingRegistrant,
-  BookingSelectionState,
   BookingTimeSlot,
   BookingVenue,
 } from '@/types/bookings';
 import '@/styles/bookings.css';
 
-export const LATEST_BOOKING_TICKET_KEY = 'kcp_latest_booking_ticket';
+export const LATEST_BOOKING_RECEIPT_KEY = 'kcp_latest_booking_receipt';
 
-const VENUE_ID_TO_CODE: Record<string, BackendFacilityCode> = {
+const LEGACY_SLUG_TO_CODE: Record<string, string> = {
   'police-turf': 'POLICE_TURF',
   'football-ground': 'FOOTBALL_GROUND',
   'indoor-badminton': 'BADMINTON_COURT',
+  'badminton-court': 'BADMINTON_COURT',
 };
 
-const COURT_ID_TO_PARTITION: Record<BookingCourtOption['id'], BackendCourtPartition> = {
-  full: 'FULL',
-  half_a: 'HALF_A',
-  half_b: 'HALF_B',
+const CORE_VENUE_IMAGES: Record<string, { url: string; alt: string; badge: string; icon: string }> = {
+  POLICE_TURF: {
+    url: '/images/facilities/police-turf.jpg',
+    alt: 'Police Turf floodlit artificial 7-a-side football turf',
+    badge: 'Turf',
+    icon: 'sports_soccer',
+  },
+  FOOTBALL_GROUND: {
+    url: '/images/facilities/football-ground.jpg',
+    alt: 'Police Parade natural grass football ground',
+    badge: 'Stadium',
+    icon: 'sports_soccer',
+  },
+  BADMINTON_COURT: {
+    url: '/images/facilities/badminton-court.jpg',
+    alt: 'Indoor wooden badminton court complex',
+    badge: 'Indoor',
+    icon: 'sports_tennis',
+  },
 };
+
+function normalizeVenueCode(param: string | null): string | null {
+  if (!param) return null;
+  const trimmed = param.trim();
+  if (!trimmed) return null;
+  return LEGACY_SLUG_TO_CODE[trimmed.toLowerCase()] ?? trimmed.toUpperCase();
+}
 
 function formatTime12h(hhmm: string): string {
   const [hStr, mStr] = hhmm.split(':');
@@ -93,36 +118,182 @@ function buildRollingDates(): BookingDateOption[] {
   return list;
 }
 
+function formatCourtModeLabel(partition: BackendCourtPartition, isPartitionable: boolean): string {
+  if (partition === 'HALF_A') return 'Half Court A (5s)';
+  if (partition === 'HALF_B') return 'Half Court B (5s)';
+  return isPartitionable ? 'Full Court (7s)' : 'Full Court';
+}
+
+function mapFacilityToBookingVenue(fac: ApiFacility): BookingVenue {
+  const media = CORE_VENUE_IMAGES[fac.code];
+  const fullTariff =
+    fac.tariffs.find((tItem) => tItem.booking_type === 'FULL_COURT') ?? fac.tariffs[0];
+  const halfTariff = fac.tariffs.find((tItem) => tItem.booking_type === 'HALF_COURT');
+
+  const fullRate = fullTariff ? Number(fullTariff.base_price) : 500;
+  const fullStandard = fullTariff?.standard_base_price
+    ? Number(fullTariff.standard_base_price)
+    : fullRate;
+  const fullDiscount = fullTariff?.concession_discount
+    ? Number(fullTariff.concession_discount)
+    : Math.max(0, fullStandard - fullRate);
+  const fullConcessionPct = fullTariff?.concession_percent ?? 0;
+  const gstRate = fullTariff ? Number(fullTariff.gst_percent) : 18;
+
+  const halfRate = halfTariff ? Number(halfTariff.base_price) : Math.round(fullRate / 2);
+  const halfStandard = halfTariff?.standard_base_price
+    ? Number(halfTariff.standard_base_price)
+    : halfRate;
+  const halfDiscount = halfTariff?.concession_discount
+    ? Number(halfTariff.concession_discount)
+    : Math.max(0, halfStandard - halfRate);
+  const halfConcessionPct = halfTariff?.concession_percent ?? fullConcessionPct;
+
+  const courtIcon = media?.icon ?? 'sports_score';
+
+  const courtOptions: BookingCourtOption[] = fac.is_partitionable
+    ? [
+        {
+          id: 'full',
+          partition: 'FULL',
+          label: `Full Court • ₹${fullRate.toLocaleString('en-IN')}/hr`,
+          shortName: 'Full Court (7s)',
+          turfBadge: 'FULL COURT',
+          icon: courtIcon,
+          hourlyRate: fullRate,
+          standardHourlyRate: fullStandard,
+          concessionDiscount: fullDiscount,
+          concessionPercent: fullConcessionPct,
+          gstRate,
+        },
+        {
+          id: 'half_a',
+          partition: 'HALF_A',
+          label: `Half A • ₹${halfRate.toLocaleString('en-IN')}/hr`,
+          shortName: 'Half Court A (5s)',
+          turfBadge: 'HALF COURT A',
+          icon: 'crop_free',
+          hourlyRate: halfRate,
+          standardHourlyRate: halfStandard,
+          concessionDiscount: halfDiscount,
+          concessionPercent: halfConcessionPct,
+          gstRate,
+        },
+        {
+          id: 'half_b',
+          partition: 'HALF_B',
+          label: `Half B • ₹${halfRate.toLocaleString('en-IN')}/hr`,
+          shortName: 'Half Court B (5s)',
+          turfBadge: 'HALF COURT B',
+          icon: 'crop_free',
+          hourlyRate: halfRate,
+          standardHourlyRate: halfStandard,
+          concessionDiscount: halfDiscount,
+          concessionPercent: halfConcessionPct,
+          gstRate,
+        },
+      ]
+    : [
+        {
+          id: 'full',
+          partition: 'FULL',
+          label: `Full Court • ₹${fullRate.toLocaleString('en-IN')}/hr`,
+          shortName: 'Full Court',
+          turfBadge: 'FULL COURT',
+          icon: courtIcon,
+          hourlyRate: fullRate,
+          standardHourlyRate: fullStandard,
+          concessionDiscount: fullDiscount,
+          concessionPercent: fullConcessionPct,
+          gstRate,
+        },
+      ];
+
+  const badgeText =
+    media?.badge ??
+    (fac.category ? fac.category.split(/\s+/)[0].slice(0, 10) : 'Venue');
+  const subtitle =
+    fac.description ||
+    (fac.is_partitionable
+      ? 'Full / Half Court Partitionable Venue'
+      : `${fac.court_count ?? 1} ${fac.court_unit_label ?? 'Court'} • ${fac.category ?? 'Sports Arena'}`);
+
+  const rateCategoryLabel =
+    fac.user_category === 'GOVT_PERSONNEL' ? 'Govt / Police Rate' : 'General Public Rate';
+
+  return {
+    id: fac.code,
+    code: fac.code,
+    name: fac.name,
+    category: fac.category ?? 'Sports Facility',
+    badge: badgeText,
+    subtitle,
+    priceLabel: fac.is_partitionable
+      ? `₹${halfRate.toLocaleString('en-IN')} – ₹${fullRate.toLocaleString('en-IN')} / hr`
+      : `₹${fullRate.toLocaleString('en-IN')} / hr`,
+    imageUrl: media?.url ?? null,
+    imageAlt: media?.alt ?? fac.name,
+    operationalStatus: fac.operational_status ?? 'ACTIVE',
+    rateBannerText: `${rateCategoryLabel}: ₹${fullRate.toLocaleString('en-IN')}/hr Full${
+      fac.is_partitionable ? ` • ₹${halfRate.toLocaleString('en-IN')}/hr Half Court` : ''
+    }`,
+    policyBadge: `${fac.is_partitionable ? 'Partitionable' : 'Hourly'} • Max ${fac.daily_user_hour_cap} hrs/day`,
+    operatingHoursText: `Operating Hours: ${formatTime12h(fac.operating_start)} – ${formatTime12h(
+      fac.operating_end,
+    )} • Max ${fac.daily_user_hour_cap} hrs/day • Instant booking confirmation & GST receipt`,
+    dailyUserHourCap: fac.daily_user_hour_cap,
+    isPartitionable: fac.is_partitionable,
+    courtOptions,
+  };
+}
+
+function mapOperationalToSlotUiStatus(
+  rawStatus: 'AVAILABLE' | 'ALREADY_BOOKED',
+  opStatus?: PublicSlotOperationalStatus,
+): BookingTimeSlot['status'] {
+  if (opStatus === 'FACILITY_MAINTENANCE' || opStatus === 'FACILITY_CLOSED') {
+    return 'facility_unavailable';
+  }
+  if (opStatus === 'BLOCKED_MAINTENANCE') {
+    return 'blocked_maintenance';
+  }
+  if (opStatus === 'RESERVED_DEPARTMENT') {
+    return 'reserved_department';
+  }
+  if (rawStatus === 'ALREADY_BOOKED' || opStatus === 'BOOKED') {
+    return 'booked';
+  }
+  return 'available';
+}
+
 export default function BookingsPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
+  const { t } = useLanguage();
 
-  const initialVenueParam = searchParams.get('venue');
-  const initialVenueId =
-    initialVenueParam && VENUE_ID_TO_CODE[initialVenueParam]
-      ? initialVenueParam
-      : 'police-turf';
+  const initialCode = normalizeVenueCode(searchParams.get('venue')) ?? 'POLICE_TURF';
 
   const rollingDates = useMemo(() => buildRollingDates(), []);
   const todayIso = rollingDates[1]?.id ?? formatDateIso(new Date());
 
   const [facilities, setFacilities] = useState<ApiFacility[]>([]);
-  const [selectedVenueId, setSelectedVenueId] = useState<string>(initialVenueId);
+  const [myBookings, setMyBookings] = useState<ApiSlotBooking[]>([]);
+  const [selectedVenueCode, setSelectedVenueCode] = useState<string>(initialCode);
   const [selectedCourtId, setSelectedCourtId] = useState<BookingCourtOption['id']>('full');
   const [selectedDateId, setSelectedDateId] = useState<string>(todayIso);
   const [selectedSlotId, setSelectedSlotId] = useState<string>('');
   const [slotsData, setSlotsData] = useState<ApiPublicSlotsResponse | null>(null);
   const [loadingSlots, setLoadingSlots] = useState<boolean>(false);
   const [reserving, setReserving] = useState<boolean>(false);
-  const [draftSaved, setDraftSaved] = useState<boolean>(false);
+  const [inlineError, setInlineError] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     window.setTimeout(() => {
       setToastMessage((prev) => (prev === msg ? null : prev));
-    }, 4000);
+    }, 4500);
   };
 
   useEffect(() => {
@@ -133,84 +304,54 @@ export default function BookingsPage() {
         if (active) setFacilities(res.facilities);
       })
       .catch(() => {
-        // Keep static tariff defaults if offline
+        // Keep fallback venues if offline
       });
     return () => {
       active = false;
     };
   }, [user?.id]);
 
+  useEffect(() => {
+    if (!user) {
+      setMyBookings([]);
+      return;
+    }
+    let active = true;
+    bookingsApi
+      .getMy()
+      .then((res) => {
+        if (active) setMyBookings(res.bookings);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
+  // Build ALL hourly-bookable facilities dynamically (core 3 + any custom Admin-created venues)
   const venues = useMemo<BookingVenue[]>(() => {
-    return bookingVenues.map((baseVenue) => {
-      const code = VENUE_ID_TO_CODE[baseVenue.id];
-      const liveFac = facilities.find((f) => f.code === code);
-      if (!liveFac) {
-        return baseVenue.id === 'police-turf'
-          ? baseVenue
-          : { ...baseVenue, courtOptions: [baseVenue.courtOptions[0]] };
-      }
+    const hourlyFacilities = facilities.filter(
+      (f) => f.booking_mode !== 'MONTHLY_MEMBERSHIP_ONLY' && f.code !== 'SYNTHETIC_TRACK',
+    );
+    if (hourlyFacilities.length === 0) {
+      return fallbackBookingVenues;
+    }
 
-      const fullTariff = liveFac.tariffs.find((t) => t.booking_type === 'FULL_COURT');
-      const halfTariff = liveFac.tariffs.find((t) => t.booking_type === 'HALF_COURT');
-      const fullRate = fullTariff ? Number(fullTariff.base_price) : baseVenue.courtOptions[0].hourlyRate;
-      const halfRate = halfTariff ? Number(halfTariff.base_price) : Math.round(fullRate / 2);
-
-      const courtOptions: BookingCourtOption[] = liveFac.is_partitionable
-        ? [
-            {
-              id: 'full',
-              label: `Full Court • ₹${fullRate.toLocaleString('en-IN')}/hr`,
-              shortName: 'Full Court (7s)',
-              turfBadge: 'FULL',
-              icon: 'sports_soccer',
-              hourlyRate: fullRate,
-            },
-            {
-              id: 'half_a',
-              label: `Half A • ₹${halfRate.toLocaleString('en-IN')}/hr`,
-              shortName: 'Half Court A (5s)',
-              turfBadge: 'HALF_A',
-              icon: 'crop_free',
-              hourlyRate: halfRate,
-            },
-            {
-              id: 'half_b',
-              label: `Half B • ₹${halfRate.toLocaleString('en-IN')}/hr`,
-              shortName: 'Half Court B (5s)',
-              turfBadge: 'HALF_B',
-              icon: 'crop_free',
-              hourlyRate: halfRate,
-            },
-          ]
-        : [
-            {
-              id: 'full',
-              label: `Full Court • ₹${fullRate.toLocaleString('en-IN')}/hr`,
-              shortName: baseVenue.courtOptions[0].shortName,
-              turfBadge: 'FULL',
-              icon: baseVenue.courtOptions[0].icon,
-              hourlyRate: fullRate,
-            },
-          ];
-
-      return {
-        ...baseVenue,
-        name: liveFac.name,
-        priceLabel: liveFac.is_partitionable
-          ? `₹${halfRate.toLocaleString('en-IN')} - ₹${fullRate.toLocaleString('en-IN')} / hr`
-          : `₹${fullRate.toLocaleString('en-IN')} / hr`,
-        rateBannerText: `${liveFac.user_category === 'GOVT_PERSONNEL' ? 'Govt Personnel Rate' : 'General Public Rate'}: ₹${fullRate.toLocaleString('en-IN')}/hr Full${
-          liveFac.is_partitionable ? ` • ₹${halfRate.toLocaleString('en-IN')}/hr Half Court` : ''
-        }`,
-        operatingHoursText: `Operating Hours: ${formatTime12h(liveFac.operating_start)} – ${formatTime12h(
-          liveFac.operating_end
-        )} • Max ${liveFac.daily_user_hour_cap} hrs/day • Stage 1 QR Gate Scan only`,
-        courtOptions,
-      };
+    // Order POLICE_TURF, FOOTBALL_GROUND, BADMINTON_COURT first, then custom venues
+    const coreOrder = ['POLICE_TURF', 'FOOTBALL_GROUND', 'BADMINTON_COURT'];
+    const sorted = [...hourlyFacilities].sort((a, b) => {
+      const ia = coreOrder.indexOf(a.code);
+      const ib = coreOrder.indexOf(b.code);
+      if (ia !== -1 && ib !== -1) return ia - ib;
+      if (ia !== -1) return -1;
+      if (ib !== -1) return 1;
+      return a.name.localeCompare(b.name);
     });
+
+    return sorted.map(mapFacilityToBookingVenue);
   }, [facilities]);
 
-  const activeVenue = venues.find((v) => v.id === selectedVenueId) ?? venues[0];
+  const activeVenue = venues.find((v) => v.code === selectedVenueCode) ?? venues[0];
   const activeCourt =
     activeVenue.courtOptions.find((c) => c.id === selectedCourtId) ??
     activeVenue.courtOptions[0];
@@ -221,12 +362,13 @@ export default function BookingsPage() {
     }
   }, [activeVenue, selectedCourtId]);
 
-  const activeFacilityCode = VENUE_ID_TO_CODE[activeVenue.id] ?? 'POLICE_TURF';
-  const activePartition = COURT_ID_TO_PARTITION[activeCourt.id] ?? 'FULL';
+  const activeFacilityCode = activeVenue.code;
+  const activePartition = activeCourt.partition;
 
   useEffect(() => {
     let active = true;
     setLoadingSlots(true);
+    setInlineError(null);
     facilitiesApi
       .getPublicSlots(activeFacilityCode, selectedDateId)
       .then((res) => {
@@ -235,7 +377,9 @@ export default function BookingsPage() {
       .catch((err) => {
         if (active) {
           setSlotsData(null);
-          showToast(err instanceof ApiError ? err.message : 'Unable to fetch slot availability.');
+          setInlineError(
+            err instanceof ApiError ? err.message : 'Unable to fetch live slot availability.',
+          );
         }
       })
       .finally(() => {
@@ -247,24 +391,44 @@ export default function BookingsPage() {
     };
   }, [activeFacilityCode, selectedDateId]);
 
+  // Sync live operational status from both facilities list and slots response
+  const effectiveOperationalStatus: FacilityOperationalStatus =
+    slotsData?.facility?.operational_status ?? activeVenue.operationalStatus;
+
+  const effectiveVenue: BookingVenue = useMemo(
+    () => ({
+      ...activeVenue,
+      operationalStatus: effectiveOperationalStatus,
+    }),
+    [activeVenue, effectiveOperationalStatus],
+  );
+
   const mappedSlots = useMemo<BookingTimeSlot[]>(() => {
-    if (!slotsData?.slots?.length) {
-      return bookingTimeSlots;
+    if (!slotsData?.slots) {
+      return [];
     }
 
     return slotsData.slots.map((slot) => {
       const partitionEntry = slot.partitions?.[activePartition];
-      const slotStatus = partitionEntry?.status ?? slot.status;
+      const rawStatus = partitionEntry?.status ?? slot.status;
+      const opStatus = partitionEntry?.operational_status ?? slot.operational_status ?? (rawStatus === 'ALREADY_BOOKED' ? 'BOOKED' : 'OPEN');
+      const opLabel = partitionEntry?.operational_label ?? slot.operational_label ?? null;
+      const opReason = partitionEntry?.operational_reason ?? slot.operational_reason ?? null;
       const startHour = Number.parseInt(slot.start_time.split(':')[0] ?? '6', 10);
       const isMorning = startHour < 12;
       const isFloodlit = startHour >= 18;
 
       return {
         id: slot.start_time,
+        startTime: slot.start_time,
+        endTime: slot.end_time,
         session: isMorning ? 'morning' : 'evening',
         timeLabel: `${formatTime12h(slot.start_time)} – ${formatTime12h(slot.end_time)}`,
         summaryTimeLabel: `${formatTime12h(slot.start_time)} – ${formatTime12h(slot.end_time)}`,
-        status: slotStatus === 'ALREADY_BOOKED' ? 'booked' : 'available',
+        status: mapOperationalToSlotUiStatus(rawStatus, opStatus),
+        operationalStatus: opStatus,
+        operationalLabel: opLabel,
+        operationalReason: opReason,
         sessionTag: isFloodlit ? 'Floodlit' : isMorning ? 'Morning' : 'Daylight',
         durationLabel: `1 Hour (${activeCourt.shortName})`,
       };
@@ -275,27 +439,55 @@ export default function BookingsPage() {
     const firstAvailable = mappedSlots.find((s) => s.status === 'available');
     setSelectedSlotId((prev) => {
       const stillValid = mappedSlots.find((s) => s.id === prev && s.status === 'available');
-      return stillValid ? prev : firstAvailable?.id ?? mappedSlots[0]?.id ?? '';
+      return stillValid ? prev : firstAvailable?.id ?? '';
     });
   }, [mappedSlots]);
 
+  const usedHoursOnDate = useMemo(() => {
+    if (!user) return 0;
+    return myBookings
+      .filter(
+        (b) =>
+          b.facility?.code === activeFacilityCode &&
+          b.booking_date_formatted === selectedDateId &&
+          (b.status === 'CONFIRMED' || b.status === 'PENDING_PAYMENT'),
+      )
+      .reduce((sum, b) => {
+        const [sh, sm] = b.start_time_formatted.split(':').map(Number);
+        const [eh, em] = b.end_time_formatted.split(':').map(Number);
+        return sum + Math.max(1, (eh * 60 + em - (sh * 60 + sm)) / 60);
+      }, 0);
+  }, [user, myBookings, activeFacilityCode, selectedDateId]);
+
+  const dailyCapReached =
+    Boolean(user) &&
+    effectiveVenue.dailyUserHourCap > 0 &&
+    usedHoursOnDate >= effectiveVenue.dailyUserHourCap;
+
   const activeDate =
     rollingDates.find((d) => d.id === selectedDateId) ?? rollingDates[1] ?? rollingDates[0];
-  const activeSlot =
-    mappedSlots.find((s) => s.id === selectedSlotId) ?? mappedSlots[0] ?? bookingTimeSlots[0];
+  const activeSlot = mappedSlots.find((s) => s.id === selectedSlotId) ?? null;
 
   const datesWithAvailability = useMemo<BookingDateOption[]>(() => {
     const availCount = mappedSlots.filter((s) => s.status === 'available').length;
     return rollingDates.map((d) =>
       d.id === selectedDateId && !d.isPast
-        ? { ...d, slotsCountLabel: `${availCount} Free` }
-        : d
+        ? {
+            ...d,
+            slotsCountLabel:
+              effectiveOperationalStatus !== 'ACTIVE'
+                ? effectiveOperationalStatus === 'CLOSED'
+                  ? 'Closed'
+                  : 'Maint.'
+                : `${availCount} Free`,
+          }
+        : d,
     );
-  }, [rollingDates, selectedDateId, mappedSlots]);
+  }, [rollingDates, selectedDateId, mappedSlots, effectiveOperationalStatus]);
 
   const dynamicMeta = useMemo<BookingPortalMeta>(() => {
     const morningAvail = mappedSlots.filter(
-      (s) => s.session === 'morning' && s.status === 'available'
+      (s) => s.session === 'morning' && s.status === 'available',
     ).length;
     const monthLabel = new Date(`${selectedDateId}T00:00:00`).toLocaleDateString('en-IN', {
       month: 'long',
@@ -307,67 +499,88 @@ export default function BookingsPage() {
       morningBadge: `${morningAvail} Slots Available`,
       statusPillText: loadingSlots
         ? 'Syncing live facility schedule...'
-        : `Kannur Sports Complex • ${activeFacilityCode} Live`,
+        : effectiveOperationalStatus === 'MAINTENANCE'
+          ? `${activeVenue.name} • Under Maintenance`
+          : effectiveOperationalStatus === 'CLOSED'
+            ? `${activeVenue.name} • Closed`
+            : `Live Schedule • ${activeFacilityCode}`,
     };
-  }, [mappedSlots, selectedDateId, loadingSlots, activeFacilityCode]);
+  }, [mappedSlots, selectedDateId, loadingSlots, activeFacilityCode, effectiveOperationalStatus, activeVenue.name]);
 
   const registrant = useMemo<BookingRegistrant>(() => {
-    if (!user) return bookingRegistrant;
+    if (!user) return guestBookingRegistrant;
+    const isGovt = user.role === 'GOVT_PERSONNEL';
     return {
       name: user.full_name,
       registrantId: `@${user.username}`,
-      email: user.email || 'Departmental Portal Account',
-      accountBadge: user.role === 'GOVT_PERSONNEL' ? 'Govt Concession' : 'Citizen Account',
+      email: user.email || 'Active Member Account',
+      accountBadge: isGovt ? 'Govt / Police • Concession' : 'General Public',
+      isGovt,
     };
   }, [user]);
 
-  const handleSelectVenue = (venueId: string) => {
-    setSelectedVenueId(venueId);
-    setDraftSaved(false);
+  const disabledReason = useMemo<string | null>(() => {
+    if (effectiveOperationalStatus === 'MAINTENANCE') {
+      return t('Venue Under Maintenance', 'വേദി അറ്റകുറ്റപ്പണിയിലാണ്');
+    }
+    if (effectiveOperationalStatus === 'CLOSED') {
+      return t('Venue Currently Closed', 'വേദി അടച്ചിരിക്കുകയാണ്');
+    }
+    if (dailyCapReached) {
+      return t(
+        `Daily Limit Reached (${effectiveVenue.dailyUserHourCap}h/day)`,
+        `പ്രതിദിന പരിധി പൂർത്തിയായി (${effectiveVenue.dailyUserHourCap} മണിക്കൂർ)`,
+      );
+    }
+    if (!activeSlot || activeSlot.status !== 'available') {
+      return t('Select an Available Slot', 'ലഭ്യമായ സ്ലോട്ട് തിരഞ്ഞെടുക്കുക');
+    }
+    return null;
+  }, [effectiveOperationalStatus, dailyCapReached, effectiveVenue.dailyUserHourCap, activeSlot, t]);
+
+  const handleSelectVenue = (venueCode: string) => {
+    setSelectedVenueCode(venueCode);
+    setInlineError(null);
+    setSearchParams({ venue: venueCode }, { replace: true });
   };
 
   const handleSelectCourt = (courtId: BookingCourtOption['id']) => {
     setSelectedCourtId(courtId);
-    setDraftSaved(false);
+    setInlineError(null);
   };
 
   const handleSelectDate = (dateId: string) => {
     setSelectedDateId(dateId);
-    setDraftSaved(false);
+    setInlineError(null);
   };
 
   const handleSelectSlot = (slotId: string) => {
     setSelectedSlotId(slotId);
-    setDraftSaved(false);
-  };
-
-  const handleSaveDraft = () => {
-    setDraftSaved(true);
-    showToast(
-      `Slot selected: ${activeVenue.name} (${activeCourt.shortName}) on ${activeDate.ticketDateLabel} at ${activeSlot.summaryTimeLabel}.`
-    );
+    setInlineError(null);
   };
 
   const handleProceedToPayment = async () => {
-    if (reserving) return;
+    if (reserving || disabledReason) return;
     if (!user) {
-      showToast('Please sign in first to reserve and pay for a facility slot.');
-      navigate('/login', { state: { from: '/bookings' } });
+      showToast('Please sign in or register first to book a facility slot.');
+      navigate('/login', { state: { from: `/bookings?venue=${activeFacilityCode}` } });
       return;
     }
 
-    if (activeSlot.status !== 'available') {
-      showToast('This slot is already booked. Please choose an available hourly slot.');
+    if (!activeSlot || activeSlot.status !== 'available') {
+      setInlineError('This slot is unavailable. Please choose an open hourly slot.');
       return;
     }
 
-    const startTime = activeSlot.id.includes(':') ? activeSlot.id : '06:00';
     setReserving(true);
+    setInlineError(null);
+
     try {
       const reserveRes = await bookingsApi.reserve({
         facility_code: activeFacilityCode,
         booking_date: selectedDateId,
-        start_time: startTime,
+        start_time: activeSlot.startTime,
+        end_time: activeSlot.endTime,
         court_partition: activePartition,
       });
 
@@ -376,42 +589,68 @@ export default function BookingsPage() {
         reference_id: reserveRes.booking.id,
       });
 
-      try {
-        window.sessionStorage.setItem(LATEST_BOOKING_TICKET_KEY, JSON.stringify(settleRes));
-      } catch {
-        // Ignore storage errors
-      }
+      const breakdown =
+        settleRes.receipt?.pricing_breakdown ??
+        settleRes.payment.pricing_breakdown ??
+        reserveRes.booking.pricing_breakdown ?? {
+          base_fee: activeCourt.standardHourlyRate.toFixed(2),
+          concession_discount: activeCourt.concessionDiscount.toFixed(2),
+          concession_percent: activeCourt.concessionPercent,
+          taxable_subtotal: Number(settleRes.payment.base_amount).toFixed(2),
+          gst_rate: activeCourt.gstRate,
+          gst_amount: Number(settleRes.payment.gst_amount).toFixed(2),
+          final_total_paid: Number(settleRes.payment.total_amount).toFixed(2),
+        };
 
-      const selectionState: BookingSelectionState = {
-        venueName: activeVenue.name,
-        courtShortName: activeCourt.shortName,
-        turfBadge: activeCourt.turfBadge,
+      const receiptData: BookingReceiptData = {
+        bookingId: reserveRes.booking.id,
+        bookingReference:
+          settleRes.receipt?.booking_or_pass_code ?? reserveRes.booking.booking_code,
+        receiptNo: settleRes.receipt?.receipt_no ?? settleRes.payment.receipt_no,
+        status: settleRes.slot_booking?.status ?? 'CONFIRMED',
+        venueName:
+          settleRes.receipt?.facility_name ??
+          reserveRes.booking.facility?.name ??
+          effectiveVenue.name,
+        facilityCode: activeFacilityCode,
+        courtPartition: activePartition,
+        courtModeLabel: formatCourtModeLabel(activePartition, effectiveVenue.isPartitionable),
         dateLabel: activeDate.ticketDateLabel,
         timeSlotLabel: activeSlot.summaryTimeLabel,
         sessionNote: activeSlot.sessionTag,
-        totalAmountFormatted: `₹${Number(settleRes.payment.total_amount).toLocaleString('en-IN', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}`,
-        bookingReference: settleRes.qr_pass.pass_or_booking_code,
-        receiptNo: settleRes.payment.receipt_no,
-        qrTokenHash: settleRes.qr_pass.qr_token_hash,
-        attendeeName: user.full_name,
-        attendeeRole: user.role === 'GOVT_PERSONNEL' ? 'Government Personnel' : 'Citizen Account',
-        paymentStatusNote: `Settled (${settleRes.payment.payment_mode})`,
+        memberName: user.full_name,
+        memberUsername: user.username,
+        userCategory: user.role === 'GOVT_PERSONNEL' ? 'GOVT_PERSONNEL' : 'PUBLIC',
+        paymentMode: settleRes.payment.payment_mode,
+        paidAt: settleRes.receipt?.issued_at ?? settleRes.payment.created_at,
+        pricingBreakdown: breakdown,
       };
 
-      navigate('/bookings/ticket', { state: selectionState });
+      try {
+        window.sessionStorage.setItem(LATEST_BOOKING_RECEIPT_KEY, JSON.stringify(receiptData));
+      } catch {
+        // Ignore storage quota errors
+      }
+
+      navigate(`/bookings/ticket?code=${encodeURIComponent(receiptData.bookingReference)}`, {
+        state: receiptData,
+      });
     } catch (error) {
-      showToast(
+      const msg =
         error instanceof ApiError
           ? error.message
-          : 'Slot reservation or payment failed. Please refresh slots and try again.'
-      );
-      // Refresh slot availability after conflict
+          : 'Slot reservation or payment failed. Please refresh slots and try again.';
+      setInlineError(msg);
+      showToast(msg);
+
+      // Live refresh slots and facilities state after any admin change / conflict
       facilitiesApi
         .getPublicSlots(activeFacilityCode, selectedDateId)
         .then((res) => setSlotsData(res))
+        .catch(() => {});
+      facilitiesApi
+        .list()
+        .then((res) => setFacilities(res.facilities))
         .catch(() => {});
     } finally {
       setReserving(false);
@@ -419,63 +658,98 @@ export default function BookingsPage() {
   };
 
   return (
-    <div className="bookings-page-container flex flex-col w-full bg-surface font-body-default text-body-default text-on-surface antialiased">
-      <div className="relative w-full overflow-hidden px-margin sm:px-margin-desktop py-space-lg max-w-7xl mx-auto flex flex-col gap-space-lg">
-        {/* Ambient Liquid Glass Atmosphere Glows */}
-        <div className="absolute -top-24 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none -z-10" />
-        <div className="absolute top-1/3 -right-20 w-80 h-80 bg-secondary-container/40 rounded-full blur-[110px] pointer-events-none -z-10" />
-
-        {/* Section: Header Context & Official Tagline */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
-          <div className="flex flex-col gap-space-xs">
-            <div className="flex items-center gap-space-xs text-primary font-label-meta text-label-meta">
-              <MaterialIcon name="verified_user" className="text-[18px]" />
-              <span>{dynamicMeta.portalBadge}</span>
+    <div className="bookings-page-container flex flex-col w-full text-[#0F172A] antialiased">
+      <div className="relative w-full max-w-[1200px] mx-auto px-4 md:px-6 pt-4 md:pt-7 pb-14 flex flex-col gap-5 md:gap-6">
+        {/* Editorial Header Context & Live Sync Pill */}
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="flex flex-col gap-2">
+            <div
+              style={{ animationDelay: '30ms' }}
+              className="bookings-rise inline-flex items-center gap-1.5 text-[#165DF5] text-[12.5px] font-semibold tracking-[0.01em]"
+            >
+              <ShieldCheck className="w-4 h-4 shrink-0" strokeWidth={2.1} />
+              <span>
+                {t(
+                  dynamicMeta.portalBadge,
+                  'ഔദ്യോഗിക വകുപ്പുതല ബുക്കിംഗ് പോർട്ടൽ • ഉടൻ പ്രവേശനം',
+                )}
+              </span>
             </div>
-            <h1 className="font-title-portal text-title-portal-mobile md:text-title-portal text-on-surface tracking-tight">
-              {dynamicMeta.title}
+            <h1 className="font-display text-[30px] sm:text-[36px] md:text-[42px] font-extrabold text-[#0F172A] tracking-[-0.03em] leading-[1.08]">
+              <span className="bookings-text-mask">
+                <span className="bookings-text-reveal" style={{ animationDelay: '70ms' }}>
+                  {t(dynamicMeta.title, 'കായിക വേദിയും മണിക്കൂർ സ്ലോട്ട് ബുക്കിംഗും')}
+                </span>
+              </span>
             </h1>
           </div>
-          <div className="flex items-center gap-space-sm bg-white/70 backdrop-blur-xl px-space-md py-space-xs rounded-full shadow-sm self-start md:self-auto">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="font-label-meta text-label-meta text-on-surface-variant font-medium">
+
+          <div
+            style={{ animationDelay: '120ms' }}
+            className="bookings-rise inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl border border-slate-200/85 px-3.5 py-2 rounded-full shadow-[0_6px_18px_-10px_rgba(15,23,42,0.1)] self-start md:self-auto"
+          >
+            <span className="relative flex h-2 w-2">
+              <span
+                className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-70 ${
+                  effectiveOperationalStatus === 'ACTIVE' ? 'bg-emerald-500' : 'bg-amber-500'
+                }`}
+              />
+              <span
+                className={`relative inline-flex rounded-full h-2 w-2 ${
+                  effectiveOperationalStatus === 'ACTIVE' ? 'bg-emerald-500' : 'bg-amber-500'
+                }`}
+              />
+            </span>
+            <span className="text-[12.5px] font-semibold text-[#334155]">
               {dynamicMeta.statusPillText}
             </span>
           </div>
-        </div>
+        </header>
 
-        {/* 1. Venue Selector Cards & Policy Banner */}
+        {/* 1. Dynamic Venue Selector Cards & Policy Banner */}
         <VenueSelectorCards
           venues={venues}
-          selectedVenueId={activeVenue.id}
+          selectedVenueId={effectiveVenue.id}
           selectedCourtId={activeCourt.id}
           onSelectVenue={handleSelectVenue}
           onSelectCourt={handleSelectCourt}
         />
 
         {/* 2. Main Booking Two-Column Workspace */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 md:gap-6 items-start">
           <SlotSelectionWorkspace
             meta={dynamicMeta}
+            venueName={effectiveVenue.name}
+            venueOperationalStatus={effectiveOperationalStatus}
+            loadingSlots={loadingSlots}
+            dailyCapInfo={
+              user
+                ? {
+                    usedHours: usedHoursOnDate,
+                    capHours: effectiveVenue.dailyUserHourCap,
+                  }
+                : null
+            }
             dates={datesWithAvailability}
             selectedDateId={selectedDateId}
             onSelectDate={handleSelectDate}
             slots={mappedSlots}
-            selectedSlotId={activeSlot.id}
+            selectedSlotId={activeSlot?.id ?? ''}
             onSelectSlot={handleSelectSlot}
             hourlyRate={activeCourt.hourlyRate}
           />
 
           <BookingSummaryCard
             meta={dynamicMeta}
-            venue={activeVenue}
+            venue={effectiveVenue}
             court={activeCourt}
             date={activeDate}
             slot={activeSlot}
             registrant={registrant}
-            draftSaved={draftSaved}
+            reserving={reserving}
+            disabledReason={disabledReason}
+            inlineError={inlineError}
             onProceedToPayment={handleProceedToPayment}
-            onSaveDraft={handleSaveDraft}
           />
         </div>
       </div>
@@ -483,15 +757,9 @@ export default function BookingsPage() {
       {/* Interactive Toast Feedback */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 bookings-toast-enter">
-          <div className="flex items-center gap-2.5 px-5 py-3.5 rounded-2xl bg-inverse-surface text-inverse-on-surface shadow-xl">
-            <MaterialIcon
-              name="check_circle"
-              className="text-emerald-400 text-[20px]"
-              filled
-            />
-            <span className="font-label-primary text-label-primary">
-              {toastMessage}
-            </span>
+          <div className="flex items-center gap-2.5 px-4 py-3 rounded-[14px] bg-[#0F172A] text-white border border-white/10 shadow-[0_18px_40px_-10px_rgba(15,23,42,0.45)] max-w-md">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" strokeWidth={2.2} />
+            <span className="text-[13.5px] font-medium leading-snug">{toastMessage}</span>
           </div>
         </div>
       )}

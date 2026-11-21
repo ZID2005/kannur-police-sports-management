@@ -3,6 +3,7 @@ import {
   AdminMembershipFilterQuery,
   ApplyMembershipInput,
   ReviewMembershipInput,
+  UpdateMembershipPeriodInput,
 } from './memberships.schema';
 import { MembershipsService } from './memberships.service';
 
@@ -17,8 +18,9 @@ export class MembershipsController {
 
       res.status(201).json({
         success: true,
-        message:
-          'Synthetic Track membership application submitted. Payment remains locked until officer verification.',
+        message: payload.instant_checkout
+          ? 'Synthetic Track membership onboarding submitted and unlocked for instant activation.'
+          : 'Synthetic Track membership application submitted. Payment remains locked until officer verification.',
         data: result,
       });
     } catch (error) {
@@ -35,6 +37,28 @@ export class MembershipsController {
 
       res.status(200).json({
         success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * PATCH /api/memberships/:id/period
+   */
+  static async updatePeriod(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const payload = req.body as UpdateMembershipPeriodInput;
+      const result = await MembershipsService.updateMembershipPeriod(
+        req.params.id,
+        req.user!,
+        payload
+      );
+
+      res.status(200).json({
+        success: true,
+        message: 'Membership period updated successfully.',
         data: result,
       });
     } catch (error) {

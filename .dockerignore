@@ -1,0 +1,43 @@
+# Git & editor metadata
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Dependencies & build artifacts
+node_modules
+dist
+dist-ssr
+build
+*.tsbuildinfo
+coverage
+.vitest
+
+# Secrets & runtime data
+.env
+.env.*
+logs
+*.log
+tmp
+temp
+backups
+*.sql.gz
+*.sql.gz.sha256
+
+# Non-backend directories (frontend/dist and nginx config are mounted via docker-compose)
+frontend
+nginx
+scripts
+tests
+docs
+Designs
+
+# Repo / Docker files not needed inside the backend image
+Dockerfile
+.dockerignore
+docker-compose.yml
+DEPLOYMENT_GUIDE.md
+LICENSE

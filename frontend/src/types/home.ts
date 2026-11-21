@@ -1,6 +1,7 @@
 /**
  * Type definitions for the Auth (`/login`, `/register`) and Public Home (`/`) screens.
  */
+import type { FacilityOperationalStatus } from '@/api/client';
 
 export type AuthTabMode = 'signin' | 'create';
 
@@ -55,6 +56,7 @@ export interface HomeTrackFacility {
   iconName: HomeFacilityIconName;
   defaultCtaLabel: string;
   to: string;
+  operationalStatus?: FacilityOperationalStatus;
 }
 
 export interface HomeActiveMembership {
@@ -85,6 +87,7 @@ export interface HomeHourlyFacility {
   to: string;
   column: 2 | 3;
   mobileFullSpan?: boolean;
+  operationalStatus?: FacilityOperationalStatus;
   desktopBusyBars: HomeBusyBar[];
   mobileBusyBars: HomeBusyBar[];
 }

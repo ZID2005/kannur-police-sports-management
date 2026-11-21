@@ -102,10 +102,9 @@ The seed script initializes the 4 Kannur City Police sports facilities (`SYNTHET
 | Role | Username | Initial Password | Default Portal Redirect |
 | :--- | :--- | :--- | :--- |
 | **Staff Admin (`STAFF_ADMIN`)** | `insp_rajeev` | `KcpAdmin@2026!` | `/admin/dashboard` |
-| **Gate Officer (`GATE_OFFICER`)** | `hc_pradeep` | `KcpGate@2026!` | `/gate/scanner` |
 | **Citizen (`PUBLIC`)** | `priya_mohan` | `PriyaSports@2026!` | `/` |
 
-> **Security Advisory:** Immediately rotate the initial passwords for `insp_rajeev` and `hc_pradeep` after initial verification and store credentials in the District Police Office vault.
+> **Security Advisory:** Immediately rotate the initial password for `insp_rajeev` after initial verification and store credentials in the District Police Office vault.
 
 ---
 
@@ -158,15 +157,7 @@ gunzip -c backups/kcp_sports_db_20261117_020000.sql.gz | \
 
 ---
 
-## 7. Gate Scanner Offline Resilience Operations
-
-- When the Gate Verification Kiosk (`/gate/scanner`) starts, it automatically downloads a signed cache manifest via `GET /api/gate/sync-cache` and stores it in browser `localStorage`.
-- During LAN outages, Gate Officers continue scanning passes and recording manual overrides (`§ 6.28`), which queue locally in `localStorage`.
-- As soon as network connectivity returns, the kiosk automatically dispatches queued entries via `POST /api/gate/batch-sync` (or the officer can click **Sync Offline Queue**).
-
----
-
-## 8. Routine Maintenance Commands
+## 7. Routine Maintenance Commands
 
 | Task | Command |
 | :--- | :--- |

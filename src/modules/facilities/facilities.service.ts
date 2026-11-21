@@ -52,10 +52,31 @@ export class FacilitiesService {
     });
 
     return facilities.map((facility) => {
+      const publicTariffByType = new Map<string, number>();
+      for (const t of facility.tariffs) {
+        if (t.user_category === UserCategory.PUBLIC) {
+          publicTariffByType.set(t.booking_type, Number(t.base_price));
+        }
+      }
+
       const categoryTariffs = facility.tariffs
         .filter((t) => t.user_category === userCategory)
         .map((t) => {
-          const basePrice = Number(t.base_price);
+          const basePrice = Math.round(Number(t.base_price) * 100) / 100;
+          const standardBasePrice =
+            userCategory === UserCategory.GOVT_PERSONNEL &&
+            publicTariffByType.has(t.booking_type) &&
+            (publicTariffByType.get(t.booking_type) ?? 0) > basePrice
+              ? Math.round((publicTariffByType.get(t.booking_type) ?? basePrice) * 100) / 100
+              : basePrice;
+          const concessionDiscount = Math.max(
+            0,
+            Math.round((standardBasePrice - basePrice) * 100) / 100
+          );
+          const concessionPercent =
+            standardBasePrice > 0 && concessionDiscount > 0
+              ? Math.round((concessionDiscount / standardBasePrice) * 1000) / 10
+              : 0;
           const gstPercent = Number(t.gst_percent);
           const gstAmount = Math.round(basePrice * (gstPercent / 100) * 100) / 100;
           const totalPrice = Math.round((basePrice + gstAmount) * 100) / 100;
@@ -65,6 +86,9 @@ export class FacilitiesService {
             user_category: t.user_category,
             booking_type: t.booking_type,
             base_price: basePrice.toFixed(2),
+            standard_base_price: standardBasePrice.toFixed(2),
+            concession_discount: concessionDiscount.toFixed(2),
+            concession_percent: concessionPercent,
             gst_percent: gstPercent.toFixed(2),
             gst_amount: gstAmount.toFixed(2),
             total_price: totalPrice.toFixed(2),
@@ -80,6 +104,12 @@ export class FacilitiesService {
         id: facility.id,
         code: facility.code,
         name: facility.name,
+        category: (facility as any).category ?? null,
+        court_count: (facility as any).court_count ?? null,
+        court_unit_label: (facility as any).court_unit_label ?? null,
+        operational_status: (facility as any).operational_status ?? 'ACTIVE',
+        max_capacity_per_slot: (facility as any).max_capacity_per_slot ?? null,
+        description: (facility as any).description ?? null,
         operating_start: formatDateToTime(facility.operating_start),
         operating_end: formatDateToTime(facility.operating_end),
         slot_duration_mins: facility.slot_duration_mins,
@@ -87,9 +117,10 @@ export class FacilitiesService {
         monthly_member_cap: facility.monthly_member_cap,
         is_partitionable: facility.is_partitionable,
         booking_mode:
-          facility.code === FacilityCode.SYNTHETIC_TRACK
+          (facility as any).booking_mode ??
+          (facility.code === FacilityCode.SYNTHETIC_TRACK
             ? 'MONTHLY_MEMBERSHIP_ONLY'
-            : 'HOURLY_SLOTS',
+            : 'HOURLY_SLOTS'),
         partition_rules: {
           is_partitionable: facility.is_partitionable,
           supported_partitions: supportedPartitions,
@@ -104,16 +135,17 @@ export class FacilitiesService {
   }
 
   /**
-   * Public endpoint: Dynamically generates hourly slots for a facility on `dateStr`.
-   * STRICT CONFIDENTIAL SLOT MASKING:
-   * Every unavailable slot or partition—whether booked by a citizen or blocked by police authority—
-   * returns ONLY `status: 'ALREADY_BOOKED'` with ZERO internal_reason, officer details, or user names.
+   * Member/public slot availability endpoint for a facility on `dateStr`.
+   * - Syncs live facility operational status (`ACTIVE`, `MAINTENANCE`, `CLOSED`) and
+   *   managed Admin slot controls (`BLOCKED_MAINTENANCE`, `RESERVED_DEPARTMENT`).
+   * - Preserves strict confidential masking for uncategorized authority blocks created
+   *   via legacy `/api/admin/slots/block` (returns ONLY `ALREADY_BOOKED` with zero internal_reason leak).
    */
-  static async getPublicFacilitySlots(facilityCode: FacilityCode, dateStr: string) {
+  static async getPublicFacilitySlots(facilityCode: string, dateStr: string) {
     const targetDate = parseDateOnly(dateStr);
 
     const facility = await prisma.facility.findUnique({
-      where: { code: facilityCode },
+      where: { code: facilityCode as FacilityCode },
     });
 
     if (!facility) {
@@ -145,33 +177,98 @@ export class FacilitiesService {
           block_date: targetDate,
           is_active: true,
         },
-        select: {
-          start_time: true,
-          end_time: true,
-          court_partition: true,
-        },
       }),
     ]);
 
     const startMins = timeToMinutes(formatDateToTime(facility.operating_start));
     const endMins = timeToMinutes(formatDateToTime(facility.operating_end));
     const stepMins = facility.slot_duration_mins || 60;
+    const facilityOperationalStatus: 'ACTIVE' | 'MAINTENANCE' | 'CLOSED' =
+      (facility as any).operational_status === 'MAINTENANCE' ||
+      (facility as any).operational_status === 'CLOSED'
+        ? (facility as any).operational_status
+        : 'ACTIVE';
+    const isFacilityClosedOrMaintenance = facilityOperationalStatus !== 'ACTIVE';
 
     const applicablePartitions = facility.is_partitionable
       ? [CourtPartition.FULL, CourtPartition.HALF_A, CourtPartition.HALF_B]
       : [CourtPartition.FULL];
 
+    const slotDelegate = (prisma as any).facilitySlot;
+    let slotWindows: Array<{
+      start_time: string;
+      end_time: string;
+      baseStatus: 'OPEN' | 'BLOCKED_MAINTENANCE' | 'RESERVED_DEPARTMENT';
+      blockReason: string | null;
+    }> = [];
+
+    if (slotDelegate && typeof slotDelegate.findMany === 'function') {
+      const managedSlots: any[] = await slotDelegate.findMany({
+        where: { facility_id: facility.id },
+        orderBy: { start_time: 'asc' },
+      });
+      slotWindows = managedSlots
+        .filter((s) => s.slot_date === null || s.slot_date === dateStr)
+        .map((s) => ({
+          start_time: formatDateToTime(s.start_time),
+          end_time: formatDateToTime(s.end_time),
+          baseStatus:
+            s.status === 'BLOCKED_MAINTENANCE' || s.status === 'RESERVED_DEPARTMENT'
+              ? s.status
+              : 'OPEN',
+          blockReason: s.block_reason ?? null,
+        }));
+    } else {
+      for (let current = startMins; current + stepMins <= endMins; current += stepMins) {
+        slotWindows.push({
+          start_time: minutesToTime(current),
+          end_time: minutesToTime(current + stepMins),
+          baseStatus: 'OPEN',
+          blockReason: null,
+        });
+      }
+    }
+
+    type PartitionOperationalStatus =
+      | 'OPEN'
+      | 'BOOKED'
+      | 'BLOCKED_MAINTENANCE'
+      | 'RESERVED_DEPARTMENT'
+      | 'FACILITY_MAINTENANCE'
+      | 'FACILITY_CLOSED';
+
+    const labelForOperationalStatus = (st: PartitionOperationalStatus): string | null => {
+      switch (st) {
+        case 'BLOCKED_MAINTENANCE':
+          return 'Blocked for Maintenance';
+        case 'RESERVED_DEPARTMENT':
+          return 'Reserved for Department';
+        case 'FACILITY_MAINTENANCE':
+          return 'Venue Under Maintenance';
+        case 'FACILITY_CLOSED':
+          return 'Venue Closed';
+        default:
+          return null;
+      }
+    };
+
     const slots = [];
 
-    for (let current = startMins; current + stepMins <= endMins; current += stepMins) {
-      const slotStartStr = minutesToTime(current);
-      const slotEndStr = minutesToTime(current + stepMins);
+    for (const win of slotWindows) {
+      const slotStartStr = win.start_time;
+      const slotEndStr = win.end_time;
       const slotStartDate = parseTimeToDate(slotStartStr);
       const slotEndDate = parseTimeToDate(slotEndStr);
 
       const partitionsMap: Record<
         string,
-        { partition: CourtPartition; status: 'AVAILABLE' | 'ALREADY_BOOKED' }
+        {
+          partition: CourtPartition;
+          status: 'AVAILABLE' | 'ALREADY_BOOKED';
+          operational_status: PartitionOperationalStatus;
+          operational_label: string | null;
+          operational_reason: string | null;
+        }
       > = {};
 
       for (const partition of applicablePartitions) {
@@ -183,32 +280,76 @@ export class FacilitiesService {
             doTimeRangesOverlap(slotStartDate, slotEndDate, b.start_time, b.end_time)
         );
 
-        const hasBlockConflict = activeBlocks.some(
+        const matchingBlock = activeBlocks.find(
           (blk) =>
             conflictingSet.includes(blk.court_partition) &&
             doTimeRangesOverlap(slotStartDate, slotEndDate, blk.start_time, blk.end_time)
         );
 
-        const isUnavailable = hasBookingConflict || hasBlockConflict;
+        const managedBlockType =
+          matchingBlock &&
+          ((matchingBlock as any).block_type === 'BLOCKED_MAINTENANCE' ||
+            (matchingBlock as any).block_type === 'RESERVED_DEPARTMENT')
+            ? ((matchingBlock as any).block_type as 'BLOCKED_MAINTENANCE' | 'RESERVED_DEPARTMENT')
+            : null;
+
+        let operationalStatus: PartitionOperationalStatus = 'OPEN';
+        let operationalReason: string | null = null;
+
+        if (isFacilityClosedOrMaintenance) {
+          operationalStatus =
+            facilityOperationalStatus === 'MAINTENANCE'
+              ? 'FACILITY_MAINTENANCE'
+              : 'FACILITY_CLOSED';
+        } else if (managedBlockType) {
+          operationalStatus = managedBlockType;
+          operationalReason =
+            typeof (matchingBlock as any).internal_reason === 'string' &&
+            (matchingBlock as any).internal_reason.trim().length > 0
+              ? (matchingBlock as any).internal_reason.trim()
+              : labelForOperationalStatus(managedBlockType);
+        } else if (
+          win.baseStatus === 'BLOCKED_MAINTENANCE' ||
+          win.baseStatus === 'RESERVED_DEPARTMENT'
+        ) {
+          operationalStatus = win.baseStatus;
+          operationalReason = win.blockReason || labelForOperationalStatus(win.baseStatus);
+        } else if (hasBookingConflict || Boolean(matchingBlock)) {
+          // Legacy uncategorized authority blocks remain strictly masked as BOOKED / ALREADY_BOOKED
+          operationalStatus = 'BOOKED';
+        }
+
+        const isUnavailable = operationalStatus !== 'OPEN';
 
         partitionsMap[partition] = {
           partition,
           status: isUnavailable ? 'ALREADY_BOOKED' : 'AVAILABLE',
+          operational_status: operationalStatus,
+          operational_label: labelForOperationalStatus(operationalStatus),
+          operational_reason: operationalReason,
         };
       }
 
-      // Overall slot status:
-      // For non-partitionable facilities, identical to FULL status.
-      // For partitionable facilities (POLICE_TURF), 'ALREADY_BOOKED' if FULL, HALF_A, and HALF_B are all unavailable,
-      // or 'AVAILABLE' if at least one partition can still be booked.
       const allPartitionsUnavailable = applicablePartitions.every(
         (p) => partitionsMap[p].status === 'ALREADY_BOOKED'
       );
+
+      const fullPartitionEntry = partitionsMap[CourtPartition.FULL] ?? partitionsMap[applicablePartitions[0]];
+      let slotOperationalStatus: PartitionOperationalStatus = 'OPEN';
+      let slotOperationalReason: string | null = null;
+
+      if (allPartitionsUnavailable) {
+        slotOperationalStatus = fullPartitionEntry.operational_status;
+        slotOperationalReason = fullPartitionEntry.operational_reason;
+      }
 
       slots.push({
         start_time: slotStartStr,
         end_time: slotEndStr,
         status: allPartitionsUnavailable ? ('ALREADY_BOOKED' as const) : ('AVAILABLE' as const),
+        operational_status: slotOperationalStatus,
+        operational_label: labelForOperationalStatus(slotOperationalStatus),
+        operational_reason: slotOperationalReason,
         partitions: partitionsMap,
       });
     }
@@ -218,6 +359,15 @@ export class FacilitiesService {
         id: facility.id,
         code: facility.code,
         name: facility.name,
+        category: (facility as any).category ?? null,
+        court_count: (facility as any).court_count ?? null,
+        operational_status: facilityOperationalStatus,
+        booking_mode:
+          (facility as any).booking_mode ??
+          (facility.code === FacilityCode.SYNTHETIC_TRACK
+            ? 'MONTHLY_MEMBERSHIP_ONLY'
+            : 'HOURLY_SLOTS'),
+        description: (facility as any).description ?? null,
         is_partitionable: facility.is_partitionable,
         operating_start: formatDateToTime(facility.operating_start),
         operating_end: formatDateToTime(facility.operating_end),
@@ -234,11 +384,11 @@ export class FacilitiesService {
    * (`AVAILABLE`, `BOOKED`, `AUTHORITY_BLOCKED`) including `internal_reason`,
    * `booking_code`, and citizen `full_name`.
    */
-  static async getAdminFacilitySlots(facilityCode: FacilityCode, dateStr: string) {
+  static async getAdminFacilitySlots(facilityCode: string, dateStr: string) {
     const targetDate = parseDateOnly(dateStr);
 
     const facility = await prisma.facility.findUnique({
-      where: { code: facilityCode },
+      where: { code: facilityCode as FacilityCode },
     });
 
     if (!facility) {

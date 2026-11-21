@@ -8,11 +8,11 @@ import type {
   HomeUpcomingBooking,
 } from '@/types/home';
 
-/* ============================ AUTH MOCK DATA ============================ */
+/* ============================ AUTH CONTENT ============================ */
 
 export const authPageContent: AuthPageContent = {
   title: 'Welcome',
-  subtitle: 'Sign in to book facilities and manage your track membership.',
+  subtitle: 'Sign in to book facilities and manage your reservations.',
   signInTabLabel: 'Sign in',
   createAccountTabLabel: 'Create account',
   usernamePlaceholder: 'Username',
@@ -23,7 +23,7 @@ export const authPageContent: AuthPageContent = {
   passwordRequirementHint: 'Use at least 8 characters.',
   forgotPasswordLabel: 'Forgot password?',
   forgotPasswordNotice:
-    'Password recovery instructions have been sent via portal notification. Please contact the Kannur City Police Sports Cell desk if you need further assistance.',
+    'Please contact the Kannur City Police Sports Cell office desk with your registered username for password reset assistance.',
   signInCtaLabel: 'Sign in',
   createAccountCtaLabel: 'Create account',
   signInErrorMessage: 'Username or password is incorrect.',
@@ -34,13 +34,13 @@ export const authPageContent: AuthPageContent = {
   termsConjunctionText: 'and the',
   privacyLinkLabel: 'Privacy Notice',
   termsSummaryText:
-    'Facility bookings and synthetic track memberships are subject to Kannur City Police stadium regulations, scheduled slot timings, and valid QR pass verification at the entry gate.',
+    'Facility bookings and synthetic track memberships are subject to Kannur City Police sports complex regulations, scheduled slot timings, and confirmed fee receipts.',
   privacySummaryText:
-    'Your portal account stores only your username, booking history, and membership pass status for gate verification. No government ID numbers or phone numbers are collected.',
+    'Your portal account uses username and password sign-in only and stores just your username, display name, user category, and official booking receipt records.',
 };
 
 export const authMockCredentials: AuthMockCredentials = {
-  validUsername: 'anilkumar',
+  validUsername: 'priya_mohan',
   invalidDemoUsername: 'officer.kannur',
   invalidDemoPassword: 'wrongpassword',
   sampleCreateUsername: 'kcp.athlete',
@@ -48,7 +48,7 @@ export const authMockCredentials: AuthMockCredentials = {
   sampleMismatchConfirmPassword: 'DifferentPass',
 };
 
-/* ============================ HOME MOCK DATA ============================ */
+/* ============================ HOME DATA ============================ */
 
 export const homeGreeting = 'Good morning';
 
@@ -56,12 +56,10 @@ export const homeTrackFacility: HomeTrackFacility = {
   id: 'synthetic-track',
   title: 'Synthetic Track',
   subtitle: 'Monthly membership',
-  imageUrl:
-    'https://lh3.googleusercontent.com/aida/ALJJyrDrCwEjrgcdsFVTBjEoiUWpOuDLAnk1vtGV6to2_hLSazCeBTokWMmMTZQTmBe9DKU6LNYynTdeSrGf8lw3LrIkqLQrmEXTKDg765a8hQEXgy7zIIi5WeHysS4Lf-eaovp3VLMYwvRD33U7hwV-P5hj0Qlp-HSY5kWaE5ynkrOuJvd1GLdopt9_BOK7elmgX_wxvbGK-3AtoWLYn0gmGFtT3pxkXnFXr5kY0sUfUYI1',
-  activeMembershipImageUrl:
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuAV_Hrgfy9vbDdz24vq7zvqtz5r6zP0uBxPuZFB7m22wLK5qfeF5XnkTeh_jBKSuDt9H6dz135vfXDSwbxadDOP1E0kgjx01WP8n3htywIDJg_JcqVv5Ep5BR-DCDMPgLJL81QaGw4d5ijm699RZunoJ135uRHe7QaM6S7WIliVsyYHr1UGnIcK7OablK5_Wv9aYU2X1jG7bO5rzhqEtM9dpuwFD7oE3pQ2m2fOhsw',
+  imageUrl: '/images/facilities/synthetic-track.jpg',
+  activeMembershipImageUrl: '/images/facilities/synthetic-track.jpg',
   iconName: 'track',
-  defaultCtaLabel: 'Apply for membership',
+  defaultCtaLabel: 'Get Track Membership',
   to: '/membership',
 };
 
@@ -69,41 +67,30 @@ export const homeActiveMembershipPreset: HomeActiveMembership = {
   facilityName: 'Synthetic Track',
   membershipLabel: 'Track membership',
   validUntilText: 'Active until 31 Mar 2027',
-  ctaLabel: 'View card',
+  ctaLabel: 'View Receipt',
   to: '/membership/pass',
-  imageUrl:
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuAV_Hrgfy9vbDdz24vq7zvqtz5r6zP0uBxPuZFB7m22wLK5qfeF5XnkTeh_jBKSuDt9H6dz135vfXDSwbxadDOP1E0kgjx01WP8n3htywIDJg_JcqVv5Ep5BR-DCDMPgLJL81QaGw4d5ijm699RZunoJ135uRHe7QaM6S7WIliVsyYHr1UGnIcK7OablK5_Wv9aYU2X1jG7bO5rzhqEtM9dpuwFD7oE3pQ2m2fOhsw',
+  imageUrl: '/images/facilities/synthetic-track.jpg',
 };
 
 export const homeUpcomingBookingPreset: HomeUpcomingBooking = {
   label: 'Next booking',
   facilityName: 'Football Ground',
   dateTimeText: 'Sat 14 Nov, 8:00 PM',
-  ctaLabel: 'View QR',
+  ctaLabel: 'View Receipt',
   to: '/bookings/ticket',
 };
 
-/**
- * Set to `homeActiveMembershipPreset` (or pass via props / URL `?state=active-membership`)
- * to render the active membership strip on the Synthetic Track card.
- */
 export const homeActiveMembership: HomeActiveMembership | null = null;
-
-/**
- * Set to `homeUpcomingBookingPreset` (or pass via props / URL `?state=upcoming-booking`)
- * to render the upcoming booking QR banner above the Bento Grid.
- */
 export const homeUpcomingBooking: HomeUpcomingBooking | null = null;
 
 export const homeHourlyFacilities: HomeHourlyFacility[] = [
   {
     id: 'football-ground',
-    title: 'Football Ground',
+    title: 'Police Parade Ground',
     subtitle: 'Book by the hour',
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida/ALJJyrDN8uRQ2Bc7rXPf_fS1zxIoJOZJJ4hZ6wZZaOhbBVuA0NJ9wf8rNiT3q5zWnLV_vqUjpfEMQ-ruvjO7RgXjUYxu1QGepkTvmFzhYgeIjkOQKFAAQWFwdA7z4KfCwYd33p0cvyc5o34pwKZ4ZueMtqH5lIDWoKvENpB4KhDpdE39EtHeJEDMca6Bym4VOqO0fkvZkKXaG4o3vnZ9HlgT_s0mKT2ynQiYWgf_Oz54ryNn',
+    imageUrl: '/images/facilities/football-ground.jpg',
     iconName: 'football',
-    to: '/bookings',
+    to: '/bookings?venue=FOOTBALL_GROUND',
     column: 2,
     desktopBusyBars: [
       { heightClass: 'h-2', colorClass: 'bg-[#DCEBFF]' },
@@ -129,10 +116,9 @@ export const homeHourlyFacilities: HomeHourlyFacility[] = [
     id: 'police-turf',
     title: 'Police Turf',
     subtitle: 'Full or half court',
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida/ALJJyrAFBDnGdeb0rUmkkWXoQ1MUtNaT7gWhT9TVNy6lNIYsLs4zfRoBRjCNJhYpHyQmtQrzgH5zPVQAi_cjlRoL9VZTb4oZRtvCSqFd3FkGVtYcHjRzkJZkfmhUJGBdWNRPXgJM-JR_rqmyVnyrh8MChJgCHmyW0yI-aQ7YZ-rFhw-mgp_As1pxHEiNwythgLR0KdMFjVS5Li_2DwrSA7iDl8Gra57fb5oGNuEsg_NiGSak',
+    imageUrl: '/images/facilities/police-turf.jpg',
     iconName: 'turf',
-    to: '/bookings',
+    to: '/bookings?venue=POLICE_TURF',
     column: 2,
     desktopBusyBars: [
       { heightClass: 'h-2', colorClass: 'bg-[#DCEBFF]' },
@@ -155,12 +141,11 @@ export const homeHourlyFacilities: HomeHourlyFacility[] = [
   },
   {
     id: 'badminton-court',
-    title: 'Badminton Court',
+    title: 'Indoor Badminton Court',
     subtitle: 'Book by court',
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida/ALJJyrC7KOf9xQIbPWG6nTXqt2xbZ--BYTjbf2lWHK5Z3F55dUanEAd8FU5CPibUK5aLx_BGsw97czT-eNg2nTJ4hhhEqMIT9k8itPJGh2QKouwPXQkl-5qydWR1Pl-A06mpTO2vdOH7bWh3SLZOq1Bu_3NRR0pByokaR5uLh1umQa03-mSwSSL3E-9Rga5BNuGgLffOMArvkw-6anIofNTrDlxkrbk0oLkbXgRPVA5MS3A',
+    imageUrl: '/images/facilities/badminton-court.jpg',
     iconName: 'badminton',
-    to: '/bookings',
+    to: '/bookings?venue=BADMINTON_COURT',
     column: 3,
     mobileFullSpan: true,
     desktopBusyBars: [
@@ -187,8 +172,8 @@ export const homeActivitySummary: HomeActivitySummary = {
   title: 'Your activity',
   periodLabel: 'This month',
   stats: [
-    { id: 'bookings', value: 6, label: 'Bookings' },
-    { id: 'hours-played', value: 9, label: 'Hours played' },
-    { id: 'coming-up', value: 2, label: 'Coming up' },
+    { id: 'bookings', value: 0, label: 'Bookings' },
+    { id: 'hours-played', value: 0, label: 'Hours booked' },
+    { id: 'coming-up', value: 0, label: 'Coming up' },
   ],
 };

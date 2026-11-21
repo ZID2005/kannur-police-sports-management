@@ -1,23 +1,42 @@
+import type {
+  ApiPaymentPricingBreakdown,
+  BackendCourtPartition,
+  BackendPaymentMode,
+  BackendSlotBookingStatus,
+  FacilityOperationalStatus,
+  PublicSlotOperationalStatus,
+} from '@/api/client';
+
 export interface BookingCourtOption {
   id: 'full' | 'half_a' | 'half_b';
+  partition: BackendCourtPartition;
   label: string;
   shortName: string;
   turfBadge: string;
   icon: string;
   hourlyRate: number;
+  standardHourlyRate: number;
+  concessionDiscount: number;
+  concessionPercent: number;
+  gstRate: number;
 }
 
 export interface BookingVenue {
   id: string;
+  code: string;
   name: string;
+  category: string;
   badge: string;
   subtitle: string;
   priceLabel: string;
-  imageUrl: string;
+  imageUrl: string | null;
   imageAlt: string;
+  operationalStatus: FacilityOperationalStatus;
   rateBannerText: string;
-  complianceBadge: string;
+  policyBadge: string;
   operatingHoursText: string;
+  dailyUserHourCap: number;
+  isPartitionable: boolean;
   courtOptions: BookingCourtOption[];
 }
 
@@ -33,10 +52,15 @@ export interface BookingDateOption {
 
 export interface BookingTimeSlot {
   id: string;
+  startTime: string;
+  endTime: string;
   session: 'morning' | 'evening';
   timeLabel: string;
   summaryTimeLabel: string;
-  status: 'available' | 'booked' | 'maintenance';
+  status: 'available' | 'booked' | 'blocked_maintenance' | 'reserved_department' | 'facility_unavailable';
+  operationalStatus: PublicSlotOperationalStatus;
+  operationalLabel: string | null;
+  operationalReason: string | null;
   sessionTag: string;
   durationLabel: string;
 }
@@ -46,6 +70,7 @@ export interface BookingRegistrant {
   registrantId: string;
   email: string;
   accountBadge: string;
+  isGovt: boolean;
 }
 
 export interface BookingPortalMeta {
@@ -65,131 +90,25 @@ export interface BookingPortalMeta {
   cancellationNotice: string;
   supportDeskTitle: string;
   supportDeskSubtitle: string;
-  supportGateBadge: string;
+  supportBadge: string;
 }
 
-export interface BookingTicketGuideline {
-  id: string;
-  icon: string;
-  textPrefix: string;
-  highlightText?: string;
-  textSuffix: string;
-}
-
-export interface BookingTicketData {
-  departmentBadge: string;
-  clearanceStage: string;
-  headline: string;
-  syncStatusBadge: string;
-  subheadline: string;
-  organizationName: string;
-  passTitle: string;
-  passTypeBadge: string;
+export interface BookingReceiptData {
+  bookingId?: string;
   bookingReference: string;
-  approvalBadge: string;
+  receiptNo?: string | null;
+  status: BackendSlotBookingStatus;
   venueName: string;
-  venueSubtitle: string;
-  venueShortBadge: string;
-  venueIcon: string;
+  facilityCode?: string;
+  courtPartition: BackendCourtPartition;
+  courtModeLabel: string;
   dateLabel: string;
   timeSlotLabel: string;
-  sessionNote: string;
-  gateName: string;
-  gateLaneInfo: string;
-  gateQuadrant: string;
-  attendeeName: string;
-  attendeeRole: string;
-  attendeeAvatarUrl: string;
-  attendeeAvatarAlt: string;
-  amountPaid: string;
-  paymentStatusNote: string;
-  upiReference: string;
-  qrSectionLabel: string;
-  qrNotice: string;
-  qrTokenHash: string;
-  qrSeed: string;
-  guidelinesTitle: string;
-  guidelines: BookingTicketGuideline[];
-  helplineTitle: string;
-  helplineSubtitle: string;
-  helplineBadge: string;
-}
-
-export interface BookingSelectionState {
-  venueName: string;
-  courtShortName: string;
-  turfBadge: string;
-  dateLabel: string;
-  timeSlotLabel: string;
-  sessionNote: string;
-  totalAmountFormatted: string;
-  bookingReference?: string;
-  receiptNo?: string;
-  qrTokenHash?: string;
-  attendeeName?: string;
-  attendeeRole?: string;
-  paymentStatusNote?: string;
-  gateName?: string;
-}
-
-export interface PassDetailItem {
-  id: string;
-  label: string;
-  value: string;
-  subtext: string;
-  highlightSubtext?: boolean;
-}
-
-export interface PassBiometricStep {
-  stepNumber: number;
-  title: string;
-  description: string;
-}
-
-export interface PassChallanRow {
-  label: string;
-  value: string;
-  isMono?: boolean;
-}
-
-export interface PassData {
-  passReference: string;
-  vaultRecordText: string;
-  syncBadgeText: string;
-  authTag: string;
-  statusTag: string;
-  confirmationTitle: string;
-  confirmationDescription: string;
-  councilName: string;
-  passTitle: string;
-  verifiedBadgeText: string;
+  sessionNote?: string;
   memberName: string;
-  departmentalCode: string;
-  designation: string;
-  memberId: string;
-  photoUrl: string;
-  photoAlt: string;
-  liveStatusText: string;
-  details: PassDetailItem[];
-  qrTitle: string;
-  qrDescription: string;
-  nfcBadgeText: string;
-  barcodeCaption: string;
-  qrSeed: string;
-  legalDisclaimer: string;
-  nodeId: string;
-  venuePhotoUrl: string;
-  venuePhotoAlt: string;
-  venueCardTitle: string;
-  venueCardAddress: string;
-  receiptAmount: string;
-  accessGuideTitle: string;
-  accessGuideSubtitle: string;
-  biometricSteps: PassBiometricStep[];
-  dailyHoursText: string;
-  trackRulesText: string;
-  challanTotal: string;
-  challanRows: PassChallanRow[];
-  dutyDeskLabel: string;
-  dutyDeskLocation: string;
+  memberUsername?: string;
+  userCategory: 'PUBLIC' | 'GOVT_PERSONNEL';
+  paymentMode?: BackendPaymentMode | null;
+  paidAt?: string | null;
+  pricingBreakdown: ApiPaymentPricingBreakdown;
 }

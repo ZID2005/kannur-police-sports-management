@@ -2,29 +2,28 @@ import { Navigate, createBrowserRouter } from 'react-router-dom';
 import { ProtectedRoute } from '@/context/AuthContext';
 import { PublicLayout } from '@/layouts/PublicLayout';
 import { AdminLayout } from '@/layouts/AdminLayout';
-import { GateScannerLayout } from '@/layouts/GateScannerLayout';
 
 import HomePage from '@/pages/public/HomePage';
 import LoginPage from '@/pages/public/LoginPage';
 import RegisterPage from '@/pages/public/RegisterPage';
 import BookingsPage from '@/pages/public/BookingsPage';
 import BookingTicketPage from '@/pages/public/BookingTicketPage';
+import MyBookingsPage from '@/pages/public/MyBookingsPage';
+import AccountPage from '@/pages/public/AccountPage';
 import MembershipPage from '@/pages/public/membership/MembershipPage';
 import MembershipPassPage from '@/pages/public/MembershipPassPage';
 
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
+import AdminBookingsPage from '@/pages/admin/AdminBookingsPage';
 import AdminMembershipsPage from '@/pages/admin/AdminMembershipsPage';
-import AdminMembershipDetailPage from '@/pages/admin/AdminMembershipDetailPage';
 import AdminFacilitiesPage from '@/pages/admin/AdminFacilitiesPage';
 import AdminPaymentsPage from '@/pages/admin/AdminPaymentsPage';
-import AdminGateEntriesPage from '@/pages/admin/AdminGateEntriesPage';
 import AdminAuditLogPage from '@/pages/admin/AdminAuditLogPage';
 
-import GateScannerPage from '@/pages/gate/GateScannerPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 
 export const router = createBrowserRouter([
-  /* ---------------- Public User ---------------- */
+  /* ---------------- Member Portal ---------------- */
   {
     element: <PublicLayout variant="auth" />,
     children: [
@@ -38,6 +37,9 @@ export const router = createBrowserRouter([
       { path: '/', element: <HomePage /> },
       { path: '/bookings', element: <BookingsPage /> },
       { path: '/bookings/ticket', element: <BookingTicketPage /> },
+      { path: '/bookings/receipt', element: <BookingTicketPage /> },
+      { path: '/my-bookings', element: <MyBookingsPage /> },
+      { path: '/account', element: <AccountPage /> },
       { path: '/membership', element: <MembershipPage /> },
       { path: '/membership/pass', element: <MembershipPassPage /> },
     ],
@@ -54,26 +56,12 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/admin/dashboard" replace /> },
       { path: 'dashboard', element: <AdminDashboardPage /> },
-      { path: 'memberships', element: <AdminMembershipsPage /> },
-      { path: 'memberships/:id', element: <AdminMembershipDetailPage /> },
       { path: 'facilities', element: <AdminFacilitiesPage /> },
+      { path: 'bookings', element: <AdminBookingsPage /> },
+      { path: 'members', element: <AdminMembershipsPage /> },
+      { path: 'memberships', element: <Navigate to="/admin/members" replace /> },
       { path: 'payments', element: <AdminPaymentsPage /> },
-      { path: 'gate-entries', element: <AdminGateEntriesPage /> },
       { path: 'audit-log', element: <AdminAuditLogPage /> },
-    ],
-  },
-
-  /* ---------------- Gate Verification ---------------- */
-  {
-    path: '/gate',
-    element: (
-      <ProtectedRoute allowedRoles={['GATE_OFFICER', 'STAFF_ADMIN']}>
-        <GateScannerLayout />
-      </ProtectedRoute>
-    ),
-    children: [
-      { index: true, element: <Navigate to="/gate/scanner" replace /> },
-      { path: 'scanner', element: <GateScannerPage /> },
     ],
   },
 

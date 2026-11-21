@@ -1,128 +1,79 @@
-export type MembershipWizardStep = 1 | 2 | 3 | 4 | 5 | 6;
+import type { BackendGender, BackendSessionWindow } from '@/api/client';
 
-export type MembershipApplicantCategoryId = 'public' | 'government';
+export type MembershipOnboardingStep = 1 | 2 | 3;
 
-export type MembershipGender = 'Male' | 'Female' | 'Transgender';
-
-export type MembershipPaymentMethodTab = 'upi' | 'debit' | 'credit' | 'netbanking';
-
-export interface MembershipCategoryOption {
-  id: MembershipApplicantCategoryId;
-  title: string;
-  description: string;
-  iconName: 'person' | 'badge';
-  stepSubtitle: string;
-  detailsSubtitle: string;
-  reviewLabel: string;
-}
+export type MembershipDurationMonths = 1 | 2 | 3 | 6;
 
 export interface MembershipStepDefinition {
-  step: 1 | 2 | 3 | 4;
+  step: MembershipOnboardingStep;
   label: string;
-  completedSublabel: string;
-  activeSublabel: string;
-  upcomingSublabel: string;
-}
-
-export interface MembershipStatusTimelineItem {
-  id: string;
-  title: string;
+  labelMl: string;
   subtitle: string;
-  badgeText?: string;
-  verifiedTag?: string;
-  status: 'completed' | 'done_all' | 'current';
+  subtitleMl: string;
 }
 
-export interface MembershipPeriodOption {
-  months: 1 | 2 | 3 | 6;
+export interface MembershipGenderOption {
+  value: BackendGender;
   label: string;
-  tierBadge: string;
-  validity: string;
-  enrolled: number;
-  capacity: number;
-  capacityPercent: number;
-  baseFee: number;
-  discount: number;
-  gst: number;
-  total: number;
-  recommended?: boolean;
-  quarterTag: string;
+  labelMl: string;
+}
+
+export interface MembershipDurationOption {
+  months: MembershipDurationMonths;
+  label: string;
+  labelMl: string;
   daysLabel: string;
+  recommended?: boolean;
 }
 
-export interface MembershipAttachedDocument {
-  fileName: string;
-  fileSize: string;
-  statusLabel: string;
-  verifiedLabel: string;
+export interface MembershipSessionOption {
+  id: BackendSessionWindow;
+  label: string;
+  labelMl: string;
+  hoursLabel: string;
 }
 
-export interface MembershipFormData {
-  category: MembershipApplicantCategoryId | null;
-  fullName: string;
-  dob: string;
-  gender: MembershipGender;
+export interface MembershipOnboardingFormData {
+  gender: BackendGender | '';
+  dateOfBirth: string;
   parentName: string;
   presentAddress: string;
+  cityLocality: string;
+  pinCode: string;
   sameAsPresent: boolean;
   permanentAddress: string;
   designation: string;
   officeAddress: string;
-  purpose: string;
-  isSportsperson: boolean;
-  sportField: string;
+  trackPurpose: string;
+  isRegisteredSportsperson: boolean;
+  sportDiscipline: string;
   associationDetails: string;
-  photoCaptured: boolean;
-  primaryDocument: MembershipAttachedDocument | null;
-  auxiliaryDocument: MembershipAttachedDocument | null;
+  selectedMonths: MembershipDurationMonths;
+  sessionWindow: BackendSessionWindow;
   declarationAccepted: boolean;
-  selectedMonths: 1 | 2 | 3 | 6;
 }
 
-export interface MembershipValidationErrors {
-  fullName?: string;
-  dob?: string;
+export interface MembershipOnboardingErrors {
+  gender?: string;
+  dateOfBirth?: string;
   presentAddress?: string;
+  cityLocality?: string;
+  pinCode?: string;
   permanentAddress?: string;
   designation?: string;
   officeAddress?: string;
-  purpose?: string;
-  sportField?: string;
+  trackPurpose?: string;
+  sportDiscipline?: string;
+  declarationAccepted?: string;
 }
 
-export interface MembershipFacilitySummary {
-  facilityName: string;
-  facilitySubtitle: string;
-  stadiumBadge: string;
-  trackCode: string;
-  environment: string;
-  location: string;
-  applicationId: string;
-  serviceId: string;
-  stationBadge: string;
-  penNumber: string;
-  sportsId: string;
-  sessionId: string;
-  trackSurface: string;
-  operatingHours: string;
-  subsidyLabel: string;
-  ageNote: string;
-}
-
-export interface MembershipMediaAssets {
-  cameraViewfinderBackdropUrl: string;
-  cameraViewfinderAlt: string;
-  capturedPortraitStep3Url: string;
-  capturedPortraitStep3Alt: string;
-  reviewPortraitStep4Url: string;
-  reviewPortraitStep4Alt: string;
-  statusPortraitStep5Url: string;
-  statusPortraitStep5Alt: string;
-  facilityAerialTrackUrl: string;
-  facilityAerialTrackAlt: string;
-}
-
-export interface MembershipNetBankingBank {
-  id: string;
-  name: string;
+export interface MembershipPricingSummary {
+  monthlyNet: number;
+  baseFee: number;
+  concessionDiscount: number;
+  concessionPercent: number;
+  taxableSubtotal: number;
+  gstPercent: number;
+  gstAmount: number;
+  totalPayable: number;
 }

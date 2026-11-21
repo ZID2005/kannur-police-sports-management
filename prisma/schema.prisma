@@ -4,7 +4,7 @@
 //
 // STRICT COMPLIANCE ENFORCED:
 // 1. ZERO mobile phone / SMS / OTP columns anywhere in the schema.
-// 2. ZERO Aadhaar or Government ID number columns anywhere in the schema.
+// 2. ZERO Government ID number columns anywhere in the schema.
 // 3. Immutable append-only `audit_logs` table enforced by PostgreSQL triggers.
 // ============================================================================
 
@@ -25,7 +25,6 @@ enum UserRole {
   PUBLIC
   GOVT_PERSONNEL
   STAFF_ADMIN
-  GATE_OFFICER
 
   @@map("user_role")
 }
@@ -36,6 +35,14 @@ enum AccountStatus {
   BANNED
 
   @@map("account_status")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  TRANSGENDER
+
+  @@map("gender")
 }
 
 enum FacilityCode {
@@ -121,30 +128,35 @@ enum PaymentStatus {
   @@map("payment_status")
 }
 
-enum VerificationType {
-  QR_ONLY
-  QR_AND_BIOMETRIC
-  MANUAL_OVERRIDE
-
-  @@map("verification_type")
-}
-
 // ----------------------------------------------------------------------------
 // MODELS
 // ----------------------------------------------------------------------------
 
 model User {
-  id                String        @id @default(uuid()) @db.Uuid
-  username          String        @unique @db.VarChar(64)
-  password_hash     String        @db.VarChar(255)
-  full_name         String        @db.VarChar(150)
-  email             String?       @unique @db.VarChar(150)
-  role              UserRole      @default(PUBLIC)
-  account_status    AccountStatus @default(ACTIVE)
-  ban_reason        String?       @db.Text
-  profile_photo_url String?       @db.Text
-  created_at        DateTime      @default(now()) @db.Timestamptz(6)
-  updated_at        DateTime      @updatedAt @db.Timestamptz(6)
+  id                         String        @id @default(uuid()) @db.Uuid
+  username                   String        @unique @db.VarChar(64)
+  password_hash              String        @db.VarChar(255)
+  full_name                  String        @db.VarChar(150)
+  email                      String?       @unique @db.VarChar(150)
+  role                       UserRole      @default(PUBLIC)
+  account_status             AccountStatus @default(ACTIVE)
+  ban_reason                 String?       @db.Text
+  profile_photo_url          String?       @db.Text
+  gender                     Gender?
+  date_of_birth              String?       @db.VarChar(32)
+  parent_name                String?       @db.VarChar(150)
+  present_address            String?       @db.Text
+  city_locality              String?       @db.VarChar(120)
+  pin_code                   String?       @db.VarChar(12)
+  permanent_address          String?       @db.Text
+  designation                String?       @db.VarChar(150)
+  office_address             String?       @db.Text
+  track_purpose              String?       @db.VarChar(255)
+  is_registered_sportsperson Boolean       @default(false)
+  sport_discipline           String?       @db.VarChar(120)
+  association_details        String?       @db.VarChar(200)
+  created_at                 DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at                 DateTime      @updatedAt @db.Timestamptz(6)
 
   // Relations
   memberships          Membership[]     @relation("UserMemberships")
@@ -153,8 +165,6 @@ model User {
   authority_blocks     AuthorityBlock[] @relation("OfficerAuthorityBlocks")
   payments             Payment[]        @relation("UserPayments")
   recorded_payments    Payment[]        @relation("OfficerRecordedPayments")
-  gate_logs            GateLog[]        @relation("UserGateLogs")
-  verified_gate_logs   GateLog[]        @relation("OfficerVerifiedGateLogs")
   audit_logs           AuditLog[]       @relation("OfficerAuditLogs")
 
   @@index([username], name: "idx_users_username")
@@ -178,7 +188,6 @@ model Facility {
   memberships      Membership[]
   slot_bookings    SlotBooking[]
   authority_blocks AuthorityBlock[]
-  gate_logs        GateLog[]
 
   @@map("facilities")
 }
@@ -201,20 +210,24 @@ model Tariff {
 }
 
 model Membership {
-  id                     String           @id @default(uuid()) @db.Uuid
-  pass_code              String           @unique @db.VarChar(32)
-  user_id                String           @db.Uuid
-  facility_id            String           @db.Uuid
-  duration_months        Int
-  start_date             DateTime?        @db.Date
-  end_date               DateTime?        @db.Date
-  session_window         SessionWindow
-  govt_service_proof_url String?          @db.Text
-  status                 MembershipStatus @default(PENDING_APPROVAL)
-  reviewed_by_officer_id String?          @db.Uuid
-  officer_remarks        String?          @db.Text
-  qr_token_hash          String?          @unique @db.VarChar(128)
-  created_at             DateTime         @default(now()) @db.Timestamptz(6)
+  id                         String           @id @default(uuid()) @db.Uuid
+  pass_code                  String           @unique @db.VarChar(32)
+  user_id                    String           @db.Uuid
+  facility_id                String           @db.Uuid
+  duration_months            Int
+  start_date                 DateTime?        @db.Date
+  end_date                   DateTime?        @db.Date
+  session_window             SessionWindow
+  govt_service_proof_url     String?          @db.Text
+  track_purpose              String?          @db.VarChar(255)
+  is_registered_sportsperson Boolean          @default(false)
+  sport_discipline           String?          @db.VarChar(120)
+  association_details        String?          @db.VarChar(200)
+  declaration_accepted       Boolean          @default(false)
+  status                     MembershipStatus @default(PENDING_APPROVAL)
+  reviewed_by_officer_id     String?          @db.Uuid
+  officer_remarks            String?          @db.Text
+  created_at                 DateTime         @default(now()) @db.Timestamptz(6)
 
   // Relations
   user                User     @relation("UserMemberships", fields: [user_id], references: [id], onDelete: Restrict)
@@ -237,7 +250,6 @@ model SlotBooking {
   court_partition CourtPartition    @default(FULL)
   total_amount    Decimal           @db.Decimal(10, 2)
   status          SlotBookingStatus @default(PENDING_PAYMENT)
-  qr_token_hash   String?           @unique @db.VarChar(128)
   created_at      DateTime          @default(now()) @db.Timestamptz(6)
 
   // Relations
@@ -290,30 +302,6 @@ model Payment {
   @@index([reference_type, reference_id], name: "idx_payments_reference")
   @@index([user_id, status], name: "idx_payments_user_status")
   @@map("payments")
-}
-
-model GateLog {
-  id                         String           @id @default(uuid()) @db.Uuid
-  facility_id                String           @db.Uuid
-  gate_name                  String           @db.VarChar(100)
-  user_id                    String?          @db.Uuid
-  pass_or_booking_code       String           @db.VarChar(64)
-  verification_type          VerificationType
-  stage1_qr_passed           Boolean
-  stage2_biometric_passed    Boolean
-  access_granted             Boolean
-  failure_or_override_reason String?          @db.Text
-  verified_by_officer_id     String           @db.Uuid
-  scanned_at                 DateTime         @default(now()) @db.Timestamptz(6)
-
-  // Relations
-  facility            Facility @relation(fields: [facility_id], references: [id], onDelete: Restrict)
-  user                User?    @relation("UserGateLogs", fields: [user_id], references: [id], onDelete: SetNull)
-  verified_by_officer User     @relation("OfficerVerifiedGateLogs", fields: [verified_by_officer_id], references: [id], onDelete: Restrict)
-
-  @@index([facility_id, scanned_at], name: "idx_gate_logs_facility_scanned")
-  @@index([pass_or_booking_code], name: "idx_gate_logs_code")
-  @@map("gate_logs")
 }
 
 model AuditLog {

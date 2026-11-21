@@ -1,14 +1,18 @@
-import { CourtPartition, FacilityCode } from '@prisma/client';
+import { CourtPartition } from '@prisma/client';
 import { z } from 'zod';
 
 export const reserveSlotSchema = z
   .object({
-    facility_code: z.nativeEnum(FacilityCode, {
-      errorMap: () => ({
-        message:
-          "Invalid facility_code. Expected 'FOOTBALL_GROUND', 'POLICE_TURF', 'BADMINTON_COURT', or 'SYNTHETIC_TRACK'.",
-      }),
-    }),
+    facility_code: z
+      .string({ required_error: 'facility_code is required.' })
+      .trim()
+      .min(2, 'facility_code must be at least 2 characters.')
+      .max(64, 'facility_code cannot exceed 64 characters.')
+      .regex(
+        /^[A-Za-z0-9_-]+$/,
+        'facility_code may only contain letters, numbers, underscores, and hyphens.'
+      )
+      .transform((val) => val.toUpperCase()),
     booking_date: z
       .string({ required_error: 'booking_date (YYYY-MM-DD) is required.' })
       .trim()

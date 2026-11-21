@@ -5,7 +5,7 @@ import { AppError } from '../utils/AppError';
 /**
  * Prohibited keys per Strict System & Proposal Constraints:
  * - NO SMS, NO OTP, NO mobile phone number fields anywhere in the APIs.
- * - ZERO collection, storage, or verification of Aadhaar or any government ID numbers.
+ * - ZERO collection, storage, or verification of government ID numbers.
  */
 const PROHIBITED_FIELD_PATTERNS = [
   /^phone$/i,
@@ -16,9 +16,6 @@ const PROHIBITED_FIELD_PATTERNS = [
   /^sms$/i,
   /^otp$/i,
   /^otp_?code$/i,
-  /^aadhaar/i,
-  /^aadhar/i,
-  /^uidai/i,
   /^govt_?id_?(no|num|number)$/i,
   /^national_?id/i,
 ];
@@ -50,7 +47,7 @@ function findProhibitedKeys(obj: unknown, prefix = ''): string[] {
 
 /**
  * Global middleware that enforces the strict prohibition on mobile numbers,
- * SMS/OTP fields, and Aadhaar/Government ID numbers in any request payload.
+ * SMS/OTP fields, and Government ID numbers in any request payload.
  */
 export function enforceComplianceConstraints(
   req: Request,
@@ -64,7 +61,7 @@ export function enforceComplianceConstraints(
   if (allViolations.length > 0) {
     return next(
       new AppError(
-        `Policy violation: This system strictly prohibits collection or processing of mobile numbers, OTP/SMS tokens, or Aadhaar/Government ID numbers. Rejected field(s): ${allViolations.join(', ')}`,
+        `Policy violation: This system strictly prohibits collection or processing of mobile numbers, OTP/SMS tokens, or Government ID numbers. Rejected field(s): ${allViolations.join(', ')}`,
         400,
         'PROHIBITED_IDENTITY_OR_MOBILE_FIELD'
       )

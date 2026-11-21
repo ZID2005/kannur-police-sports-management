@@ -1,14 +1,17 @@
-import { FacilityCode } from '@prisma/client';
 import { z } from 'zod';
 
 export const facilityCodeParamSchema = z
   .object({
-    code: z.nativeEnum(FacilityCode, {
-      errorMap: () => ({
-        message:
-          "Invalid facility code. Expected one of: 'SYNTHETIC_TRACK', 'FOOTBALL_GROUND', 'POLICE_TURF', 'BADMINTON_COURT'.",
-      }),
-    }),
+    code: z
+      .string({ required_error: 'Facility code parameter is required.' })
+      .trim()
+      .min(2, 'Facility code must be at least 2 characters.')
+      .max(64, 'Facility code cannot exceed 64 characters.')
+      .regex(
+        /^[A-Za-z0-9_-]+$/,
+        'Facility code may only contain letters, numbers, underscores, and hyphens.'
+      )
+      .transform((val) => val.toUpperCase()),
   })
   .strict();
 

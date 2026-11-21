@@ -15,7 +15,6 @@ import { prisma } from '../../config/database';
 import { AuthenticatedUser } from '../../types/express';
 import { AppError } from '../../utils/AppError';
 import { recordAuditLog } from '../../utils/auditLogger';
-import { generateQrTokenHash } from '../../utils/qrToken';
 import {
   formatDateOnly,
   formatDateToTime,
@@ -60,7 +59,8 @@ function verifyAndResolveAmounts(
   expectedBase: number,
   expectedGst: number,
   expectedTotal: number,
-  input: { base_amount?: number; gst_amount?: number; total_amount?: number }
+  input: { base_amount?: number; gst_amount?: number; total_amount?: number },
+  gstPercent = 18
 ) {
   const resolvedBase =
     input.base_amount !== undefined
@@ -75,15 +75,15 @@ function verifyAndResolveAmounts(
       ? Math.round(input.total_amount * 100) / 100
       : expectedTotal;
 
-  const computedGstAt18 = Math.round(resolvedBase * 0.18 * 100) / 100;
+  const computedGst = Math.round(resolvedBase * (gstPercent / 100) * 100) / 100;
   const computedTotalSum = Math.round((resolvedBase + resolvedGst) * 100) / 100;
 
   if (
-    Math.abs(resolvedGst - computedGstAt18) > 0.01 ||
+    Math.abs(resolvedGst - computedGst) > 0.01 ||
     Math.abs(resolvedTotal - computedTotalSum) > 0.01
   ) {
     throw new AppError(
-      `Invalid GST or total calculation: 18% GST on base_amount (${resolvedBase.toFixed(2)}) must equal ${computedGstAt18.toFixed(2)}, and total_amount must equal base_amount + gst_amount (${computedTotalSum.toFixed(2)}).`,
+      `Invalid GST or total calculation: ${gstPercent}% GST on base_amount (${resolvedBase.toFixed(2)}) must equal ${computedGst.toFixed(2)}, and total_amount must equal base_amount + gst_amount (${computedTotalSum.toFixed(2)}).`,
       400,
       'INVALID_GST_CALCULATION'
     );
@@ -108,7 +108,7 @@ function verifyAndResolveAmounts(
 }
 
 /**
- * Internal helper that executes a payment settlement + QR pass activation inside a Prisma transaction.
+ * Internal helper that executes a payment settlement and confirmation receipt issuance inside a Prisma transaction.
  */
 async function executeSettlementTransaction(
   tx: DbTxClient,
@@ -217,15 +217,28 @@ async function executeSettlementTransaction(
         ? UserCategory.GOVT_PERSONNEL
         : UserCategory.PUBLIC;
 
-    const tariff = await tx.tariff.findUnique({
-      where: {
-        uq_tariff_facility_category_type: {
-          facility_id: membership.facility_id,
-          user_category: userCategory,
-          booking_type: BookingType.MONTHLY_PASS,
+    const [tariff, publicTariff] = await Promise.all([
+      tx.tariff.findUnique({
+        where: {
+          uq_tariff_facility_category_type: {
+            facility_id: membership.facility_id,
+            user_category: userCategory,
+            booking_type: BookingType.MONTHLY_PASS,
+          },
         },
-      },
-    });
+      }),
+      userCategory === UserCategory.GOVT_PERSONNEL
+        ? tx.tariff.findUnique({
+            where: {
+              uq_tariff_facility_category_type: {
+                facility_id: membership.facility_id,
+                user_category: UserCategory.PUBLIC,
+                booking_type: BookingType.MONTHLY_PASS,
+              },
+            },
+          })
+        : Promise.resolve(null),
+    ]);
 
     const monthlyBasePrice = Number(
       tariff?.base_price ?? (userCategory === UserCategory.GOVT_PERSONNEL ? 250 : 500)
@@ -239,17 +252,36 @@ async function executeSettlementTransaction(
       expectedBase,
       expectedGst,
       expectedTotal,
-      input
+      input,
+      gstPercent
     );
+
+    const stdMonthlyPublic = Number(publicTariff?.base_price ?? 500);
+    const stdMembershipBase =
+      userCategory === UserCategory.GOVT_PERSONNEL &&
+      stdMonthlyPublic * membership.duration_months > baseAmount
+        ? Math.round(stdMonthlyPublic * membership.duration_months * 100) / 100
+        : baseAmount;
+    const membershipConcession = Math.max(
+      0,
+      Math.round((stdMembershipBase - baseAmount) * 100) / 100
+    );
+    const membershipConcessionPct =
+      stdMembershipBase > 0 && membershipConcession > 0
+        ? Math.round((membershipConcession / stdMembershipBase) * 1000) / 10
+        : 0;
+    const membershipPricingBreakdown = {
+      base_fee: stdMembershipBase.toFixed(2),
+      concession_discount: membershipConcession.toFixed(2),
+      concession_percent: membershipConcessionPct,
+      taxable_subtotal: baseAmount.toFixed(2),
+      gst_rate: gstPercent,
+      gst_amount: gstAmount.toFixed(2),
+      final_total_paid: totalAmount.toFixed(2),
+    };
 
     const receiptNo = await generateUniqueReceiptNo(tx);
     const facilityCode = membership.facility?.code ?? FacilityCode.SYNTHETIC_TRACK;
-
-    const qrTokenHash = generateQrTokenHash({
-      passOrBookingCode: membership.pass_code,
-      userId: membership.user_id,
-      facilityCode,
-    });
 
     const todayStr = formatDateOnly(new Date());
     const startDate = parseDateOnly(todayStr);
@@ -277,7 +309,6 @@ async function executeSettlementTransaction(
         start_date: startDate,
         end_date: endDate,
         status: MembershipStatus.ACTIVE,
-        qr_token_hash: qrTokenHash,
       },
       include: {
         facility: true,
@@ -295,25 +326,34 @@ async function executeSettlementTransaction(
     return {
       payment: {
         ...createdPayment,
+        user_category: userCategory,
         pass_or_booking_code: activatedMembership.pass_code,
         facility_code: facilityCode,
+        facility_name: activatedMembership.facility?.name ?? 'Synthetic Athletic Track',
+        pricing_breakdown: membershipPricingBreakdown,
       },
-      qr_pass: {
+      receipt: {
+        receipt_no: createdPayment.receipt_no,
         reference_type: PaymentReferenceType.MEMBERSHIP,
         reference_id: activatedMembership.id,
-        pass_or_booking_code: activatedMembership.pass_code,
+        booking_or_pass_code: activatedMembership.pass_code,
         facility_code: facilityCode,
+        facility_name: activatedMembership.facility?.name ?? 'Synthetic Athletic Track',
         status: activatedMembership.status,
+        user_category: userCategory,
+        payment_mode: paymentMode,
         start_date: formatDateOnly(startDate),
         end_date: formatDateOnly(endDate),
+        duration_months: activatedMembership.duration_months,
         session_window: activatedMembership.session_window,
-        qr_token: qrTokenHash,
-        qr_token_hash: qrTokenHash,
+        pricing_breakdown: membershipPricingBreakdown,
+        issued_at: createdPayment.created_at,
       },
       membership: {
         ...activatedMembership,
         start_date_formatted: formatDateOnly(startDate),
         end_date_formatted: formatDateOnly(endDate),
+        pricing_breakdown: membershipPricingBreakdown,
       },
     };
   }
@@ -411,15 +451,28 @@ async function executeSettlementTransaction(
       ? BookingType.FULL_COURT
       : BookingType.HALF_COURT;
 
-  const tariff = await tx.tariff.findUnique({
-    where: {
-      uq_tariff_facility_category_type: {
-        facility_id: booking.facility_id,
-        user_category: userCategory,
-        booking_type: bookingType,
+  const [tariff, publicTariff] = await Promise.all([
+    tx.tariff.findUnique({
+      where: {
+        uq_tariff_facility_category_type: {
+          facility_id: booking.facility_id,
+          user_category: userCategory,
+          booking_type: bookingType,
+        },
       },
-    },
-  });
+    }),
+    userCategory === UserCategory.GOVT_PERSONNEL
+      ? tx.tariff.findUnique({
+          where: {
+            uq_tariff_facility_category_type: {
+              facility_id: booking.facility_id,
+              user_category: UserCategory.PUBLIC,
+              booking_type: bookingType,
+            },
+          },
+        })
+      : Promise.resolve(null),
+  ]);
 
   const startMins = timeToMinutes(formatDateToTime(booking.start_time));
   const endMins = timeToMinutes(formatDateToTime(booking.end_time));
@@ -428,12 +481,13 @@ async function executeSettlementTransaction(
   let expectedBase: number;
   let expectedGst: number;
   let expectedTotal: number;
+  let resolvedGstPercent = 18;
 
   if (tariff) {
     const hourlyBase = Number(tariff.base_price);
-    const gstPercent = Number(tariff.gst_percent ?? 18);
+    resolvedGstPercent = Number(tariff.gst_percent ?? 18);
     expectedBase = Math.round(hourlyBase * hours * 100) / 100;
-    expectedGst = Math.round(expectedBase * (gstPercent / 100) * 100) / 100;
+    expectedGst = Math.round(expectedBase * (resolvedGstPercent / 100) * 100) / 100;
     expectedTotal = Math.round((expectedBase + expectedGst) * 100) / 100;
   } else {
     expectedTotal = Math.round(Number(booking.total_amount) * 100) / 100;
@@ -445,17 +499,33 @@ async function executeSettlementTransaction(
     expectedBase,
     expectedGst,
     expectedTotal,
-    input
+    input,
+    resolvedGstPercent
   );
+
+  const stdBookingBase =
+    userCategory === UserCategory.GOVT_PERSONNEL &&
+    publicTariff &&
+    Math.round(Number(publicTariff.base_price) * hours * 100) / 100 > baseAmount
+      ? Math.round(Number(publicTariff.base_price) * hours * 100) / 100
+      : baseAmount;
+  const bookingConcession = Math.max(0, Math.round((stdBookingBase - baseAmount) * 100) / 100);
+  const bookingConcessionPct =
+    stdBookingBase > 0 && bookingConcession > 0
+      ? Math.round((bookingConcession / stdBookingBase) * 1000) / 10
+      : 0;
+  const bookingPricingBreakdown = {
+    base_fee: stdBookingBase.toFixed(2),
+    concession_discount: bookingConcession.toFixed(2),
+    concession_percent: bookingConcessionPct,
+    taxable_subtotal: baseAmount.toFixed(2),
+    gst_rate: resolvedGstPercent,
+    gst_amount: gstAmount.toFixed(2),
+    final_total_paid: totalAmount.toFixed(2),
+  };
 
   const receiptNo = await generateUniqueReceiptNo(tx);
   const facilityCode = booking.facility?.code ?? FacilityCode.POLICE_TURF;
-
-  const qrTokenHash = generateQrTokenHash({
-    passOrBookingCode: booking.booking_code,
-    userId: booking.user_id,
-    facilityCode,
-  });
 
   const createdPayment = await tx.payment.create({
     data: {
@@ -476,7 +546,6 @@ async function executeSettlementTransaction(
     where: { id: booking.id },
     data: {
       status: SlotBookingStatus.CONFIRMED,
-      qr_token_hash: qrTokenHash,
     },
     include: {
       facility: true,
@@ -494,48 +563,103 @@ async function executeSettlementTransaction(
   return {
     payment: {
       ...createdPayment,
+      user_category: userCategory,
       pass_or_booking_code: confirmedBooking.booking_code,
       facility_code: facilityCode,
+      facility_name: confirmedBooking.facility?.name ?? 'Sports Facility',
+      pricing_breakdown: bookingPricingBreakdown,
     },
-    qr_pass: {
+    receipt: {
+      receipt_no: createdPayment.receipt_no,
       reference_type: PaymentReferenceType.SLOT_BOOKING,
       reference_id: confirmedBooking.id,
-      pass_or_booking_code: confirmedBooking.booking_code,
+      booking_or_pass_code: confirmedBooking.booking_code,
       facility_code: facilityCode,
+      facility_name: confirmedBooking.facility?.name ?? 'Sports Facility',
       status: confirmedBooking.status,
+      user_category: userCategory,
+      payment_mode: paymentMode,
       booking_date: formatDateOnly(confirmedBooking.booking_date),
       start_time: formatDateToTime(confirmedBooking.start_time),
       end_time: formatDateToTime(confirmedBooking.end_time),
       court_partition: confirmedBooking.court_partition,
-      qr_token: qrTokenHash,
-      qr_token_hash: qrTokenHash,
+      pricing_breakdown: bookingPricingBreakdown,
+      issued_at: createdPayment.created_at,
     },
     slot_booking: {
       ...confirmedBooking,
       booking_date_formatted: formatDateOnly(confirmedBooking.booking_date),
       start_time_formatted: formatDateToTime(confirmedBooking.start_time),
       end_time_formatted: formatDateToTime(confirmedBooking.end_time),
+      pricing_breakdown: bookingPricingBreakdown,
     },
   };
 }
 
 /**
- * Enriches a list of Payment records with their referenced Membership or SlotBooking metadata.
+ * Enriches a list of Payment records with their referenced Membership or SlotBooking metadata
+ * and structured pricing breakdown.
  */
-async function enrichPaymentRecords(payments: any[]) {
+async function enrichPaymentRecords(
+  payments: any[],
+  options: { userRoleOverride?: UserRole } = {}
+) {
   return Promise.all(
     payments.map(async (p) => {
+      const resolvedRole = options.userRoleOverride ?? p.user?.role ?? UserRole.PUBLIC;
+      const userCategory =
+        resolvedRole === UserRole.GOVT_PERSONNEL
+          ? UserCategory.GOVT_PERSONNEL
+          : UserCategory.PUBLIC;
+
+      const taxableSubtotal = Math.round(Number(p.base_amount ?? 0) * 100) / 100;
+      const gstAmount = Math.round(Number(p.gst_amount ?? 0) * 100) / 100;
+      const finalTotalPaid = Math.round(Number(p.total_amount ?? 0) * 100) / 100;
+
       if (p.reference_type === PaymentReferenceType.MEMBERSHIP) {
         const membership = await prisma.membership.findUnique({
           where: { id: p.reference_id },
           include: { facility: true },
         });
-        return {
+        const publicTariff =
+          membership && userCategory === UserCategory.GOVT_PERSONNEL
+            ? await prisma.tariff.findUnique({
+                where: {
+                  uq_tariff_facility_category_type: {
+                    facility_id: membership.facility_id,
+                    user_category: UserCategory.PUBLIC,
+                    booking_type: BookingType.MONTHLY_PASS,
+                  },
+                },
+              })
+            : null;
+        const months = Math.max(1, Number(membership?.duration_months ?? 1));
+        const stdBase =
+          userCategory === UserCategory.GOVT_PERSONNEL &&
+          publicTariff &&
+          Math.round(Number(publicTariff.base_price) * months * 100) / 100 > taxableSubtotal
+            ? Math.round(Number(publicTariff.base_price) * months * 100) / 100
+            : taxableSubtotal;
+        const conc = Math.max(0, Math.round((stdBase - taxableSubtotal) * 100) / 100);
+        const concPct = stdBase > 0 && conc > 0 ? Math.round((conc / stdBase) * 1000) / 10 : 0;
+        const gstRate =
+          taxableSubtotal > 0 ? Math.round((gstAmount / taxableSubtotal) * 1000) / 10 : 18;
+
+        const baseRecord: Record<string, any> = {
           ...p,
+          user_category: userCategory,
           pass_or_booking_code: membership?.pass_code ?? null,
           facility_code: membership?.facility?.code ?? null,
           facility_name: membership?.facility?.name ?? null,
-          qr_token_hash: membership?.qr_token_hash ?? null,
+          pricing_breakdown: {
+            base_fee: stdBase.toFixed(2),
+            concession_discount: conc.toFixed(2),
+            concession_percent: concPct,
+            taxable_subtotal: taxableSubtotal.toFixed(2),
+            gst_rate: gstRate,
+            gst_amount: gstAmount.toFixed(2),
+            final_total_paid: finalTotalPaid.toFixed(2),
+          },
           reference_details: membership
             ? {
                 pass_code: membership.pass_code,
@@ -546,22 +670,66 @@ async function enrichPaymentRecords(payments: any[]) {
                   ? formatDateOnly(membership.start_date)
                   : null,
                 end_date: membership.end_date ? formatDateOnly(membership.end_date) : null,
-                qr_token_hash: membership.qr_token_hash,
               }
             : null,
         };
+        return baseRecord;
       }
 
       const booking = await prisma.slotBooking.findUnique({
         where: { id: p.reference_id },
         include: { facility: true },
       });
-      return {
+      const bookingType =
+        booking?.court_partition === CourtPartition.FULL
+          ? BookingType.FULL_COURT
+          : BookingType.HALF_COURT;
+      const publicTariff =
+        booking && userCategory === UserCategory.GOVT_PERSONNEL
+          ? await prisma.tariff.findUnique({
+              where: {
+                uq_tariff_facility_category_type: {
+                  facility_id: booking.facility_id,
+                  user_category: UserCategory.PUBLIC,
+                  booking_type: bookingType,
+                },
+              },
+            })
+          : null;
+      const hours = booking
+        ? Math.max(
+            1,
+            (timeToMinutes(formatDateToTime(booking.end_time)) -
+              timeToMinutes(formatDateToTime(booking.start_time))) /
+              60
+          )
+        : 1;
+      const stdBase =
+        userCategory === UserCategory.GOVT_PERSONNEL &&
+        publicTariff &&
+        Math.round(Number(publicTariff.base_price) * hours * 100) / 100 > taxableSubtotal
+          ? Math.round(Number(publicTariff.base_price) * hours * 100) / 100
+          : taxableSubtotal;
+      const conc = Math.max(0, Math.round((stdBase - taxableSubtotal) * 100) / 100);
+      const concPct = stdBase > 0 && conc > 0 ? Math.round((conc / stdBase) * 1000) / 10 : 0;
+      const gstRate =
+        taxableSubtotal > 0 ? Math.round((gstAmount / taxableSubtotal) * 1000) / 10 : 18;
+
+      const baseRecord: Record<string, any> = {
         ...p,
+        user_category: userCategory,
         pass_or_booking_code: booking?.booking_code ?? null,
         facility_code: booking?.facility?.code ?? null,
         facility_name: booking?.facility?.name ?? null,
-        qr_token_hash: booking?.qr_token_hash ?? null,
+        pricing_breakdown: {
+          base_fee: stdBase.toFixed(2),
+          concession_discount: conc.toFixed(2),
+          concession_percent: concPct,
+          taxable_subtotal: taxableSubtotal.toFixed(2),
+          gst_rate: gstRate,
+          gst_amount: gstAmount.toFixed(2),
+          final_total_paid: finalTotalPaid.toFixed(2),
+        },
         reference_details: booking
           ? {
               booking_code: booking.booking_code,
@@ -570,10 +738,10 @@ async function enrichPaymentRecords(payments: any[]) {
               end_time: formatDateToTime(booking.end_time),
               court_partition: booking.court_partition,
               status: booking.status,
-              qr_token_hash: booking.qr_token_hash,
             }
           : null,
       };
+      return baseRecord;
     })
   );
 }
@@ -582,7 +750,7 @@ export class PaymentsService {
   /**
    * POST /api/payments/settle
    * Settles an eligible MEMBERSHIP (APPROVED_UNPAID) or SLOT_BOOKING (PENDING_PAYMENT)
-   * via ONLINE_GATEWAY inside a Prisma transaction and activates the signed QR pass.
+   * via ONLINE_GATEWAY inside a Prisma transaction and issues a structured booking confirmation receipt.
    */
   static async settleOnlinePayment(user: AuthenticatedUser, input: SettlePaymentInput) {
     const runTx = async (tx: DbTxClient) =>
@@ -602,7 +770,7 @@ export class PaymentsService {
   /**
    * POST /api/admin/payments/office-receipt (`STAFF_ADMIN` only)
    * Records an offline/treasury challan payment (`OFFICE_RECEIPT`), activates the corresponding
-   * Membership or Slot Booking with a signed `qr_token_hash`, and writes an immutable entry to `audit_logs`.
+   * Membership or Slot Booking, and writes an immutable entry to `audit_logs`.
    */
   static async recordOfficeReceipt(
     officer: AuthenticatedUser,
@@ -625,23 +793,30 @@ export class PaymentsService {
     await recordAuditLog({
       officerId: officer.id,
       actionCategory: 'OFFICE_RECEIPT_PAYMENT',
-      actionDescription: `Officer '${officer.username}' recorded OFFICE_RECEIPT '${result.payment.receipt_no}' (INR ${result.payment.total_amount}) and activated ${input.reference_type} '${result.qr_pass.pass_or_booking_code}'.`,
+      actionDescription: `Officer '${officer.username}' recorded OFFICE_RECEIPT '${result.payment.receipt_no}' (INR ${result.payment.total_amount}) for ${input.reference_type} '${result.receipt.booking_or_pass_code}'.`,
       targetRefId: result.payment.receipt_no,
       details: {
+        officer_username: officer.username,
+        officer_role: officer.role,
+        target_entity: 'PAYMENT',
         payment_id: result.payment.id,
         receipt_no: result.payment.receipt_no,
         payment_mode: PaymentMode.OFFICE_RECEIPT,
         reference_type: result.payment.reference_type,
         reference_id: result.payment.reference_id,
-        pass_or_booking_code: result.qr_pass.pass_or_booking_code,
-        facility_code: result.qr_pass.facility_code,
+        pass_or_booking_code: result.receipt.booking_or_pass_code,
+        facility_code: result.receipt.facility_code,
         user_id: result.payment.user_id,
         base_amount: String(result.payment.base_amount),
         gst_amount: String(result.payment.gst_amount),
         total_amount: String(result.payment.total_amount),
-        qr_token_hash: result.qr_pass.qr_token_hash,
         treasury_challan_no: input.treasury_challan_no ?? null,
         remarks: input.remarks ?? null,
+        reason:
+          input.remarks ??
+          (input.treasury_challan_no
+            ? `Treasury challan ${input.treasury_challan_no} verified and settled.`
+            : 'Offline office payment receipt recorded and settled.'),
       },
       ipAddress,
     });
@@ -668,7 +843,9 @@ export class PaymentsService {
       orderBy: { created_at: 'desc' },
     });
 
-    const enriched = await enrichPaymentRecords(payments);
+    const enriched = await enrichPaymentRecords(payments, {
+      userRoleOverride: user.role,
+    });
     return { payments: enriched };
   }
 

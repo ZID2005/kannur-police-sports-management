@@ -15,7 +15,7 @@ paymentsRouter.post(
   PaymentsController.settleOnlinePayment
 );
 
-// 2. View authenticated user's payment receipts & activated QR passes
+// 2. View authenticated user's payment receipts & pricing breakdowns
 paymentsRouter.get('/my', PaymentsController.getMyPayments);
 
 export default paymentsRouter;

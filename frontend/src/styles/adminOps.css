@@ -1,4 +1,7 @@
-/* Page-specific styles extracted from facilities_slot_management and payment_management_financial_reports */
+/* ------------------------------------------------------------------
+ * Kannur City Police — Admin Portal Command Surface & Motion System
+ * Cohesive typography, structured elevation, and smooth micro-motion.
+ * ------------------------------------------------------------------ */
 
 .admin-ops-page > :first-child {
   margin-top: 0 !important;
@@ -8,11 +11,510 @@
   margin-bottom: 0 !important;
 }
 
-.scrollbar-none::-webkit-scrollbar {
+.scrollbar-none::-webkit-scrollbar,
+.admin-scroll-hidden::-webkit-scrollbar {
   display: none;
 }
 
-.scrollbar-none {
+.scrollbar-none,
+.admin-scroll-hidden {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Smooth staggered entrance animations */
+@keyframes adminFadeRise {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes adminRowReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes adminBarGrow {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes adminAmbientFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-24px, 18px, 0) scale(1.06);
+  }
+}
+
+@keyframes adminBackdropFade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes adminDrawerSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes adminPanelExpand {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes adminDropdownPop {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes adminSheetDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes adminModalPopIn {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.008);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.admin-animate-enter {
+  opacity: 0;
+  animation: adminFadeRise 520ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.admin-row-enter {
+  opacity: 0;
+  animation: adminRowReveal 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.admin-bar-fill {
+  transform-origin: left center;
+  animation: adminBarGrow 760ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.admin-ambient-orb {
+  animation: adminAmbientFloat 22s ease-in-out infinite;
+}
+
+.admin-backdrop-enter {
+  animation: adminBackdropFade 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.admin-drawer-enter {
+  animation: adminDrawerSlideIn 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.admin-panel-expand {
+  animation: adminPanelExpand 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.admin-dropdown-enter {
+  transform-origin: top right;
+  animation: adminDropdownPop 210ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.admin-sheet-enter {
+  animation: adminSheetDrop 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.admin-modal-enter {
+  animation: adminModalPopIn 360ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Centered Floating Liquid Glass Modal & Controls */
+.admin-glass-modal {
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(244, 248, 255, 0.86) 52%,
+    rgba(250, 252, 255, 0.9) 100%
+  );
+  backdrop-filter: blur(38px) saturate(165%);
+  -webkit-backdrop-filter: blur(38px) saturate(165%);
+  border: 1px solid rgba(255, 255, 255, 0.94);
+  box-shadow:
+    0 32px 84px -18px rgba(15, 23, 42, 0.3),
+    0 10px 30px -10px rgba(22, 93, 245, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96);
+}
+
+.admin-glass-section {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 10px 26px -18px rgba(22, 93, 245, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.admin-glass-btn {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(241, 246, 255, 0.76) 100%
+  );
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(203, 213, 225, 0.72);
+  color: #0f172a;
+  box-shadow:
+    0 2px 8px -2px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96);
+  transition:
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 200ms ease;
+}
+
+.admin-glass-btn:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(235, 243, 255, 0.9) 100%
+  );
+  border-color: rgba(147, 197, 253, 0.85);
+  transform: translateY(-1px);
+  box-shadow:
+    0 8px 18px -8px rgba(22, 93, 245, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.admin-glass-btn:active {
+  transform: translateY(0) scale(0.975);
+}
+
+.admin-glass-btn-primary {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    rgba(36, 118, 255, 0.94) 0%,
+    rgba(16, 86, 232, 0.96) 55%,
+    rgba(0, 72, 194, 0.98) 100%
+  );
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+  box-shadow:
+    0 10px 26px -8px rgba(22, 93, 245, 0.56),
+    0 2px 6px -2px rgba(15, 23, 42, 0.16),
+    inset 0 1px 1px rgba(255, 255, 255, 0.45);
+  transition:
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 180ms ease,
+    box-shadow 200ms ease;
+}
+
+.admin-glass-btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(255, 255, 255, 0.04) 48%,
+    rgba(255, 255, 255, 0) 52%
+  );
+  pointer-events: none;
+}
+
+.admin-glass-btn-primary:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1.5px);
+  box-shadow:
+    0 16px 32px -10px rgba(22, 93, 245, 0.65),
+    0 4px 10px -2px rgba(15, 23, 42, 0.18),
+    inset 0 1px 1px rgba(255, 255, 255, 0.55);
+}
+
+.admin-glass-btn-primary:active {
+  transform: translateY(0) scale(0.975);
+}
+
+.admin-glass-chip {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(203, 213, 225, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  transition:
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 180ms ease;
+}
+
+.admin-glass-chip:hover {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(147, 197, 253, 0.85);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 14px -8px rgba(22, 93, 245, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.admin-glass-chip:active {
+  transform: scale(0.97);
+}
+
+.admin-modal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-modal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-modal-scroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.38);
+  border-radius: 9999px;
+}
+
+.admin-modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.55);
+}
+
+.admin-nav-pill-glide {
+  transition:
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 180ms ease;
+}
+
+/* Interactive Venue & Slot Card Micro-Motion */
+.admin-facility-card {
+  transition:
+    transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 200ms ease,
+    background-color 200ms ease;
+}
+
+.admin-facility-card:hover {
+  transform: translateY(-2px);
+}
+
+.admin-slot-card {
+  transition:
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.admin-slot-card:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 24px -16px rgba(15, 23, 42, 0.2),
+    0 2px 6px -2px rgba(15, 23, 42, 0.05);
+}
+
+/* Elevated Executive Card Primitive */
+.admin-surface-card {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 12px 32px -18px rgba(15, 23, 42, 0.11);
+  transition:
+    transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 220ms ease;
+}
+
+.admin-kpi-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 10px 26px -16px rgba(15, 23, 42, 0.1);
+  transition:
+    transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 220ms ease;
+}
+
+.admin-kpi-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(22, 93, 245, 0.28);
+  box-shadow:
+    0 18px 36px -18px rgba(22, 93, 245, 0.2),
+    0 4px 12px -4px rgba(15, 23, 42, 0.06);
+}
+
+.admin-kpi-card:hover .admin-kpi-icon {
+  transform: scale(1.06);
+}
+
+.admin-kpi-icon {
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Action Buttons */
+.admin-btn-secondary {
+  height: 42px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #dbe2ec;
+  color: #0f172a;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition:
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 180ms ease;
+}
+
+.admin-btn-secondary:hover {
+  background: #f8fafc;
+  border-color: #b8c5d9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px -8px rgba(15, 23, 42, 0.18);
+}
+
+.admin-btn-secondary:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.admin-btn-primary {
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #165df5 0%, #0053cd 100%);
+  border: 1px solid rgba(0, 64, 161, 0.35);
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.12),
+    0 8px 20px -6px rgba(22, 93, 245, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition:
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 160ms ease,
+    box-shadow 180ms ease;
+}
+
+.admin-btn-primary:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow:
+    0 2px 4px rgba(15, 23, 42, 0.14),
+    0 12px 24px -8px rgba(22, 93, 245, 0.56),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.admin-btn-primary:active {
+  transform: translateY(0) scale(0.985);
+}
+
+/* Table row interactive polish */
+.admin-table-row {
+  transition: background-color 160ms ease;
+}
+
+.admin-table-row:hover {
+  background-color: rgba(239, 246, 255, 0.65);
+}
+
+/* Signup item interactive polish */
+.admin-signup-item {
+  transition:
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 200ms ease;
+}
+
+.admin-signup-item:hover {
+  background-color: #ffffff;
+  border-color: rgba(22, 93, 245, 0.24);
+  transform: translateX(2px);
+  box-shadow: 0 8px 20px -14px rgba(22, 93, 245, 0.32);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-animate-enter,
+  .admin-row-enter,
+  .admin-bar-fill,
+  .admin-ambient-orb,
+  .admin-backdrop-enter,
+  .admin-drawer-enter,
+  .admin-panel-expand,
+  .admin-dropdown-enter,
+  .admin-sheet-enter,
+  .admin-modal-enter {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .admin-nav-pill-glide {
+    transition: none !important;
+  }
 }

@@ -1,353 +1,458 @@
-import { useState } from 'react';
-import { MaterialIcon } from '@/components/ui/MaterialIcon';
 import {
-  membershipCategories,
-  membershipFacilitySummary,
-  membershipMediaAssets,
-  membershipPrimaryDocumentSample,
-} from '@/data/mockData';
-import type { MembershipFormData, MembershipWizardStep } from '@/types/membership';
+  ArrowLeft,
+  ArrowRight,
+  Building2,
+  CalendarDays,
+  Check,
+  CreditCard,
+  Edit3,
+  Loader2,
+  Lock,
+  MapPin,
+  ShieldCheck,
+  User,
+} from 'lucide-react';
+import type { AuthUser } from '@/api/client';
+import { useLanguage } from '@/context/LanguageContext';
+import { membershipGenderOptions, membershipSessionOptions } from '@/data/mockData';
+import type {
+  MembershipOnboardingFormData,
+  MembershipOnboardingStep,
+  MembershipPricingSummary,
+} from '@/types/membership';
 
 interface MembershipReviewStepProps {
-  formData: MembershipFormData;
-  onUpdateField: <K extends keyof MembershipFormData>(
-    key: K,
-    value: MembershipFormData[K],
-  ) => void;
-  onJumpToStep: (step: MembershipWizardStep) => void;
-  onNotify: (message: string) => void;
+  user: AuthUser | null;
+  trackName: string;
+  formData: MembershipOnboardingFormData;
+  pricing: MembershipPricingSummary;
+  isGovt: boolean;
+  isTrackUnavailable: boolean;
+  submitting: boolean;
+  errorMessage: string | null;
+  declarationError?: string;
+  onToggleDeclaration: (accepted: boolean) => void;
+  onJumpToStep: (step: MembershipOnboardingStep) => void;
   onBack: () => void;
-  onSubmitApplication: () => Promise<boolean> | void;
+  onActivate: () => void;
+}
+
+function formatInr(amount: number): string {
+  return `₹${amount.toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+function formatDobDisplay(isoDate: string): string {
+  if (!isoDate) return '—';
+  const dt = new Date(`${isoDate.slice(0, 10)}T00:00:00Z`);
+  if (Number.isNaN(dt.getTime())) return isoDate;
+  return dt.toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
 }
 
 export function MembershipReviewStep({
+  user,
+  trackName,
   formData,
-  onUpdateField,
+  pricing,
+  isGovt,
+  isTrackUnavailable,
+  submitting,
+  errorMessage,
+  declarationError,
+  onToggleDeclaration,
   onJumpToStep,
-  onNotify,
   onBack,
-  onSubmitApplication,
+  onActivate,
 }: MembershipReviewStepProps) {
-  const [submittingState, setSubmittingState] = useState<'idle' | 'submitting' | 'submitted'>(
-    'idle',
-  );
+  const { lang, t } = useLanguage();
 
-  const categoryMeta =
-    membershipCategories.find((c) => c.id === formData.category) ?? membershipCategories[1];
-  const isGovernment = formData.category !== 'public';
-  const attachedDoc = formData.primaryDocument ?? membershipPrimaryDocumentSample;
+  const genderMeta = membershipGenderOptions.find((g) => g.value === formData.gender);
+  const sessionMeta = membershipSessionOptions.find((s) => s.id === formData.sessionWindow);
 
-  const handleSubmit = async () => {
-    if (!formData.declarationAccepted || submittingState !== 'idle') return;
-    setSubmittingState('submitting');
-    try {
-      const result = await onSubmitApplication();
-      if (result === false) {
-        setSubmittingState('idle');
-        return;
-      }
-      setSubmittingState('submitted');
-    } catch {
-      setSubmittingState('idle');
-    }
-  };
+  const formattedPresentAddress = [
+    formData.presentAddress.trim(),
+    formData.cityLocality.trim(),
+    formData.pinCode.trim() ? `PIN ${formData.pinCode.trim()}` : '',
+  ]
+    .filter(Boolean)
+    .join(', ');
 
   return (
-    <section className="lg:col-span-8 flex flex-col gap-6">
+    <section className="lg:col-span-8 w-full flex flex-col gap-5 membership-step-enter">
       {/* Header */}
-      <div className="flex flex-col mb-2">
-        <h1 className="font-title-portal text-[28px] md:text-title-portal font-bold text-on-surface tracking-tight">
-          Review and submit
+      <div className="flex flex-col gap-1.5">
+        <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-[#165DF5]">
+          {t('Step 3 of 3 • Review & Instant Activation', 'ഘട്ടം 3 / 3 • പരിശോധനയും സജീവമാക്കലും')}
+        </p>
+        <h1 className="font-display text-[28px] sm:text-[34px] font-extrabold text-[#0F172A] tracking-[-0.03em] leading-[1.1]">
+          {t('Review & Activate Membership', 'വിവരങ്ങൾ പരിശോധിച്ച് സജീവമാക്കുക')}
         </h1>
-        <p className="font-body-default text-[15px] md:text-body-default text-tertiary mt-1.5">
-          Please verify all details carefully before submitting your application.
+        <p className="text-[14px] text-[#475569]">
+          {t(
+            'Verify your member details, chosen track plan, and official GST breakdown below. Your membership becomes ACTIVE immediately upon checkout.',
+            'നിങ്ങളുടെ വിവരങ്ങളും പ്ലാനും GST ഫീസും പരിശോധിക്കുക. പണമടച്ചാലുടൻ അംഗത്വം സജീവമാകും.',
+          )}
         </p>
       </div>
 
-      {/* Card 1: Personal & Category details */}
-      <article className="rounded-[28px] md:rounded-[36px] bg-surface-container-lowest/60 backdrop-blur-[40px] p-5 md:p-8 shadow-[0_20px_40px_rgba(0,83,205,0.08),inset_0_1px_0_0_rgba(255,255,255,0.9)] transition-all hover:shadow-[0_24px_48px_rgba(0,83,205,0.11)]">
-        <div className="flex items-center justify-between pb-6 mb-6 bg-surface-container-low/40 px-4 py-3 rounded-2xl">
+      {/* Card 1: Member Demographics & Personal Details */}
+      <article className="rounded-[24px] bg-white/90 backdrop-blur-2xl border border-slate-200/85 p-5 sm:p-6 shadow-[0_14px_36px_-18px_rgba(15,23,42,0.1)]">
+        <div className="flex items-center justify-between gap-2 pb-4 mb-4 border-b border-slate-100">
           <div className="flex items-center gap-2.5">
-            <MaterialIcon name="badge" className="text-primary text-[22px]" />
-            <h2 className="font-headline-card text-[18px] md:text-headline-card font-semibold text-on-surface">
-              Personal &amp; Category details
+            <span className="w-8 h-8 rounded-xl bg-[#165DF5]/10 text-[#165DF5] flex items-center justify-center">
+              <User className="w-4 h-4" />
+            </span>
+            <h2 className="font-display text-[17px] font-bold text-[#0F172A]">
+              {t('Member Profile & Demographics', 'അംഗ പ്രൊഫൈലും വ്യക്തിഗത വിവരങ്ങളും')}
             </h2>
           </div>
           <button
             type="button"
-            onClick={() => onJumpToStep(2)}
-            className="font-label-primary text-label-primary font-semibold text-primary hover:text-primary-container transition-colors flex items-center gap-1 group"
+            onClick={() => onJumpToStep(1)}
+            className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#165DF5] hover:text-[#0F50DC]"
           >
-            <span>Edit</span>
-            <MaterialIcon
-              name="edit"
-              className="text-[16px] transition-transform group-hover:translate-x-0.5"
-            />
+            <Edit3 className="w-3.5 h-3.5" />
+            <span>{t('Edit', 'തിരുത്തുക')}</span>
           </button>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-8 items-start">
-          {/* Captured Photo */}
-          <div className="flex flex-col items-center flex-shrink-0">
-            <div className="relative w-24 h-24 rounded-2xl overflow-hidden shadow-[0_8px_20px_rgba(0,83,205,0.12)] bg-surface-container">
-              <img
-                className="w-full h-full object-cover"
-                alt={membershipMediaAssets.reviewPortraitStep4Alt}
-                src={membershipMediaAssets.reviewPortraitStep4Url}
-              />
-            </div>
-            <div className="mt-2.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-lowest/90 shadow-[0_2px_6px_rgba(0,0,0,0.06)]">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-caption text-caption text-on-surface font-semibold">
-                Live verified
-              </span>
-            </div>
-          </div>
-
-          {/* Key-value Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-6 w-full">
-            <div className="flex flex-col">
-              <span className="font-label-meta text-label-meta text-tertiary">Category</span>
-              <span className="font-body-medium text-body-medium text-on-surface mt-0.5 font-semibold">
-                {categoryMeta.reviewLabel}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-label-meta text-label-meta text-tertiary">Full name</span>
-              <span className="font-body-medium text-body-medium text-on-surface mt-0.5 font-semibold">
-                {formData.fullName}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-label-meta text-label-meta text-tertiary">Date of birth</span>
-              <span className="font-body-default text-body-default text-on-surface mt-0.5">
-                {formData.dob} ({membershipFacilitySummary.ageNote})
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-label-meta text-label-meta text-tertiary">Gender</span>
-              <span className="font-body-default text-body-default text-on-surface mt-0.5">
-                {formData.gender}
-              </span>
-            </div>
-            <div className="flex flex-col md:col-span-2">
-              <span className="font-label-meta text-label-meta text-tertiary">
-                Father&apos;s name
-              </span>
-              <span className="font-body-default text-body-default text-on-surface mt-0.5">
-                {formData.parentName || 'Not provided'}
-              </span>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      {/* Card 2: Address & Service Information */}
-      <article className="rounded-[28px] md:rounded-[36px] bg-surface-container-lowest/60 backdrop-blur-[40px] p-5 md:p-8 shadow-[0_20px_40px_rgba(0,83,205,0.08),inset_0_1px_0_0_rgba(255,255,255,0.9)] transition-all hover:shadow-[0_24px_48px_rgba(0,83,205,0.11)]">
-        <div className="flex items-center justify-between pb-6 mb-6 bg-surface-container-low/40 px-4 py-3 rounded-2xl">
-          <div className="flex items-center gap-2.5">
-            <MaterialIcon name="domain" className="text-primary text-[22px]" />
-            <h2 className="font-headline-card text-[18px] md:text-headline-card font-semibold text-on-surface">
-              Address &amp; Service Information
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={() => onJumpToStep(2)}
-            className="font-label-primary text-label-primary font-semibold text-primary hover:text-primary-container transition-colors flex items-center gap-1 group"
-          >
-            <span>Edit</span>
-            <MaterialIcon
-              name="edit"
-              className="text-[16px] transition-transform group-hover:translate-x-0.5"
-            />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-8">
-          <div className="flex flex-col">
-            <span className="font-label-meta text-label-meta text-tertiary">Present address</span>
-            <span className="font-body-default text-body-default text-on-surface mt-0.5 leading-relaxed">
-              {formData.presentAddress}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[13.5px]">
+          <div>
+            <span className="block text-[11.5px] font-bold uppercase tracking-[0.06em] text-[#64748B]">
+              {t('Full Name', 'പൂർണ്ണനാമം')}
+            </span>
+            <span className="font-semibold text-[#0F172A] mt-0.5 block">
+              {user?.full_name ?? t('Sign in required', 'സൈൻ ഇൻ ആവശ്യമാണ്')}
             </span>
           </div>
-          <div className="flex flex-col">
-            <span className="font-label-meta text-label-meta text-tertiary">Permanent address</span>
-            <span className="font-body-default text-body-default text-on-surface mt-0.5 leading-relaxed">
-              {formData.sameAsPresent ? 'Same as present address' : formData.permanentAddress}
+
+          <div>
+            <span className="block text-[11.5px] font-bold uppercase tracking-[0.06em] text-[#64748B]">
+              {t('Account Category', 'അക്കൗണ്ട് വിഭാഗം')}
+            </span>
+            <span className="inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-full text-[11.5px] font-bold bg-slate-100 text-[#334155]">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#165DF5]" />
+              {isGovt ? t('Govt / Police', 'സർക്കാർ / പോലീസ്') : t('General Public', 'പൊതുജനം')}
             </span>
           </div>
-          {isGovernment && (
-            <>
-              <div className="flex flex-col">
-                <span className="font-label-meta text-label-meta text-tertiary">Designation</span>
-                <span className="font-body-medium text-body-medium text-on-surface mt-0.5 font-semibold">
-                  {formData.designation}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-label-meta text-label-meta text-tertiary">
-                  Office address
-                </span>
-                <span className="font-body-default text-body-default text-on-surface mt-0.5 leading-relaxed">
-                  {formData.officeAddress}
-                </span>
-              </div>
-            </>
+
+          <div>
+            <span className="block text-[11.5px] font-bold uppercase tracking-[0.06em] text-[#64748B]">
+              {t('Gender', 'ലിംഗം')}
+            </span>
+            <span className="font-semibold text-[#0F172A] mt-0.5 block">
+              {genderMeta ? (lang === 'ML' ? genderMeta.labelMl : genderMeta.label) : '—'}
+            </span>
+          </div>
+
+          <div>
+            <span className="block text-[11.5px] font-bold uppercase tracking-[0.06em] text-[#64748B]">
+              {t('Date of Birth', 'ജനനത്തീയതി')}
+            </span>
+            <span className="font-semibold text-[#0F172A] mt-0.5 block">
+              {formatDobDisplay(formData.dateOfBirth)}
+            </span>
+          </div>
+
+          {formData.parentName.trim() && (
+            <div className="sm:col-span-2">
+              <span className="block text-[11.5px] font-bold uppercase tracking-[0.06em] text-[#64748B]">
+                {t("Father's or Mother's Name", 'പിതാവിന്റെ / മാതാവിന്റെ പേര്')}
+              </span>
+              <span className="font-medium text-[#0F172A] mt-0.5 block">
+                {formData.parentName.trim()}
+              </span>
+            </div>
           )}
         </div>
       </article>
 
-      {/* Card 3: Facility Usage & Verified Documents */}
-      <article className="rounded-[28px] md:rounded-[36px] bg-surface-container-lowest/60 backdrop-blur-[40px] p-5 md:p-8 shadow-[0_20px_40px_rgba(0,83,205,0.08),inset_0_1px_0_0_rgba(255,255,255,0.9)] transition-all hover:shadow-[0_24px_48px_rgba(0,83,205,0.11)]">
-        <div className="flex items-center justify-between pb-6 mb-6 bg-surface-container-low/40 px-4 py-3 rounded-2xl">
+      {/* Card 2: Address & Track Profile */}
+      <article className="rounded-[24px] bg-white/90 backdrop-blur-2xl border border-slate-200/85 p-5 sm:p-6 shadow-[0_14px_36px_-18px_rgba(15,23,42,0.1)]">
+        <div className="flex items-center justify-between gap-2 pb-4 mb-4 border-b border-slate-100">
           <div className="flex items-center gap-2.5">
-            <MaterialIcon name="sports" className="text-primary text-[22px]" />
-            <h2 className="font-headline-card text-[18px] md:text-headline-card font-semibold text-on-surface">
-              Facility Usage &amp; Verified Documents
+            <span className="w-8 h-8 rounded-xl bg-[#165DF5]/10 text-[#165DF5] flex items-center justify-center">
+              <MapPin className="w-4 h-4" />
+            </span>
+            <h2 className="font-display text-[17px] font-bold text-[#0F172A]">
+              {t('Residential Address & Track Profile', 'താമസ വിലാസവും ട്രാക്ക് വിവരങ്ങളും')}
             </h2>
           </div>
           <button
             type="button"
-            onClick={() => onJumpToStep(3)}
-            className="font-label-primary text-label-primary font-semibold text-primary hover:text-primary-container transition-colors flex items-center gap-1 group"
+            onClick={() => onJumpToStep(1)}
+            className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#165DF5] hover:text-[#0F50DC]"
           >
-            <span>Edit</span>
-            <MaterialIcon
-              name="edit"
-              className="text-[16px] transition-transform group-hover:translate-x-0.5"
-            />
+            <Edit3 className="w-3.5 h-3.5" />
+            <span>{t('Edit', 'തിരുത്തുക')}</span>
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-8 mb-6">
-          <div className="flex flex-col">
-            <span className="font-label-meta text-label-meta text-tertiary">Facility</span>
-            <div className="inline-flex items-center gap-2 mt-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-primary" />
-              <span className="font-body-medium text-body-medium text-on-surface font-semibold">
-                {membershipFacilitySummary.facilityName} (Monthly)
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[13.5px]">
+          <div>
+            <span className="block text-[11.5px] font-bold uppercase tracking-[0.06em] text-[#64748B]">
+              {t('Present Address', 'താമസ വിലാസം')}
+            </span>
+            <span className="text-[#0F172A] mt-0.5 block leading-relaxed">
+              {formattedPresentAddress || '—'}
+            </span>
+          </div>
+
+          <div>
+            <span className="block text-[11.5px] font-bold uppercase tracking-[0.06em] text-[#64748B]">
+              {t('Permanent Address', 'സ്ഥിര വിലാസം')}
+            </span>
+            <span className="text-[#0F172A] mt-0.5 block leading-relaxed">
+              {formData.sameAsPresent
+                ? t('Same as present address', 'താമസ വിലാസത്തിന് സമാനം')
+                : formData.permanentAddress.trim() || '—'}
+            </span>
+          </div>
+
+          {isGovt && (
+            <>
+              <div>
+                <span className="flex items-center gap-1 text-[11.5px] font-bold uppercase tracking-[0.06em] text-[#64748B]">
+                  <Building2 className="w-3 h-3 text-[#165DF5]" />
+                  {t('Designation / Rank', 'തസ്തിക')}
+                </span>
+                <span className="font-semibold text-[#0F172A] mt-0.5 block">
+                  {formData.designation.trim() || '—'}
+                </span>
+              </div>
+
+              <div>
+                <span className="block text-[11.5px] font-bold uppercase tracking-[0.06em] text-[#64748B]">
+                  {t('Office / Station Address', 'ഓഫീസ് വിലാസം')}
+                </span>
+                <span className="text-[#0F172A] mt-0.5 block leading-relaxed">
+                  {formData.officeAddress.trim() || '—'}
+                </span>
+              </div>
+            </>
+          )}
+
+          <div>
+            <span className="block text-[11.5px] font-bold uppercase tracking-[0.06em] text-[#64748B]">
+              {t('Purpose of Track Use', 'ട്രാക്ക് ഉപയോഗ ലക്ഷ്യം')}
+            </span>
+            <span className="text-[#0F172A] mt-0.5 block">{formData.trackPurpose.trim() || '—'}</span>
+          </div>
+
+          <div>
+            <span className="block text-[11.5px] font-bold uppercase tracking-[0.06em] text-[#64748B]">
+              {t('Registered Sportsperson', 'രജിസ്റ്റർ ചെയ്ത കായികതാരം')}
+            </span>
+            <span className="text-[#0F172A] mt-0.5 block">
+              {formData.isRegisteredSportsperson
+                ? `${t('Yes', 'അതെ')} — ${formData.sportDiscipline.trim()}${
+                    formData.associationDetails.trim()
+                      ? ` (${formData.associationDetails.trim()})`
+                      : ''
+                  }`
+                : t('No', 'ഇല്ല')}
+            </span>
+          </div>
+        </div>
+      </article>
+
+      {/* Card 3: Chosen Plan & Official GST Breakdown */}
+      <article className="rounded-[24px] bg-white/95 backdrop-blur-2xl border border-slate-200/85 p-5 sm:p-6 shadow-[0_14px_36px_-18px_rgba(15,23,42,0.1)] flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-2 pb-4 border-b border-slate-100">
+          <div className="flex items-center gap-2.5">
+            <span className="w-8 h-8 rounded-xl bg-[#165DF5]/10 text-[#165DF5] flex items-center justify-center">
+              <CalendarDays className="w-4 h-4" />
+            </span>
+            <div>
+              <h2 className="font-display text-[17px] font-bold text-[#0F172A]">
+                {t('Selected Plan & GST Fee Summary', 'തിരഞ്ഞെടുത്ത പ്ലാനും GST ഫീസും')}
+              </h2>
+              <p className="text-[12px] text-[#64748B]">{trackName}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => onJumpToStep(2)}
+            className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#165DF5] hover:text-[#0F50DC]"
+          >
+            <Edit3 className="w-3.5 h-3.5" />
+            <span>{t('Change Plan', 'പ്ലാൻ മാറ്റുക')}</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[13.5px]">
+          <div className="rounded-[14px] bg-slate-50 border border-slate-200/75 px-4 py-3">
+            <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-[#64748B]">
+              {t('Duration', 'കാലാവധി')}
+            </span>
+            <p className="font-display font-bold text-[#0F172A] mt-0.5">
+              {formData.selectedMonths}{' '}
+              {formData.selectedMonths === 1
+                ? t('Month (30 Days)', 'മാസം (30 ദിവസം)')
+                : t(`Months (${formData.selectedMonths * 30} Days)`, `മാസം (${formData.selectedMonths * 30} ദിവസം)`)}
+            </p>
+          </div>
+          <div className="rounded-[14px] bg-slate-50 border border-slate-200/75 px-4 py-3">
+            <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-[#64748B]">
+              {t('Daily Session Window', 'പ്രതിദിന സെഷൻ')}
+            </span>
+            <p className="font-display font-bold text-[#0F172A] mt-0.5">
+              {sessionMeta ? (lang === 'ML' ? sessionMeta.labelMl : sessionMeta.label) : formData.sessionWindow}{' '}
+              <span className="text-[12px] font-normal text-[#64748B]">
+                ({sessionMeta?.hoursLabel})
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-[16px] bg-slate-50/90 border border-slate-200/75 p-4 flex flex-col gap-2 text-[13.5px]">
+          <div className="flex items-center justify-between text-[#475569]">
+            <span>{t('Base Fee', 'അടിസ്ഥാന ഫീസ്')}</span>
+            <span className="font-semibold text-[#0F172A] tabular-nums">
+              {formatInr(pricing.baseFee)}
+            </span>
+          </div>
+
+          {(pricing.concessionDiscount > 0 || isGovt) && (
+            <div className="flex items-center justify-between text-emerald-700">
+              <span className="font-medium">
+                {t('Govt / Police Concession', 'സർക്കാർ / പോലീസ് ഇളവ്')} (
+                {pricing.concessionPercent}%)
+              </span>
+              <span className="font-semibold tabular-nums">
+                −{formatInr(pricing.concessionDiscount)}
               </span>
             </div>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-label-meta text-label-meta text-tertiary">Purpose</span>
-            <span className="font-body-default text-body-default text-on-surface mt-0.5">
-              {formData.purpose}
-            </span>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-label-meta text-label-meta text-tertiary">
-              Registered sportsperson
-            </span>
-            <span className="font-body-default text-body-default text-on-surface mt-0.5">
-              {formData.isSportsperson
-                ? `Yes — ${formData.sportField}${
-                    formData.associationDetails ? ` (${formData.associationDetails})` : ''
-                  }`
-                : 'No'}
-            </span>
-          </div>
-        </div>
+          )}
 
-        {/* Document Preview Tray */}
-        <div className="flex flex-col">
-          <span className="font-label-meta text-label-meta text-tertiary mb-2">
-            Attached document
-          </span>
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-surface-container-low/70 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.7)]">
-            <div className="flex items-center gap-3.5 min-w-0">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
-                <MaterialIcon name="description" className="text-[26px]" />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="font-label-primary text-label-primary font-semibold text-on-surface truncate">
-                  {attachedDoc.fileName}
-                </span>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="font-caption text-caption text-tertiary">
-                    {attachedDoc.fileSize}
-                  </span>
-                  <span className="w-1 h-1 rounded-full bg-outline-variant" />
-                  <span className="inline-flex items-center gap-1 font-caption text-caption font-medium text-emerald-600">
-                    <MaterialIcon name="check_circle" className="text-[13px]" />
-                    {attachedDoc.verifiedLabel}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                onNotify(`Previewing verified document: ${attachedDoc.fileName}`)
-              }
-              className="px-4 py-2 rounded-xl bg-surface-container-lowest/80 text-primary font-label-meta text-label-meta font-semibold shadow-[0_2px_6px_rgba(0,83,205,0.06)] hover:bg-surface-container-lowest transition-colors flex items-center gap-1 flex-shrink-0"
-            >
-              <MaterialIcon name="visibility" className="text-[16px]" />
-              <span>View</span>
-            </button>
+          <div className="flex items-center justify-between text-[#475569]">
+            <span>{t('Taxable Subtotal', 'നികുതി ബാധകമായ തുക')}</span>
+            <span className="font-semibold text-[#0F172A] tabular-nums">
+              {formatInr(pricing.taxableSubtotal)}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between text-[#475569]">
+            <span>GST ({pricing.gstPercent}%)</span>
+            <span className="font-semibold text-[#0F172A] tabular-nums">
+              {formatInr(pricing.gstAmount)}
+            </span>
+          </div>
+
+          <div className="mt-1 pt-3 border-t border-dashed border-slate-300 flex items-center justify-between">
+            <span className="font-bold text-[#0F172A]">
+              {t('Total Payable Now', 'ഇപ്പോൾ അടയ്‌ക്കേണ്ട തുക')}
+            </span>
+            <span className="font-display text-[24px] font-extrabold text-[#165DF5] tabular-nums">
+              {formatInr(pricing.totalPayable)}
+            </span>
           </div>
         </div>
       </article>
 
-      {/* Card 4: Declaration & Consent */}
-      <article className="rounded-[28px] md:rounded-[36px] bg-surface-container-lowest/60 backdrop-blur-[40px] p-5 md:p-8 shadow-[0_20px_40px_rgba(0,83,205,0.08),inset_0_1px_0_0_rgba(255,255,255,0.9)]">
-        <div className="flex items-start gap-4">
-          <div className="pt-0.5 flex-shrink-0">
+      {/* Card 4: Member Declaration & Instant Activation Consent */}
+      <article
+        className={`rounded-[22px] bg-white/90 border p-5 shadow-sm ${
+          declarationError ? 'border-red-300 bg-red-50/40' : 'border-slate-200/85'
+        }`}
+      >
+        <label className="flex items-start gap-3 cursor-pointer select-none">
+          <span className="relative flex items-center justify-center mt-0.5 shrink-0">
             <input
-              id="declaration"
+              id="onboard-declaration"
               type="checkbox"
               checked={formData.declarationAccepted}
-              onChange={(e) => onUpdateField('declarationAccepted', e.target.checked)}
-              className="w-[22px] h-[22px] rounded-lg accent-primary cursor-pointer transition-transform active:scale-95"
+              onChange={(e) => onToggleDeclaration(e.target.checked)}
+              className="peer sr-only"
             />
-          </div>
-          <label className="flex flex-col cursor-pointer select-none" htmlFor="declaration">
-            <span className="font-label-primary text-label-primary text-on-surface font-medium leading-relaxed">
-              I hereby declare that all information provided is true and accurate. I have read and
-              agree to the Kannur City Police sports facility rules, code of conduct, and terms of
-              membership.
+            <span className="w-[20px] h-[20px] rounded-[6px] border border-slate-300 bg-white peer-checked:bg-[#165DF5] peer-checked:border-[#165DF5] transition-all flex items-center justify-center">
+              <Check
+                className={`w-3.5 h-3.5 text-white transition-transform ${
+                  formData.declarationAccepted ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
+                }`}
+                strokeWidth={3}
+              />
             </span>
-            <span className="font-caption text-caption text-tertiary mt-2">
-              By submitting, your dossier will be routed to the District Police Office Sports
-              Council for final approval.
+          </span>
+          <span className="text-[13.5px] text-[#334155] leading-relaxed">
+            <strong className="text-[#0F172A]">
+              {t(
+                'I confirm that the onboarding details provided above are accurate and agree to the Kannur City Police Sports Complex track rules and code of conduct.',
+                'മുകളിൽ നൽകിയ വിവരങ്ങൾ ശരിയാണെന്നും കണ്ണൂർ സിറ്റി പോലീസ് സ്പോർട്സ് കോംപ്ലക്സ് നിയമങ്ങൾ പാലിക്കാമെന്നും ഞാൻ സ്ഥിരീകരിക്കുന്നു.',
+              )}
+            </strong>
+            <span className="block text-[12px] text-[#64748B] mt-1">
+              {t(
+                'Completing checkout activates your Synthetic Track membership immediately and issues an official printable GST fee receipt.',
+                'പണമടയ്ക്കൽ പൂർത്തിയാക്കുന്നതോടെ അംഗത്വം ഉടൻ സജീവമാകുകയും പ്രിന്റ് ചെയ്യാവുന്ന GST രസീത് ലഭിക്കുകയും ചെയ്യും.',
+              )}
             </span>
-          </label>
-        </div>
+          </span>
+        </label>
+        {declarationError && (
+          <p className="text-[12px] font-semibold text-[#DC2626] mt-2 pl-8">{declarationError}</p>
+        )}
       </article>
 
-      {/* Bottom Action Row */}
-      <div className="flex items-center justify-between gap-4 pt-4">
+      {errorMessage && (
+        <div
+          role="alert"
+          className="rounded-[16px] bg-rose-50 border border-rose-200 px-4 py-3 text-[13px] font-medium text-rose-800"
+        >
+          {errorMessage}
+        </div>
+      )}
+
+      {/* Action Footer */}
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
         <button
           type="button"
           onClick={onBack}
-          className="h-14 px-8 rounded-[22px] bg-surface-container-lowest/60 backdrop-blur-xl text-primary font-body-medium text-body-medium font-semibold shadow-[0_4px_16px_rgba(0,83,205,0.06)] hover:bg-surface-container-lowest/90 hover:-translate-y-0.5 active:scale-[0.985] transition-all flex items-center justify-center"
+          disabled={submitting}
+          className="btn-glass !h-12 px-6 text-[14px] inline-flex items-center justify-center gap-2"
         >
-          Back
+          <ArrowLeft className="w-4 h-4" />
+          <span>{t('Back to Plan', 'പ്ലാനിലേക്ക്')}</span>
         </button>
 
         <button
           type="button"
-          disabled={!formData.declarationAccepted || submittingState !== 'idle'}
-          onClick={handleSubmit}
-          className={`h-14 px-10 rounded-[22px] text-on-primary font-body-medium text-body-medium font-semibold shadow-[0_8px_24px_rgba(0,83,205,0.28),inset_0_1px_1px_rgba(255,255,255,0.25)] transition-all flex items-center justify-center flex-1 sm:flex-none ${
-            submittingState === 'submitted'
-              ? 'bg-emerald-600'
-              : 'bg-primary hover:shadow-[0_12px_28px_rgba(0,83,205,0.35)] hover:-translate-y-0.5 active:scale-[0.985]'
-          } ${!formData.declarationAccepted ? 'opacity-50 pointer-events-none' : ''}`}
+          disabled={submitting || isTrackUnavailable}
+          onClick={onActivate}
+          className={`btn-primary !h-12 px-7 text-[14.5px] inline-flex items-center justify-center gap-2 ${
+            submitting || isTrackUnavailable ? 'opacity-55 cursor-not-allowed' : ''
+          }`}
         >
-          {submittingState === 'submitting' ? (
+          {submitting ? (
             <>
-              <MaterialIcon name="progress_activity" className="text-[20px] animate-spin mr-2" />
-              <span>Submitting dossier...</span>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>{t('Activating Membership...', 'അംഗത്വം സജീവമാക്കുന്നു...')}</span>
             </>
-          ) : submittingState === 'submitted' ? (
+          ) : isTrackUnavailable ? (
             <>
-              <MaterialIcon name="check_circle" className="text-[20px] mr-2" />
-              <span>Application submitted</span>
+              <Lock className="w-4 h-4" />
+              <span>{t('Enrollment Temporarily Paused', 'രജിസ്ട്രേഷൻ താൽക്കാലികമായി നിർത്തി')}</span>
+            </>
+          ) : user ? (
+            <>
+              <CreditCard className="w-4 h-4" />
+              <span className="tabular-nums">
+                {t('Activate & Pay', 'സജീവമാക്കി പണമടയ്ക്കുക')} ({formatInr(pricing.totalPayable)})
+              </span>
+              <ArrowRight className="w-4 h-4" />
             </>
           ) : (
-            <span>Submit application</span>
+            <>
+              <span>{t('Sign in to Activate', 'സൈൻ ഇൻ ചെയ്ത് സജീവമാക്കുക')}</span>
+              <ArrowRight className="w-4 h-4" />
+            </>
           )}
         </button>
       </div>

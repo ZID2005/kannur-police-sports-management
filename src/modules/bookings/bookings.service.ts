@@ -3,6 +3,7 @@ import {
   BookingType,
   CourtPartition,
   FacilityCode,
+  PaymentReferenceType,
   Prisma,
   SlotBookingStatus,
   UserCategory,
@@ -25,13 +26,60 @@ import {
 import { getConflictingPartitions } from '../facilities/facilities.service';
 import { CancelBookingInput, ReserveSlotInput } from './bookings.schema';
 
-const HOURLY_BOOKABLE_FACILITIES = new Set<FacilityCode>([
-  FacilityCode.FOOTBALL_GROUND,
-  FacilityCode.POLICE_TURF,
-  FacilityCode.BADMINTON_COURT,
-]);
-
 const CANCELLATION_MIN_ADVANCE_MS = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+
+function round2(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+export interface BookingPricingBreakdown {
+  base_fee: string;
+  concession_discount: string;
+  concession_percent: number;
+  taxable_subtotal: string;
+  gst_rate: number;
+  gst_amount: string;
+  final_total_paid: string;
+}
+
+function buildBookingPricingBreakdown(params: {
+  taxableSubtotal: number;
+  standardPublicBase: number | null;
+  gstRate: number;
+  gstAmount: number;
+  finalTotal: number;
+  userCategory: UserCategory;
+}): BookingPricingBreakdown {
+  const taxableSubtotal = round2(params.taxableSubtotal);
+  const gstAmount = round2(params.gstAmount);
+  const finalTotal = round2(params.finalTotal);
+  let baseFee = taxableSubtotal;
+  let concessionDiscount = 0;
+
+  if (
+    params.userCategory === UserCategory.GOVT_PERSONNEL &&
+    params.standardPublicBase !== null &&
+    params.standardPublicBase > taxableSubtotal
+  ) {
+    baseFee = round2(params.standardPublicBase);
+    concessionDiscount = round2(baseFee - taxableSubtotal);
+  }
+
+  const concessionPercent =
+    baseFee > 0 && concessionDiscount > 0
+      ? Math.round((concessionDiscount / baseFee) * 1000) / 10
+      : 0;
+
+  return {
+    base_fee: baseFee.toFixed(2),
+    concession_discount: concessionDiscount.toFixed(2),
+    concession_percent: concessionPercent,
+    taxable_subtotal: taxableSubtotal.toFixed(2),
+    gst_rate: params.gstRate,
+    gst_amount: gstAmount.toFixed(2),
+    final_total_paid: finalTotal.toFixed(2),
+  };
+}
 
 /**
  * Per-facility-date async lock queue to serialize concurrent reservation requests
@@ -95,20 +143,11 @@ export class BookingsService {
    * and overlapping partition conflicts inside a Serializable transaction with SELECT ... FOR UPDATE.
    */
   static async reserveSlot(user: AuthenticatedUser, input: ReserveSlotInput) {
-    // 1. Validate facility is hourly-bookable
-    if (!HOURLY_BOOKABLE_FACILITIES.has(input.facility_code)) {
-      throw new AppError(
-        `Facility '${input.facility_code}' does not support hourly slot bookings. Use the monthly membership application endpoint (/api/memberships/apply).`,
-        400,
-        'FACILITY_NOT_HOURLY_BOOKABLE'
-      );
-    }
-
     const bookingDateObj = parseDateOnly(input.booking_date);
     const startMins = timeToMinutes(input.start_time);
 
     const facility = await prisma.facility.findUnique({
-      where: { code: input.facility_code },
+      where: { code: input.facility_code as FacilityCode },
     });
 
     if (!facility) {
@@ -116,6 +155,28 @@ export class BookingsService {
         `Facility '${input.facility_code}' not found.`,
         404,
         'FACILITY_NOT_FOUND'
+      );
+    }
+
+    // 1. Validate facility is hourly-bookable (supports both core and custom Admin-created hourly venues)
+    const bookingMode = (facility as any).booking_mode;
+    if (
+      bookingMode === 'MONTHLY_MEMBERSHIP_ONLY' ||
+      facility.code === FacilityCode.SYNTHETIC_TRACK
+    ) {
+      throw new AppError(
+        `Facility '${input.facility_code}' does not support hourly slot bookings. Use the monthly membership enrollment flow (/api/memberships/apply).`,
+        400,
+        'FACILITY_NOT_HOURLY_BOOKABLE'
+      );
+    }
+
+    const opStatus = (facility as any).operational_status ?? 'ACTIVE';
+    if (opStatus !== 'ACTIVE') {
+      throw new AppError(
+        `Facility '${facility.name}' is currently ${opStatus === 'MAINTENANCE' ? 'under maintenance' : 'closed'} and unavailable for reservations.`,
+        409,
+        'FACILITY_UNAVAILABLE'
       );
     }
 
@@ -129,7 +190,7 @@ export class BookingsService {
       );
     }
 
-    // 3. Determine and validate start_time and end_time against facility operating hours
+    // 3. Determine and validate start_time and end_time against facility operating hours or managed slots
     const slotDurationMins = facility.slot_duration_mins || 60;
     const resolvedEndTimeStr = input.end_time ?? minutesToTime(startMins + slotDurationMins);
     const endMins = timeToMinutes(resolvedEndTimeStr);
@@ -143,7 +204,28 @@ export class BookingsService {
     }
 
     const durationMins = endMins - startMins;
-    if (durationMins % slotDurationMins !== 0) {
+    const startTimeDate = parseTimeToDate(input.start_time);
+    const endTimeDate = parseTimeToDate(resolvedEndTimeStr);
+
+    const slotDelegate = (prisma as any).facilitySlot;
+    let managedSlotsForDate: any[] = [];
+    let hasExactManagedSlot = false;
+
+    if (slotDelegate && typeof slotDelegate.findMany === 'function') {
+      const allManagedSlots: any[] = await slotDelegate.findMany({
+        where: { facility_id: facility.id },
+      });
+      managedSlotsForDate = allManagedSlots.filter(
+        (s) => s.slot_date === null || s.slot_date === input.booking_date
+      );
+      hasExactManagedSlot = managedSlotsForDate.some(
+        (s) =>
+          formatDateToTime(s.start_time) === input.start_time &&
+          formatDateToTime(s.end_time) === resolvedEndTimeStr
+      );
+    }
+
+    if (!hasExactManagedSlot && durationMins % slotDurationMins !== 0) {
       throw new AppError(
         `Slot duration must be a multiple of ${slotDurationMins} minutes.`,
         400,
@@ -154,7 +236,7 @@ export class BookingsService {
     const opStartMins = timeToMinutes(formatDateToTime(facility.operating_start));
     const opEndMins = timeToMinutes(formatDateToTime(facility.operating_end));
 
-    if (startMins < opStartMins || endMins > opEndMins) {
+    if (!hasExactManagedSlot && (startMins < opStartMins || endMins > opEndMins)) {
       throw new AppError(
         `Requested slot (${input.start_time} - ${resolvedEndTimeStr}) is outside facility operating hours (${formatDateToTime(facility.operating_start)} - ${formatDateToTime(facility.operating_end)}).`,
         400,
@@ -163,8 +245,6 @@ export class BookingsService {
     }
 
     const requestedHours = durationMins / 60;
-    const startTimeDate = parseTimeToDate(input.start_time);
-    const endTimeDate = parseTimeToDate(resolvedEndTimeStr);
     const conflictingPartitions = getConflictingPartitions(requestedPartition);
 
     const lockKey = `${facility.id}:${input.booking_date}`;
@@ -185,8 +265,7 @@ export class BookingsService {
           `;
         }
 
-        // 4a. Check overlapping active authority blocks & active citizen bookings first
-        //     (Strict Confidential Masking: both return identical ALREADY_BOOKED error)
+        // 4a. Check overlapping managed blocked slots, active authority blocks, & active citizen bookings
         const [existingAuthorityBlocks, existingFacilityBookings] = await Promise.all([
           tx.authorityBlock.findMany({
             where: {
@@ -208,15 +287,69 @@ export class BookingsService {
           }),
         ]);
 
-        const hasBlockOverlap = existingAuthorityBlocks.some((blk) =>
+        const overlappingBlock = existingAuthorityBlocks.find((blk) =>
           doTimeRangesOverlap(startTimeDate, endTimeDate, blk.start_time, blk.end_time)
         );
+
+        if (overlappingBlock) {
+          const managedBlockType = (overlappingBlock as any).block_type;
+          if (
+            managedBlockType === 'BLOCKED_MAINTENANCE' ||
+            managedBlockType === 'RESERVED_DEPARTMENT'
+          ) {
+            const label =
+              managedBlockType === 'BLOCKED_MAINTENANCE'
+                ? 'blocked for maintenance'
+                : 'reserved for department use';
+            const reasonText =
+              typeof overlappingBlock.internal_reason === 'string' &&
+              overlappingBlock.internal_reason.trim().length > 0
+                ? ` (${overlappingBlock.internal_reason.trim()})`
+                : '';
+            throw new AppError(
+              `This time slot is currently ${label}${reasonText} and cannot be booked.`,
+              409,
+              'SLOT_BLOCKED'
+            );
+          }
+
+          // Legacy uncategorized confidential authority block remains strictly masked
+          throw new AppError(
+            'The requested slot or partition is already booked and unavailable.',
+            409,
+            'SLOT_ALREADY_BOOKED'
+          );
+        }
+
+        const blockedManagedSlot = managedSlotsForDate.find(
+          (s) =>
+            (s.status === 'BLOCKED_MAINTENANCE' || s.status === 'RESERVED_DEPARTMENT') &&
+            conflictingPartitions.includes(s.court_partition ?? CourtPartition.FULL) &&
+            doTimeRangesOverlap(startTimeDate, endTimeDate, s.start_time, s.end_time)
+        );
+
+        if (blockedManagedSlot) {
+          const label =
+            blockedManagedSlot.status === 'BLOCKED_MAINTENANCE'
+              ? 'blocked for maintenance'
+              : 'reserved for department use';
+          const reasonText =
+            typeof blockedManagedSlot.block_reason === 'string' &&
+            blockedManagedSlot.block_reason.trim().length > 0
+              ? ` (${blockedManagedSlot.block_reason.trim()})`
+              : '';
+          throw new AppError(
+            `This time slot is currently ${label}${reasonText} and cannot be booked.`,
+            409,
+            'SLOT_BLOCKED'
+          );
+        }
 
         const hasBookingOverlap = existingFacilityBookings.some((b) =>
           doTimeRangesOverlap(startTimeDate, endTimeDate, b.start_time, b.end_time)
         );
 
-        if (hasBlockOverlap || hasBookingOverlap) {
+        if (hasBookingOverlap) {
           throw new AppError(
             'The requested slot or partition is already booked and unavailable.',
             409,
@@ -250,7 +383,7 @@ export class BookingsService {
           );
         }
 
-        // 4c. Calculate total_amount from active tariff (base_price + 18% GST)
+        // 4c. Calculate total_amount & structured pricing_breakdown from active tariff
         const userCategory =
           user.role === UserRole.GOVT_PERSONNEL
             ? UserCategory.GOVT_PERSONNEL
@@ -261,15 +394,28 @@ export class BookingsService {
             ? BookingType.FULL_COURT
             : BookingType.HALF_COURT;
 
-        const tariff = await tx.tariff.findUnique({
-          where: {
-            uq_tariff_facility_category_type: {
-              facility_id: facility.id,
-              user_category: userCategory,
-              booking_type: bookingType,
+        const [tariff, publicTariff] = await Promise.all([
+          tx.tariff.findUnique({
+            where: {
+              uq_tariff_facility_category_type: {
+                facility_id: facility.id,
+                user_category: userCategory,
+                booking_type: bookingType,
+              },
             },
-          },
-        });
+          }),
+          userCategory === UserCategory.GOVT_PERSONNEL
+            ? tx.tariff.findUnique({
+                where: {
+                  uq_tariff_facility_category_type: {
+                    facility_id: facility.id,
+                    user_category: UserCategory.PUBLIC,
+                    booking_type: bookingType,
+                  },
+                },
+              })
+            : Promise.resolve(null),
+        ]);
 
         if (!tariff || !tariff.is_active) {
           throw new AppError(
@@ -281,9 +427,21 @@ export class BookingsService {
 
         const hourlyBasePrice = Number(tariff.base_price);
         const gstPercent = Number(tariff.gst_percent);
-        const baseAmount = Math.round(hourlyBasePrice * requestedHours * 100) / 100;
-        const gstAmount = Math.round(baseAmount * (gstPercent / 100) * 100) / 100;
-        const totalAmount = Math.round((baseAmount + gstAmount) * 100) / 100;
+        const taxableSubtotal = round2(hourlyBasePrice * requestedHours);
+        const gstAmount = round2(taxableSubtotal * (gstPercent / 100));
+        const totalAmount = round2(taxableSubtotal + gstAmount);
+        const standardPublicBase = publicTariff
+          ? round2(Number(publicTariff.base_price) * requestedHours)
+          : null;
+
+        const pricingBreakdown = buildBookingPricingBreakdown({
+          taxableSubtotal,
+          standardPublicBase,
+          gstRate: gstPercent,
+          gstAmount,
+          finalTotal: totalAmount,
+          userCategory,
+        });
 
         const bookingCode = await generateUniqueBookingCode(tx);
 
@@ -310,11 +468,17 @@ export class BookingsService {
             booking_date_formatted: formatDateOnly(createdBooking.booking_date),
             start_time_formatted: formatDateToTime(createdBooking.start_time),
             end_time_formatted: formatDateToTime(createdBooking.end_time),
+            user_category: userCategory,
+            pricing_breakdown: pricingBreakdown,
             fee_breakdown: {
               user_category: userCategory,
               booking_type: bookingType,
               hours: requestedHours,
-              base_amount: baseAmount.toFixed(2),
+              base_fee: pricingBreakdown.base_fee,
+              concession_discount: pricingBreakdown.concession_discount,
+              concession_percent: pricingBreakdown.concession_percent,
+              taxable_subtotal: pricingBreakdown.taxable_subtotal,
+              base_amount: taxableSubtotal.toFixed(2),
               gst_percent: gstPercent.toFixed(2),
               gst_amount: gstAmount.toFixed(2),
               total_amount: totalAmount.toFixed(2),
@@ -338,7 +502,7 @@ export class BookingsService {
 
   /**
    * GET /api/bookings/my
-   * Lists the logged-in user's slot bookings.
+   * Lists the logged-in user's slot bookings with structured receipt pricing breakdown.
    */
   static async getMyBookings(user: AuthenticatedUser) {
     const bookings = await prisma.slotBooking.findMany({
@@ -349,24 +513,128 @@ export class BookingsService {
       orderBy: [{ booking_date: 'desc' }, { start_time: 'desc' }],
     });
 
+    const userCategory =
+      user.role === UserRole.GOVT_PERSONNEL
+        ? UserCategory.GOVT_PERSONNEL
+        : UserCategory.PUBLIC;
+
+    // Fetch linked payments when payment delegate exists (safe for minimal unit test mocks)
+    const paymentByBookingId = new Map<string, any>();
+    const paymentDelegate = (prisma as any).payment;
+    if (paymentDelegate && typeof paymentDelegate.findMany === 'function') {
+      const userPayments: any[] = await paymentDelegate.findMany({
+        where: {
+          user_id: user.id,
+          reference_type: PaymentReferenceType.SLOT_BOOKING,
+        },
+        orderBy: { created_at: 'desc' },
+      });
+      for (const p of userPayments) {
+        if (!paymentByBookingId.has(p.reference_id)) {
+          paymentByBookingId.set(p.reference_id, p);
+        }
+      }
+    }
+
+    const tariffCache = new Map<string, any | null>();
+    const lookupTariff = async (
+      facilityId: string,
+      cat: UserCategory,
+      bookingType: BookingType
+    ) => {
+      const key = `${facilityId}|${cat}|${bookingType}`;
+      if (tariffCache.has(key)) return tariffCache.get(key);
+      const found = await prisma.tariff.findUnique({
+        where: {
+          uq_tariff_facility_category_type: {
+            facility_id: facilityId,
+            user_category: cat,
+            booking_type: bookingType,
+          },
+        },
+      });
+      tariffCache.set(key, found ?? null);
+      return found ?? null;
+    };
+
     const nowMs = Date.now();
 
-    const formatted = bookings.map((b) => {
-      const slotStartTimestamp = combineDateAndTime(b.booking_date, b.start_time);
-      const isFutureEligible =
-        slotStartTimestamp.getTime() - nowMs > CANCELLATION_MIN_ADVANCE_MS;
-      const isStatusCancelable =
-        b.status === SlotBookingStatus.PENDING_PAYMENT ||
-        b.status === SlotBookingStatus.CONFIRMED;
+    const formatted = await Promise.all(
+      bookings.map(async (b) => {
+        const slotStartTimestamp = combineDateAndTime(b.booking_date, b.start_time);
+        const isFutureEligible =
+          slotStartTimestamp.getTime() - nowMs > CANCELLATION_MIN_ADVANCE_MS;
+        const isStatusCancelable =
+          b.status === SlotBookingStatus.PENDING_PAYMENT ||
+          b.status === SlotBookingStatus.CONFIRMED;
 
-      return {
-        ...b,
-        booking_date_formatted: formatDateOnly(b.booking_date),
-        start_time_formatted: formatDateToTime(b.start_time),
-        end_time_formatted: formatDateToTime(b.end_time),
-        can_cancel: isFutureEligible && isStatusCancelable,
-      };
-    });
+        const bookingType =
+          b.court_partition === CourtPartition.FULL
+            ? BookingType.FULL_COURT
+            : BookingType.HALF_COURT;
+        const sMins = timeToMinutes(formatDateToTime(b.start_time));
+        const eMins = timeToMinutes(formatDateToTime(b.end_time));
+        const hours = Math.max(1, (eMins - sMins) / 60);
+
+        const [userTariff, publicTariff] = await Promise.all([
+          lookupTariff(b.facility_id, userCategory, bookingType),
+          userCategory === UserCategory.GOVT_PERSONNEL
+            ? lookupTariff(b.facility_id, UserCategory.PUBLIC, bookingType)
+            : Promise.resolve(null),
+        ]);
+
+        const linkedPayment = paymentByBookingId.get(b.id) ?? null;
+        const gstRate = userTariff ? Number(userTariff.gst_percent ?? 18) : 18;
+        let taxableSubtotal: number;
+        let gstAmount: number;
+        let finalTotal: number;
+
+        if (linkedPayment) {
+          taxableSubtotal = round2(Number(linkedPayment.base_amount));
+          gstAmount = round2(Number(linkedPayment.gst_amount));
+          finalTotal = round2(Number(linkedPayment.total_amount));
+        } else if (userTariff) {
+          taxableSubtotal = round2(Number(userTariff.base_price) * hours);
+          gstAmount = round2(taxableSubtotal * (gstRate / 100));
+          finalTotal = round2(taxableSubtotal + gstAmount);
+        } else {
+          finalTotal = round2(Number(b.total_amount));
+          taxableSubtotal = round2(finalTotal / (1 + gstRate / 100));
+          gstAmount = round2(finalTotal - taxableSubtotal);
+        }
+
+        const standardPublicBase = publicTariff
+          ? round2(Number(publicTariff.base_price) * hours)
+          : null;
+
+        const pricingBreakdown = buildBookingPricingBreakdown({
+          taxableSubtotal,
+          standardPublicBase,
+          gstRate,
+          gstAmount,
+          finalTotal,
+          userCategory,
+        });
+
+        return {
+          ...b,
+          booking_date_formatted: formatDateOnly(b.booking_date),
+          start_time_formatted: formatDateToTime(b.start_time),
+          end_time_formatted: formatDateToTime(b.end_time),
+          can_cancel: isFutureEligible && isStatusCancelable,
+          user_category: userCategory,
+          pricing_breakdown: pricingBreakdown,
+          receipt: linkedPayment
+            ? {
+                receipt_no: linkedPayment.receipt_no,
+                payment_mode: linkedPayment.payment_mode,
+                status: linkedPayment.status,
+                paid_at: linkedPayment.created_at,
+              }
+            : null,
+        };
+      })
+    );
 
     return { bookings: formatted };
   }

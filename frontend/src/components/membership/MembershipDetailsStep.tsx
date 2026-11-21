@@ -1,246 +1,339 @@
-import { MaterialIcon } from '@/components/ui/MaterialIcon';
-import { membershipGenders } from '@/data/mockData';
+import { Link } from 'react-router-dom';
+import {
+  ArrowRight,
+  Building2,
+  Calendar,
+  MapPin,
+  ShieldCheck,
+  Sparkles,
+  User,
+  Users,
+} from 'lucide-react';
+import type { AuthUser, BackendGender } from '@/api/client';
+import { useLanguage } from '@/context/LanguageContext';
+import { membershipGenderOptions } from '@/data/mockData';
 import type {
-  MembershipFormData,
-  MembershipGender,
-  MembershipValidationErrors,
+  MembershipOnboardingErrors,
+  MembershipOnboardingFormData,
 } from '@/types/membership';
 
 interface MembershipDetailsStepProps {
-  formData: MembershipFormData;
-  errors: MembershipValidationErrors;
-  onUpdateField: <K extends keyof MembershipFormData>(
+  user: AuthUser | null;
+  formData: MembershipOnboardingFormData;
+  errors: MembershipOnboardingErrors;
+  isTrackUnavailable: boolean;
+  onUpdateField: <K extends keyof MembershipOnboardingFormData>(
     key: K,
-    value: MembershipFormData[K],
+    value: MembershipOnboardingFormData[K],
   ) => void;
-  onClearFieldsForTest: () => void;
-  onRestoreSampleData: () => void;
-  onBack: () => void;
   onContinue: () => void;
 }
 
 export function MembershipDetailsStep({
+  user,
   formData,
   errors,
+  isTrackUnavailable,
   onUpdateField,
-  onClearFieldsForTest,
-  onRestoreSampleData,
-  onBack,
   onContinue,
 }: MembershipDetailsStepProps) {
-  const isGovernment = formData.category === 'government';
+  const { lang, t } = useLanguage();
+  const isGovt = user?.role === 'GOVT_PERSONNEL';
 
   return (
-    <section className="lg:col-span-8 w-full flex flex-col gap-6 md:gap-8">
-      {/* Header Group */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-        <div className="flex flex-col gap-1.5">
-          <h1 className="font-title-portal text-[28px] md:text-title-portal font-bold text-on-surface tracking-tight leading-tight">
-            Your details
-          </h1>
-          <p className="font-body-default text-[15px] md:text-body-default text-secondary">
-            Fields marked <span className="text-error">*</span> are required.
-          </p>
-        </div>
-
-        {/* Helper pills to quickly preview filled vs empty/error states */}
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          <button
-            type="button"
-            onClick={onRestoreSampleData}
-            className="px-3 py-1.5 rounded-full bg-surface-container-lowest/70 hover:bg-surface-container-lowest text-primary font-label-meta text-label-meta font-semibold shadow-sm transition-colors"
-          >
-            Fill sample
-          </button>
-          <button
-            type="button"
-            onClick={onClearFieldsForTest}
-            className="px-3 py-1.5 rounded-full bg-surface-container-lowest/70 hover:bg-surface-container-lowest text-secondary hover:text-error font-label-meta text-label-meta font-medium shadow-sm transition-colors"
-          >
-            Clear fields
-          </button>
-        </div>
+    <section className="lg:col-span-8 w-full flex flex-col gap-5 membership-step-enter">
+      {/* Header */}
+      <div className="flex flex-col gap-1.5">
+        <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-[#165DF5]">
+          {t('Step 1 of 3 • Member Onboarding', 'ഘട്ടം 1 / 3 • അംഗ വിവരങ്ങൾ')}
+        </p>
+        <h1 className="font-display text-[28px] sm:text-[34px] font-extrabold text-[#0F172A] tracking-[-0.03em] leading-[1.1]">
+          {t('Member Onboarding Details', 'അംഗത്വ വ്യക്തിഗത വിവരങ്ങൾ')}
+        </h1>
+        <p className="text-[14px] text-[#475569]">
+          {t(
+            'Provide your personal demographics, residential address, and track training purpose. Fields marked * are required and saved to your profile.',
+            'നിങ്ങളുടെ വ്യക്തിഗത വിവരങ്ങളും മേൽവിലാസവും ട്രാക്ക് ഉപയോഗ ലക്ഷ്യവും നൽകുക. * അടയാളപ്പെടുത്തിയവ നിർബന്ധമാണ്.',
+          )}
+        </p>
       </div>
 
-      {/* Row 1: Side-by-side Glass Cards (Personal & Address) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Card 1: Personal Details */}
-        <div className="bg-surface-container-lowest/60 backdrop-blur-[40px] shadow-[0_20px_40px_rgba(31,111,255,0.07),inset_0_1px_0_0_rgba(255,255,255,0.85)] rounded-[28px] md:rounded-[36px] p-5 md:p-8 flex flex-col gap-5 md:gap-6">
-          <h3 className="font-headline-card text-[18px] md:text-headline-card font-semibold text-on-surface">
-            Personal
-          </h3>
-
-          {/* Full Name */}
-          <div className="flex flex-col gap-2">
-            <label
-              className="font-label-primary text-[14px] md:text-label-primary font-medium text-on-surface"
-              htmlFor="fullName"
-            >
-              Full name <span className="text-error">*</span>
-            </label>
-            <div className="flex flex-col gap-1.5 w-full">
-              <div className="relative flex items-center">
-                <input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  value={formData.fullName}
-                  onChange={(e) => onUpdateField('fullName', e.target.value)}
-                  placeholder="Enter full name"
-                  aria-invalid={Boolean(errors.fullName)}
-                  className={`w-full h-14 px-5 rounded-[16px] md:rounded-[20px] bg-white/50 backdrop-blur-[20px] shadow-[inset_0_1px_2px_rgba(17,20,24,0.03)] font-body-default text-[15px] md:text-body-default text-on-surface placeholder:text-secondary/50 focus:outline-none focus:bg-white/85 focus:shadow-[0_0_0_4px_rgba(31,111,255,0.15)] transition-all ${
-                    errors.fullName ? 'membership-input-error' : ''
-                  }`}
-                />
-              </div>
-              {errors.fullName && (
-                <span className="font-label-meta text-[13px] leading-[18px] font-medium text-[#E5484D]">
-                  {errors.fullName}
+      {/* Auto-Displayed Account Identity & Category Read-Only Strip */}
+      {user ? (
+        <div className="rounded-[22px] bg-white/95 border border-slate-200/85 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <span className="w-11 h-11 rounded-2xl bg-[#165DF5]/10 text-[#165DF5] flex items-center justify-center shrink-0">
+              <User className="w-5 h-5" />
+            </span>
+            <div className="min-w-0">
+              <span className="text-[11px] font-bold uppercase tracking-[0.07em] text-[#64748B]">
+                {t('Member Account (From Sign-Up)', 'അംഗ അക്കൗണ്ട് (രജിസ്ട്രേഷൻ പ്രകാരം)')}
+              </span>
+              <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                <span className="font-display text-[17px] font-extrabold text-[#0F172A] truncate">
+                  {user.full_name}
                 </span>
-              )}
+                <span className="text-[12.5px] font-mono text-[#64748B]">@{user.username}</span>
+              </div>
             </div>
           </div>
 
-          {/* Date of Birth */}
-          <div className="flex flex-col gap-2">
-            <label
-              className="font-label-primary text-[14px] md:text-label-primary font-medium text-on-surface"
-              htmlFor="dob"
+          <div className="flex items-center gap-2 shrink-0">
+            <span
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-bold border ${
+                isGovt
+                  ? 'bg-blue-50 border-blue-200 text-[#0F50DC]'
+                  : 'bg-slate-100 border-slate-200 text-[#334155]'
+              }`}
             >
-              Date of birth <span className="text-error">*</span>
-            </label>
-            <div className="flex flex-col gap-1.5 w-full">
-              <div className="relative flex items-center">
-                <input
-                  id="dob"
-                  name="dob"
-                  type="text"
-                  value={formData.dob}
-                  onChange={(e) => onUpdateField('dob', e.target.value)}
-                  placeholder="DD / MM / YYYY"
-                  aria-invalid={Boolean(errors.dob)}
-                  className={`w-full h-14 pl-5 pr-12 rounded-[16px] md:rounded-[20px] bg-white/50 backdrop-blur-[20px] shadow-[inset_0_1px_2px_rgba(17,20,24,0.03)] font-body-default text-[15px] md:text-body-default text-on-surface placeholder:text-secondary/50 focus:outline-none focus:bg-white/85 focus:shadow-[0_0_0_4px_rgba(31,111,255,0.15)] transition-all ${
-                    errors.dob ? 'membership-input-error' : ''
-                  }`}
-                />
-                <MaterialIcon
-                  name="calendar_today"
-                  className="absolute right-4 text-secondary/70 pointer-events-none text-[20px] md:text-[22px]"
-                />
-              </div>
-              {errors.dob && (
-                <span className="font-label-meta text-[13px] leading-[18px] font-medium text-[#E5484D]">
-                  {errors.dob}
-                </span>
+              {isGovt ? <ShieldCheck className="w-3.5 h-3.5" /> : <Users className="w-3.5 h-3.5" />}
+              {isGovt
+                ? t('Govt / Police Personnel', 'സർക്കാർ / പോലീസ്')
+                : t('General Public', 'പൊതുജനം')}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-[22px] bg-blue-50/80 border border-blue-200/80 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <p className="text-[14px] font-bold text-[#0F172A]">
+              {t('Sign in to save your onboarding details', 'വിവരങ്ങൾ സേവ് ചെയ്യാൻ സൈൻ ഇൻ ചെയ്യുക')}
+            </p>
+            <p className="text-[13px] text-[#475569] mt-0.5">
+              {t(
+                'Your account name and category (General Public vs. Govt / Police) are auto-filled from your Kannur City Police Sports account.',
+                'നിങ്ങളുടെ പേരും വിഭാഗവും അക്കൗണ്ടിൽ നിന്ന് സ്വയം പൂരിപ്പിക്കപ്പെടും.',
               )}
-            </div>
+            </p>
+          </div>
+          <Link
+            to="/login"
+            state={{ from: '/membership' }}
+            className="btn-primary !h-10 px-5 text-[13.5px] inline-flex items-center justify-center shrink-0"
+          >
+            {t('Sign in', 'സൈൻ ഇൻ')}
+          </Link>
+        </div>
+      )}
+
+      {/* Row 1: Side-by-Side Cards (Personal & Residential Address) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Card 1: Personal Demographics */}
+        <div className="rounded-[24px] bg-white/90 backdrop-blur-2xl border border-slate-200/85 p-5 sm:p-6 shadow-[0_14px_36px_-18px_rgba(15,23,42,0.1)] flex flex-col gap-4">
+          <div className="flex items-center gap-2.5">
+            <span className="w-8 h-8 rounded-xl bg-[#165DF5]/10 text-[#165DF5] flex items-center justify-center">
+              <User className="w-4 h-4" />
+            </span>
+            <h2 className="font-display text-[17px] font-bold text-[#0F172A]">
+              {t('Personal Details', 'വ്യക്തിഗത വിവരങ്ങൾ')}
+            </h2>
           </div>
 
           {/* Gender Segmented Control */}
-          <div className="flex flex-col gap-2">
-            <label className="font-label-primary text-[14px] md:text-label-primary font-medium text-on-surface">
-              Gender <span className="text-error">*</span>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[13px] font-semibold text-[#1E293B]">
+              {t('Gender', 'ലിംഗം')} <span className="text-[#DC2626]">*</span>
             </label>
-            <div className="h-12 md:h-14 p-1 md:p-1.5 rounded-[16px] md:rounded-[20px] bg-white/40 backdrop-blur-[20px] shadow-[inset_0_1px_2px_rgba(17,20,24,0.03)] flex items-center gap-1 md:gap-1.5">
-              {membershipGenders.map((g: MembershipGender) => {
-                const isSelected = formData.gender === g;
+            <div
+              role="radiogroup"
+              aria-label="Gender"
+              className={`p-1 rounded-[14px] bg-slate-100/90 border flex items-center gap-1 ${
+                errors.gender ? 'border-[#DC2626] ring-2 ring-red-100' : 'border-slate-200/90'
+              }`}
+            >
+              {membershipGenderOptions.map((opt) => {
+                const isSelected = formData.gender === opt.value;
                 return (
                   <button
-                    key={g}
+                    key={opt.value}
                     type="button"
-                    onClick={() => onUpdateField('gender', g)}
-                    className={
+                    role="radio"
+                    aria-checked={isSelected}
+                    onClick={() => onUpdateField('gender', opt.value as BackendGender)}
+                    className={`flex-1 h-10 rounded-[10px] text-[13px] font-semibold transition-all ${
                       isSelected
-                        ? 'flex-1 h-full rounded-[12px] md:rounded-[16px] bg-[#1F6FFF]/15 text-[#0053CD] font-label-primary text-[13px] md:text-label-primary font-semibold flex items-center justify-center transition-all shadow-[0_2px_8px_rgba(31,111,255,0.12)]'
-                        : 'flex-1 h-full rounded-[12px] md:rounded-[16px] text-secondary hover:text-on-surface font-label-primary text-[13px] md:text-label-primary font-medium flex items-center justify-center transition-all'
-                    }
+                        ? 'bg-[#165DF5] text-white shadow-[0_4px_12px_-3px_rgba(22,93,245,0.5)]'
+                        : 'text-[#475569] hover:text-[#0F172A] hover:bg-white/70'
+                    }`}
                   >
-                    {g}
+                    {lang === 'ML' ? opt.labelMl : opt.label}
                   </button>
                 );
               })}
             </div>
+            {errors.gender && (
+              <span className="text-[12px] font-medium text-[#DC2626]">{errors.gender}</span>
+            )}
+          </div>
+
+          {/* Date of Birth */}
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="onboard-dob" className="text-[13px] font-semibold text-[#1E293B]">
+              {t('Date of Birth', 'ജനനത്തീയതി')} <span className="text-[#DC2626]">*</span>
+            </label>
+            <div className="relative flex items-center">
+              <Calendar className="w-4 h-4 text-[#94A3B8] absolute left-3.5 pointer-events-none" />
+              <input
+                id="onboard-dob"
+                name="dateOfBirth"
+                type="date"
+                max={new Date().toISOString().slice(0, 10)}
+                value={formData.dateOfBirth}
+                onChange={(e) => onUpdateField('dateOfBirth', e.target.value)}
+                aria-invalid={Boolean(errors.dateOfBirth)}
+                className={`membership-input pl-10 pr-3.5 ${
+                  errors.dateOfBirth ? 'membership-input-error' : ''
+                }`}
+              />
+            </div>
+            {errors.dateOfBirth && (
+              <span className="text-[12px] font-medium text-[#DC2626]">{errors.dateOfBirth}</span>
+            )}
           </div>
 
           {/* Father's or Mother's Name (Optional) */}
-          <div className="flex flex-col gap-2">
-            <label
-              className="font-label-primary text-[14px] md:text-label-primary font-medium text-on-surface"
-              htmlFor="parentName"
-            >
-              Father&apos;s or mother&apos;s name
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="onboard-parent" className="text-[13px] font-semibold text-[#1E293B]">
+              {t("Father's or Mother's Name", 'പിതാവിന്റെ / മാതാവിന്റെ പേര്')}{' '}
+              <span className="text-[11.5px] font-normal text-[#64748B]">
+                ({t('Optional', 'ഓപ്ഷണൽ')})
+              </span>
             </label>
-            <div className="relative flex items-center">
-              <input
-                id="parentName"
-                name="parentName"
-                type="text"
-                value={formData.parentName}
-                onChange={(e) => onUpdateField('parentName', e.target.value)}
-                placeholder="Optional"
-                className="w-full h-14 px-5 rounded-[16px] md:rounded-[20px] bg-white/50 backdrop-blur-[20px] shadow-[inset_0_1px_2px_rgba(17,20,24,0.03)] font-body-default text-[15px] md:text-body-default text-on-surface placeholder:text-secondary/50 focus:outline-none focus:bg-white/85 focus:shadow-[0_0_0_4px_rgba(31,111,255,0.15)] transition-all"
-              />
-            </div>
+            <input
+              id="onboard-parent"
+              name="parentName"
+              type="text"
+              value={formData.parentName}
+              onChange={(e) => onUpdateField('parentName', e.target.value)}
+              placeholder={t('e.g. Sreedharan Nair', 'ഉദാ. ശ്രീധരൻ നായർ')}
+              className="membership-input px-3.5"
+            />
           </div>
         </div>
 
-        {/* Card 2: Address Details */}
-        <div className="bg-surface-container-lowest/60 backdrop-blur-[40px] shadow-[0_20px_40px_rgba(31,111,255,0.07),inset_0_1px_0_0_rgba(255,255,255,0.85)] rounded-[28px] md:rounded-[36px] p-5 md:p-8 flex flex-col justify-between gap-5 md:gap-6">
-          <div className="flex flex-col gap-5 md:gap-6">
-            <h3 className="font-headline-card text-[18px] md:text-headline-card font-semibold text-on-surface">
-              Address
-            </h3>
+        {/* Card 2: Residential Address */}
+        <div className="rounded-[24px] bg-white/90 backdrop-blur-2xl border border-slate-200/85 p-5 sm:p-6 shadow-[0_14px_36px_-18px_rgba(15,23,42,0.1)] flex flex-col justify-between gap-4">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2.5">
+              <span className="w-8 h-8 rounded-xl bg-[#165DF5]/10 text-[#165DF5] flex items-center justify-center">
+                <MapPin className="w-4 h-4" />
+              </span>
+              <h2 className="font-display text-[17px] font-bold text-[#0F172A]">
+                {t('Residential Address', 'താമസ വിലാസം')}
+              </h2>
+            </div>
 
-            {/* Present Address (3-line) */}
-            <div className="flex flex-col gap-2">
+            {/* Present Address */}
+            <div className="flex flex-col gap-1.5">
               <label
-                className="font-label-primary text-[14px] md:text-label-primary font-medium text-on-surface"
-                htmlFor="presentAddress"
+                htmlFor="onboard-present-address"
+                className="text-[13px] font-semibold text-[#1E293B]"
               >
-                Present address <span className="text-error">*</span>
+                {t('House / Street Address', 'വീട് / തെരുവ് വിലാസം')}{' '}
+                <span className="text-[#DC2626]">*</span>
               </label>
               <textarea
-                id="presentAddress"
+                id="onboard-present-address"
                 name="presentAddress"
-                rows={3}
+                rows={2}
                 value={formData.presentAddress}
                 onChange={(e) => onUpdateField('presentAddress', e.target.value)}
-                placeholder="Enter house/flat, street, area, pincode"
+                placeholder={t(
+                  'House / Flat No., Building, Street Name',
+                  'വീട്ട് / ഫ്ലാറ്റ് നമ്പർ, തെരുവിന്റെ പേര്',
+                )}
                 aria-invalid={Boolean(errors.presentAddress)}
-                className={`w-full p-3.5 md:p-4 rounded-[16px] md:rounded-[20px] bg-white/50 backdrop-blur-[20px] shadow-[inset_0_1px_2px_rgba(17,20,24,0.03)] font-body-default text-[15px] md:text-body-default text-on-surface placeholder:text-secondary/50 focus:outline-none focus:bg-white/85 focus:shadow-[0_0_0_4px_rgba(31,111,255,0.15)] resize-none transition-all leading-relaxed ${
+                className={`membership-textarea p-3 leading-relaxed resize-none ${
                   errors.presentAddress ? 'membership-input-error' : ''
                 }`}
               />
               {errors.presentAddress && (
-                <span className="font-label-meta text-[13px] leading-[18px] font-medium text-[#E5484D]">
+                <span className="text-[12px] font-medium text-[#DC2626]">
                   {errors.presentAddress}
                 </span>
               )}
             </div>
 
-            {/* Conditional Permanent Address if toggle is OFF */}
-            {!formData.sameAsPresent && (
-              <div className="flex flex-col gap-2">
+            {/* Locality / City + PIN Code */}
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+              <div className="sm:col-span-7 flex flex-col gap-1.5">
                 <label
-                  className="font-label-primary text-[14px] md:text-label-primary font-medium text-on-surface"
-                  htmlFor="permanentAddress"
+                  htmlFor="onboard-locality"
+                  className="text-[13px] font-semibold text-[#1E293B]"
                 >
-                  Permanent address <span className="text-error">*</span>
+                  {t('Locality / City', 'സ്ഥലം / നഗരം')} <span className="text-[#DC2626]">*</span>
+                </label>
+                <input
+                  id="onboard-locality"
+                  name="cityLocality"
+                  type="text"
+                  value={formData.cityLocality}
+                  onChange={(e) => onUpdateField('cityLocality', e.target.value)}
+                  placeholder={t('e.g. Thottada, Kannur', 'ഉദാ. തോട്ടട, കണ്ണൂർ')}
+                  aria-invalid={Boolean(errors.cityLocality)}
+                  className={`membership-input px-3.5 ${
+                    errors.cityLocality ? 'membership-input-error' : ''
+                  }`}
+                />
+                {errors.cityLocality && (
+                  <span className="text-[12px] font-medium text-[#DC2626]">
+                    {errors.cityLocality}
+                  </span>
+                )}
+              </div>
+
+              <div className="sm:col-span-5 flex flex-col gap-1.5">
+                <label htmlFor="onboard-pin" className="text-[13px] font-semibold text-[#1E293B]">
+                  {t('PIN Code', 'പിൻ കോഡ്')} <span className="text-[#DC2626]">*</span>
+                </label>
+                <input
+                  id="onboard-pin"
+                  name="pinCode"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={formData.pinCode}
+                  onChange={(e) =>
+                    onUpdateField('pinCode', e.target.value.replace(/\D/g, '').slice(0, 6))
+                  }
+                  placeholder="670007"
+                  aria-invalid={Boolean(errors.pinCode)}
+                  className={`membership-input px-3.5 font-mono ${
+                    errors.pinCode ? 'membership-input-error' : ''
+                  }`}
+                />
+                {errors.pinCode && (
+                  <span className="text-[12px] font-medium text-[#DC2626]">{errors.pinCode}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Conditional Permanent Address */}
+            {!formData.sameAsPresent && (
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="onboard-permanent-address"
+                  className="text-[13px] font-semibold text-[#1E293B]"
+                >
+                  {t('Permanent Address', 'സ്ഥിര വിലാസം')} <span className="text-[#DC2626]">*</span>
                 </label>
                 <textarea
-                  id="permanentAddress"
+                  id="onboard-permanent-address"
                   name="permanentAddress"
                   rows={2}
                   value={formData.permanentAddress}
                   onChange={(e) => onUpdateField('permanentAddress', e.target.value)}
-                  placeholder="Enter permanent house/flat, street, area, pincode"
+                  placeholder={t(
+                    'Enter full permanent address with locality and PIN code',
+                    'സ്ഥിര വിലാസം, സ്ഥലം, പിൻ കോഡ് എന്നിവ നൽകുക',
+                  )}
                   aria-invalid={Boolean(errors.permanentAddress)}
-                  className={`w-full p-3.5 md:p-4 rounded-[16px] md:rounded-[20px] bg-white/50 backdrop-blur-[20px] shadow-[inset_0_1px_2px_rgba(17,20,24,0.03)] font-body-default text-[15px] md:text-body-default text-on-surface placeholder:text-secondary/50 focus:outline-none focus:bg-white/85 focus:shadow-[0_0_0_4px_rgba(31,111,255,0.15)] resize-none transition-all leading-relaxed ${
+                  className={`membership-textarea p-3 leading-relaxed resize-none ${
                     errors.permanentAddress ? 'membership-input-error' : ''
                   }`}
                 />
                 {errors.permanentAddress && (
-                  <span className="font-label-meta text-[13px] leading-[18px] font-medium text-[#E5484D]">
+                  <span className="text-[12px] font-medium text-[#DC2626]">
                     {errors.permanentAddress}
                   </span>
                 )}
@@ -248,221 +341,235 @@ export function MembershipDetailsStep({
             )}
           </div>
 
-          {/* Toggle Switch: Permanent address matches present */}
-          <div className="pt-2 md:pt-4 flex items-center justify-between gap-4">
-            <span className="font-label-primary text-[13px] md:text-label-primary text-on-surface leading-tight">
-              Permanent address is the same as present address
+          {/* Same-as-present Toggle */}
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-3">
+            <span className="text-[13px] font-medium text-[#334155]">
+              {t(
+                'Permanent address is the same as present address',
+                'സ്ഥിര വിലാസവും താമസ വിലാസവും ഒന്നുതന്നെയാണ്',
+              )}
             </span>
             <button
               type="button"
               role="switch"
               aria-checked={formData.sameAsPresent}
               onClick={() => onUpdateField('sameAsPresent', !formData.sameAsPresent)}
-              className={
+              className={`w-11 h-6 rounded-full p-0.5 flex items-center shrink-0 transition-colors ${
                 formData.sameAsPresent
-                  ? 'w-12 h-7 rounded-full bg-[#1F6FFF] p-1 flex items-center justify-end shrink-0 transition-colors shadow-[0_2px_8px_rgba(31,111,255,0.25)] focus:outline-none'
-                  : 'w-12 h-7 rounded-full bg-surface-container-highest p-1 flex items-center justify-start shrink-0 transition-colors shadow-inner focus:outline-none'
-              }
+                  ? 'bg-[#165DF5] justify-end'
+                  : 'bg-slate-300 justify-start'
+              }`}
             >
-              <div className="w-5 h-5 rounded-full bg-white shadow-sm transform transition-transform" />
+              <span className="w-5 h-5 rounded-full bg-white shadow-sm" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Conditional Card: Employment (when Government Personnel is selected) */}
-      {isGovernment && (
-        <div className="bg-surface-container-lowest/60 backdrop-blur-[40px] shadow-[0_20px_40px_rgba(31,111,255,0.07),inset_0_1px_0_0_rgba(255,255,255,0.85)] rounded-[28px] md:rounded-[36px] p-5 md:p-8 flex flex-col gap-5 md:gap-6">
-          <h3 className="font-headline-card text-[18px] md:text-headline-card font-semibold text-on-surface">
-            Employment
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Field 1: Designation */}
-            <div className="flex flex-col gap-2">
+      {/* Conditional Card: Department / Office Details (Govt/Police Accounts Only — No ID uploads or ID numbers) */}
+      {isGovt && (
+        <div className="rounded-[24px] bg-white/90 backdrop-blur-2xl border border-blue-200/80 p-5 sm:p-6 shadow-[0_14px_36px_-18px_rgba(22,93,245,0.12)] flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2.5">
+              <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#165DF5] flex items-center justify-center">
+                <Building2 className="w-4 h-4" />
+              </span>
+              <h2 className="font-display text-[17px] font-bold text-[#0F172A]">
+                {t('Department / Office Details', 'വകുപ്പ് / ഓഫീസ് വിവരങ്ങൾ')}
+              </h2>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[11px] font-bold text-[#0F50DC]">
+              {t('Govt / Police Category', 'സർക്കാർ / പോലീസ് വിഭാഗം')}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
               <label
-                className="font-label-primary text-[14px] md:text-label-primary font-medium text-on-surface"
-                htmlFor="designation"
+                htmlFor="onboard-designation"
+                className="text-[13px] font-semibold text-[#1E293B]"
               >
-                Designation <span className="text-error">*</span>
+                {t('Designation / Rank', 'തസ്തിക')} <span className="text-[#DC2626]">*</span>
               </label>
-              <div className="flex flex-col gap-1.5">
-                <input
-                  id="designation"
-                  name="designation"
-                  type="text"
-                  value={formData.designation}
-                  onChange={(e) => onUpdateField('designation', e.target.value)}
-                  placeholder="Enter designation"
-                  aria-invalid={Boolean(errors.designation)}
-                  className={`w-full h-14 px-5 rounded-[16px] md:rounded-[20px] bg-white/50 backdrop-blur-[20px] shadow-[inset_0_1px_2px_rgba(17,20,24,0.03)] font-body-default text-[15px] md:text-body-default text-on-surface placeholder:text-secondary/50 focus:outline-none focus:bg-white/85 focus:shadow-[0_0_0_4px_rgba(31,111,255,0.15)] transition-all ${
-                    errors.designation ? 'membership-input-error' : ''
-                  }`}
-                />
-                {errors.designation && (
-                  <span className="font-label-meta text-[13px] leading-[18px] font-medium text-[#E5484D]">
-                    {errors.designation}
-                  </span>
-                )}
-              </div>
+              <input
+                id="onboard-designation"
+                name="designation"
+                type="text"
+                value={formData.designation}
+                onChange={(e) => onUpdateField('designation', e.target.value)}
+                placeholder={t('e.g. Sub-Inspector of Police', 'ഉദാ. സബ് ഇൻസ്പെക്ടർ')}
+                aria-invalid={Boolean(errors.designation)}
+                className={`membership-input px-3.5 ${
+                  errors.designation ? 'membership-input-error' : ''
+                }`}
+              />
+              {errors.designation && (
+                <span className="text-[12px] font-medium text-[#DC2626]">{errors.designation}</span>
+              )}
             </div>
 
-            {/* Field 2: Office address */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <label
-                className="font-label-primary text-[14px] md:text-label-primary font-medium text-on-surface"
-                htmlFor="officeAddress"
+                htmlFor="onboard-office-address"
+                className="text-[13px] font-semibold text-[#1E293B]"
               >
-                Office address <span className="text-error">*</span>
+                {t('Office / Station Address', 'ഓഫീസ് / സ്റ്റേഷൻ വിലാസം')}{' '}
+                <span className="text-[#DC2626]">*</span>
               </label>
-              <div className="flex flex-col gap-1.5">
-                <textarea
-                  id="officeAddress"
-                  name="officeAddress"
-                  rows={2}
-                  value={formData.officeAddress}
-                  onChange={(e) => onUpdateField('officeAddress', e.target.value)}
-                  placeholder="Enter office address"
-                  aria-invalid={Boolean(errors.officeAddress)}
-                  className={`w-full p-4 rounded-[16px] md:rounded-[20px] bg-white/50 backdrop-blur-[20px] shadow-[inset_0_1px_2px_rgba(17,20,24,0.03)] font-body-default text-[15px] md:text-body-default text-on-surface placeholder:text-secondary/50 focus:outline-none focus:bg-white/85 focus:shadow-[0_0_0_4px_rgba(31,111,255,0.15)] resize-none transition-all leading-relaxed min-h-[56px] h-auto ${
-                    errors.officeAddress ? 'membership-input-error' : ''
-                  }`}
-                />
-                {errors.officeAddress && (
-                  <span className="font-label-meta text-[13px] leading-[18px] font-medium text-[#E5484D]">
-                    {errors.officeAddress}
-                  </span>
+              <input
+                id="onboard-office-address"
+                name="officeAddress"
+                type="text"
+                value={formData.officeAddress}
+                onChange={(e) => onUpdateField('officeAddress', e.target.value)}
+                placeholder={t(
+                  'e.g. District Police Office, South Bazaar, Kannur',
+                  'ഉദാ. ജില്ലാ പോലീസ് ഓഫീസ്, കണ്ണൂർ',
                 )}
-              </div>
+                aria-invalid={Boolean(errors.officeAddress)}
+                className={`membership-input px-3.5 ${
+                  errors.officeAddress ? 'membership-input-error' : ''
+                }`}
+              />
+              {errors.officeAddress && (
+                <span className="text-[12px] font-medium text-[#DC2626]">
+                  {errors.officeAddress}
+                </span>
+              )}
             </div>
           </div>
         </div>
       )}
 
-      {/* Full-Width Glass Card: Track Use */}
-      <div className="bg-surface-container-lowest/60 backdrop-blur-[40px] shadow-[0_20px_40px_rgba(31,111,255,0.07),inset_0_1px_0_0_rgba(255,255,255,0.85)] rounded-[28px] md:rounded-[36px] p-5 md:p-8 flex flex-col gap-5 md:gap-6">
-        <h3 className="font-headline-card text-[18px] md:text-headline-card font-semibold text-on-surface">
-          Track use
-        </h3>
-
-        {/* Purpose of using the Synthetic Track */}
-        <div className="flex flex-col gap-2">
-          <label
-            className="font-label-primary text-[14px] md:text-label-primary font-medium text-on-surface"
-            htmlFor="purpose"
-          >
-            Purpose of using the Synthetic Track <span className="text-error">*</span>
-          </label>
-          <div className="flex flex-col gap-1.5">
-            <input
-              id="purpose"
-              name="purpose"
-              type="text"
-              value={formData.purpose}
-              onChange={(e) => onUpdateField('purpose', e.target.value)}
-              placeholder="e.g., Daily fitness conditioning, athletic trials preparation, sprint training"
-              aria-invalid={Boolean(errors.purpose)}
-              className={`w-full h-14 px-5 rounded-[16px] md:rounded-[20px] bg-white/50 backdrop-blur-[20px] shadow-[inset_0_1px_2px_rgba(17,20,24,0.03)] font-body-default text-[15px] md:text-body-default text-on-surface placeholder:text-secondary/50 focus:outline-none focus:bg-white/85 focus:shadow-[0_0_0_4px_rgba(31,111,255,0.15)] transition-all ${
-                errors.purpose ? 'membership-input-error' : ''
-              }`}
-            />
-            {errors.purpose && (
-              <span className="font-label-meta text-[13px] leading-[18px] font-medium text-[#E5484D]">
-                {errors.purpose}
-              </span>
-            )}
-          </div>
+      {/* Card 3: Track Use & Sportsperson Profile */}
+      <div className="rounded-[24px] bg-white/90 backdrop-blur-2xl border border-slate-200/85 p-5 sm:p-6 shadow-[0_14px_36px_-18px_rgba(15,23,42,0.1)] flex flex-col gap-4">
+        <div className="flex items-center gap-2.5">
+          <span className="w-8 h-8 rounded-xl bg-[#165DF5]/10 text-[#165DF5] flex items-center justify-center">
+            <Sparkles className="w-4 h-4" />
+          </span>
+          <h2 className="font-display text-[17px] font-bold text-[#0F172A]">
+            {t('Track Use & Athletic Profile', 'ട്രാക്ക് ഉപയോഗവും കായിക വിവരങ്ങളും')}
+          </h2>
         </div>
 
-        {/* Switch Row: Registered Sportsperson */}
-        <div className="flex items-center justify-between gap-4 pt-1">
-          <span className="font-label-primary text-[13px] md:text-label-primary text-on-surface leading-tight">
-            I am a registered sportsperson
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="onboard-purpose" className="text-[13px] font-semibold text-[#1E293B]">
+            {t('Purpose of using the Synthetic Track', 'സിന്തറ്റിക് ട്രാക്ക് ഉപയോഗിക്കുന്നതിന്റെ ലക്ഷ്യം')}{' '}
+            <span className="text-[#DC2626]">*</span>
+          </label>
+          <input
+            id="onboard-purpose"
+            name="trackPurpose"
+            type="text"
+            value={formData.trackPurpose}
+            onChange={(e) => onUpdateField('trackPurpose', e.target.value)}
+            placeholder={t(
+              'e.g. Daily fitness conditioning, sprint drills, marathon preparation',
+              'ഉദാ. ദിനസരി ഫിറ്റ്നസ് പരിശീലനം, മാരത്തൺ തയ്യാറെടുപ്പ്',
+            )}
+            aria-invalid={Boolean(errors.trackPurpose)}
+            className={`membership-input px-3.5 ${
+              errors.trackPurpose ? 'membership-input-error' : ''
+            }`}
+          />
+          {errors.trackPurpose && (
+            <span className="text-[12px] font-medium text-[#DC2626]">{errors.trackPurpose}</span>
+          )}
+        </div>
+
+        {/* Registered Sportsperson Switch */}
+        <div className="flex items-center justify-between gap-3 pt-1">
+          <span className="text-[13.5px] font-semibold text-[#1E293B]">
+            {t('I am a registered sportsperson', 'ഞാൻ രജിസ്റ്റർ ചെയ്ത കായികതാരമാണ്')}
           </span>
           <button
             type="button"
             role="switch"
-            aria-checked={formData.isSportsperson}
-            onClick={() => onUpdateField('isSportsperson', !formData.isSportsperson)}
-            className={
-              formData.isSportsperson
-                ? 'w-12 h-7 rounded-full bg-[#1F6FFF] p-1 flex items-center justify-end shrink-0 transition-colors shadow-[0_2px_8px_rgba(31,111,255,0.25)] focus:outline-none'
-                : 'w-12 h-7 rounded-full bg-surface-container-highest p-1 flex items-center justify-start shrink-0 transition-colors shadow-inner focus:outline-none'
+            aria-checked={formData.isRegisteredSportsperson}
+            onClick={() =>
+              onUpdateField('isRegisteredSportsperson', !formData.isRegisteredSportsperson)
             }
+            className={`w-11 h-6 rounded-full p-0.5 flex items-center shrink-0 transition-colors ${
+              formData.isRegisteredSportsperson
+                ? 'bg-[#165DF5] justify-end'
+                : 'bg-slate-300 justify-start'
+            }`}
           >
-            <div className="w-5 h-5 rounded-full bg-white shadow-sm transform transition-transform" />
+            <span className="w-5 h-5 rounded-full bg-white shadow-sm" />
           </button>
         </div>
 
-        {/* Conditional Sportsperson Fields (from kannur_city_police_membership_step_2_sportsperson_active) */}
-        {formData.isSportsperson && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-            <div className="flex flex-col gap-2">
-              <label
-                className="font-label-primary text-[14px] md:text-label-primary font-medium text-on-surface"
-                htmlFor="sportField"
-              >
-                Sport <span className="text-error">*</span>
+        {formData.isRegisteredSportsperson && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="onboard-sport" className="text-[13px] font-semibold text-[#1E293B]">
+                {t('Sport / Discipline', 'കായിക ഇനം')} <span className="text-[#DC2626]">*</span>
               </label>
-              <div className="flex flex-col gap-1.5">
-                <input
-                  id="sportField"
-                  name="sportField"
-                  type="text"
-                  value={formData.sportField}
-                  onChange={(e) => onUpdateField('sportField', e.target.value)}
-                  placeholder="e.g., Athletics"
-                  aria-invalid={Boolean(errors.sportField)}
-                  className={`w-full h-14 px-5 rounded-[16px] md:rounded-[20px] bg-white/50 backdrop-blur-[20px] shadow-[inset_0_1px_2px_rgba(17,20,24,0.03)] font-body-default text-[15px] md:text-body-default text-on-surface placeholder:text-secondary/50 focus:outline-none focus:bg-white/85 focus:shadow-[0_0_0_4px_rgba(31,111,255,0.15)] transition-all ${
-                    errors.sportField ? 'membership-input-error' : ''
-                  }`}
-                />
-                {errors.sportField && (
-                  <span className="font-label-meta text-[13px] leading-[18px] font-medium text-[#E5484D]">
-                    {errors.sportField}
-                  </span>
-                )}
-              </div>
+              <input
+                id="onboard-sport"
+                name="sportDiscipline"
+                type="text"
+                value={formData.sportDiscipline}
+                onChange={(e) => onUpdateField('sportDiscipline', e.target.value)}
+                placeholder={t('e.g. Athletics, 400m Sprint', 'ഉദാ. അത്‌ലറ്റിക്സ്')}
+                aria-invalid={Boolean(errors.sportDiscipline)}
+                className={`membership-input px-3.5 ${
+                  errors.sportDiscipline ? 'membership-input-error' : ''
+                }`}
+              />
+              {errors.sportDiscipline && (
+                <span className="text-[12px] font-medium text-[#DC2626]">
+                  {errors.sportDiscipline}
+                </span>
+              )}
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <label
-                className="font-label-primary text-[14px] md:text-label-primary font-medium text-on-surface"
-                htmlFor="associationDetails"
+                htmlFor="onboard-association"
+                className="text-[13px] font-semibold text-[#1E293B]"
               >
-                Association or event details
+                {t('Association or Event Details', 'അസോസിയേഷൻ / മത്സര വിവരങ്ങൾ')}{' '}
+                <span className="text-[11.5px] font-normal text-[#64748B]">
+                  ({t('Optional', 'ഓപ്ഷണൽ')})
+                </span>
               </label>
-              <div className="relative flex items-center">
-                <input
-                  id="associationDetails"
-                  name="associationDetails"
-                  type="text"
-                  value={formData.associationDetails}
-                  onChange={(e) => onUpdateField('associationDetails', e.target.value)}
-                  placeholder="e.g., Kerala State Athletics Association"
-                  className="w-full h-14 px-5 rounded-[16px] md:rounded-[20px] bg-white/50 backdrop-blur-[20px] shadow-[inset_0_1px_2px_rgba(17,20,24,0.03)] font-body-default text-[15px] md:text-body-default text-on-surface placeholder:text-secondary/50 focus:outline-none focus:bg-white/85 focus:shadow-[0_0_0_4px_rgba(31,111,255,0.15)] transition-all"
-                />
-              </div>
+              <input
+                id="onboard-association"
+                name="associationDetails"
+                type="text"
+                value={formData.associationDetails}
+                onChange={(e) => onUpdateField('associationDetails', e.target.value)}
+                placeholder={t(
+                  'e.g. Kerala State Athletics Association',
+                  'ഉദാ. കേരള സ്റ്റേറ്റ് അത്‌ലറ്റിക്സ് അസോസിയേഷൻ',
+                )}
+                className="membership-input px-3.5"
+              />
             </div>
           </div>
         )}
       </div>
 
-      {/* Action Row */}
-      <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-between gap-3 md:gap-4 pt-2 md:pt-4">
-        <button
-          type="button"
-          onClick={onBack}
-          className="h-14 px-8 rounded-[20px] md:rounded-[22px] bg-surface-container-lowest/60 backdrop-blur-[20px] shadow-[0_4px_16px_rgba(0,0,0,0.03),inset_0_1px_0_0_rgba(255,255,255,0.90)] font-label-primary text-[15px] md:text-label-primary font-semibold text-[#1F6FFF] hover:bg-surface-container-lowest/90 hover:-translate-y-0.5 active:scale-[0.985] transition-all flex items-center justify-center"
+      {/* Action Footer */}
+      <div className="flex items-center justify-between gap-3 pt-1">
+        <Link
+          to="/"
+          className="btn-glass !h-12 px-6 text-[14px] inline-flex items-center justify-center"
         >
-          Back
-        </button>
+          {t('Cancel', 'റദ്ദാക്കുക')}
+        </Link>
 
         <button
           type="button"
+          disabled={isTrackUnavailable}
           onClick={onContinue}
-          className="h-14 px-10 rounded-[20px] md:rounded-[22px] bg-[#1F6FFF] text-white font-label-primary text-[15px] md:text-label-primary font-semibold shadow-[0_8px_24px_rgba(31,111,255,0.28)] select-none transition-all hover:-translate-y-0.5 active:scale-[0.985] flex items-center justify-center"
+          className={`btn-primary !h-12 px-7 text-[14.5px] inline-flex items-center justify-center gap-2 ${
+            isTrackUnavailable ? 'opacity-55 cursor-not-allowed' : ''
+          }`}
         >
-          Continue
+          <span>{t('Continue to Plan & Session', 'പ്ലാൻ തിരഞ്ഞെടുക്കാൻ തുടരുക')}</span>
+          <ArrowRight className="w-4 h-4" />
         </button>
       </div>
     </section>

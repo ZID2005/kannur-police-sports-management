@@ -8,7 +8,7 @@ export interface DossierIdentitySectionProps {
 export function DossierIdentitySection({ application }: DossierIdentitySectionProps) {
   return (
     <div className="lg:col-span-7 flex flex-col gap-space-lg">
-      {/* Profile & Biometric Card */}
+      {/* Profile & Identity Card */}
       <div className="bg-surface-container-lowest/80 backdrop-blur-2xl rounded-[32px] p-space-md sm:p-space-xl shadow-md relative overflow-hidden flex flex-col gap-space-md">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md pb-space-sm">
           <div className="flex items-center gap-space-sm">
@@ -32,7 +32,7 @@ export function DossierIdentitySection({ application }: DossierIdentitySectionPr
 
         {/* Main Officer Identity Tile */}
         <div className="p-space-md rounded-[24px] bg-surface-container-low flex flex-col sm:flex-row gap-space-md items-start sm:items-center">
-          {/* Photo with Biometric Verified Badge */}
+          {/* Photo with Verification Badge */}
           <div className="relative shrink-0 w-32 h-36 rounded-2xl overflow-hidden shadow-sm bg-surface-container-high">
             <img
               className="w-full h-full object-cover"
@@ -41,7 +41,7 @@ export function DossierIdentitySection({ application }: DossierIdentitySectionPr
             />
             <div className="absolute bottom-0 inset-x-0 bg-primary/90 backdrop-blur-md px-1.5 py-1 text-center">
               <span className="text-on-primary font-caption text-[10px] leading-tight block font-medium">
-                {application.biometricMatchLabel}
+                {application.profileVerificationLabel}
               </span>
             </div>
           </div>
